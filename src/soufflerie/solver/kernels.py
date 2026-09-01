@@ -18,6 +18,7 @@ from soufflerie.errors import (
     InternalInvariantError,
 )
 from soufflerie.solver.boundaries import sponge_columns, validate_sponge_mask
+from soufflerie.solver.forces import ObstacleForce, ObstacleLinks, momentum_exchange_force
 from soufflerie.solver.lattice import DerivedLatticeConfig, validate_populations
 from soufflerie.solver.numpy_oracle import NumpyLatticeState, initialize_numpy
 
@@ -45,6 +46,8 @@ class _WarpBackend(Protocol):
         velocity: npt.NDArray[np.float32],
         device: str,
     ) -> tuple[WarpArray, WarpArray, WarpArray, WarpArray]: ...
+
+    def upload_mask(self, mask: npt.NDArray[np.bool_], device: str) -> WarpArray: ...
 
     def launch_collision(
         self,
@@ -77,6 +80,7 @@ class _WarpBackend(Protocol):
         self,
         post_collision: WarpArray,
         streamed: WarpArray,
+        solid_mask: WarpArray,
         inlet_velocity_lu: float,
         shape: tuple[int, int],
         device: str,
@@ -136,6 +140,8 @@ class WarpKernelAdapter:
             self.device = self._backend.resolve_device(device)
         except (RuntimeError, ValueError) as exc:
             raise DeviceUnavailableError(f"solver device {device!r} is unavailable") from exc
+        self._mask_cache_host: npt.NDArray[np.bool_] | None = None
+        self._mask_cache_device: WarpArray | None = None
 
     def _validate_state(
         self, state: LatticeState, config: DerivedLatticeConfig | None = None
@@ -268,6 +274,7 @@ class WarpKernelAdapter:
         self,
         state: LatticeState,
         config: DerivedLatticeConfig,
+        mask: npt.NDArray[np.bool_] | None = None,
         *,
         inlet_velocity_lu: float,
     ) -> None:
@@ -275,9 +282,19 @@ class WarpKernelAdapter:
 
         shape = self._validate_state(state, config)
         target = self._validate_channel_velocity(config, inlet_velocity_lu)
+        effective_mask = np.zeros(config.shape, dtype=np.bool_) if mask is None else mask
+        validate_sponge_mask(config, effective_mask)
+        if self._mask_cache_host is None or not np.array_equal(
+            self._mask_cache_host, effective_mask
+        ):
+            self._mask_cache_host = effective_mask.copy()
+            self._mask_cache_device = self._backend.upload_mask(effective_mask, self.device)
+        if self._mask_cache_device is None:
+            raise InternalInvariantError("BC-2 OBSTACLE: device mask cache was not initialized")
         self._backend.launch_channel_boundaries(
             state.f_next,
             state.f,
+            self._mask_cache_device,
             target,
             shape,
             self.device,
@@ -316,6 +333,29 @@ class WarpKernelAdapter:
         self.apply_sponge(state, config, mask, inlet_velocity_lu=inlet_velocity_lu)
         self.pull_stream_channel(state, config, inlet_velocity_lu=inlet_velocity_lu)
         self.reduce_macroscopic(state)
+
+    def step_obstacle(
+        self,
+        state: LatticeState,
+        config: DerivedLatticeConfig,
+        mask: npt.NDArray[np.bool_],
+        links: ObstacleLinks,
+        *,
+        inlet_velocity_lu: float,
+        measure_force: bool = True,
+    ) -> ObstacleForce | None:
+        """Run one obstacle step and optionally reduce force in deterministic host order."""
+
+        self.collide(state, config)
+        self.apply_sponge(state, config, mask, inlet_velocity_lu=inlet_velocity_lu)
+        force = (
+            momentum_exchange_force(self.post_collision_numpy(state), links, config)
+            if measure_force
+            else None
+        )
+        self.pull_stream_channel(state, config, mask, inlet_velocity_lu=inlet_velocity_lu)
+        self.reduce_macroscopic(state)
+        return force
 
     def synchronize(self) -> None:
         self._backend.synchronize(self.device)
