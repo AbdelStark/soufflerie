@@ -65,6 +65,7 @@ def _opposite(direction: int) -> int:
 @wp.func
 def _pull_channel(
     post_collision: wp.array3d(dtype=wp.float32),
+    solid_mask: wp.array2d(dtype=wp.uint8),
     y: int,
     x: int,
     direction: int,
@@ -73,6 +74,14 @@ def _pull_channel(
 ) -> wp.float32:
     source_x = x - _direction_x(direction)
     source_y = y - _direction_y(direction)
+    if (
+        source_y >= 0
+        and source_y < ny
+        and source_x >= 0
+        and source_x < nx
+        and solid_mask[source_y, source_x] != wp.uint8(0)
+    ):
+        return post_collision[y, x, _opposite(direction)]
     if source_y <= 0 or source_y >= ny - 1:
         return post_collision[y, x, _opposite(direction)]
     if source_x < 0 or source_x >= nx:
@@ -167,6 +176,7 @@ def sponge_kernel(
 @wp.kernel
 def channel_boundaries_kernel(
     post_collision: wp.array3d(dtype=wp.float32),
+    solid_mask: wp.array2d(dtype=wp.uint8),
     inlet_velocity_lu: wp.float32,
     nx: int,
     ny: int,
@@ -183,16 +193,16 @@ def channel_boundaries_kernel(
     f7 = post_collision[y, x, 7]
     f8 = post_collision[y, x, 8]
 
-    if y > 0 and y < ny - 1:
-        f0 = _pull_channel(post_collision, y, x, 0, nx, ny)
-        f1 = _pull_channel(post_collision, y, x, 1, nx, ny)
-        f2 = _pull_channel(post_collision, y, x, 2, nx, ny)
-        f3 = _pull_channel(post_collision, y, x, 3, nx, ny)
-        f4 = _pull_channel(post_collision, y, x, 4, nx, ny)
-        f5 = _pull_channel(post_collision, y, x, 5, nx, ny)
-        f6 = _pull_channel(post_collision, y, x, 6, nx, ny)
-        f7 = _pull_channel(post_collision, y, x, 7, nx, ny)
-        f8 = _pull_channel(post_collision, y, x, 8, nx, ny)
+    if y > 0 and y < ny - 1 and solid_mask[y, x] == wp.uint8(0):
+        f0 = _pull_channel(post_collision, solid_mask, y, x, 0, nx, ny)
+        f1 = _pull_channel(post_collision, solid_mask, y, x, 1, nx, ny)
+        f2 = _pull_channel(post_collision, solid_mask, y, x, 2, nx, ny)
+        f3 = _pull_channel(post_collision, solid_mask, y, x, 3, nx, ny)
+        f4 = _pull_channel(post_collision, solid_mask, y, x, 4, nx, ny)
+        f5 = _pull_channel(post_collision, solid_mask, y, x, 5, nx, ny)
+        f6 = _pull_channel(post_collision, solid_mask, y, x, 6, nx, ny)
+        f7 = _pull_channel(post_collision, solid_mask, y, x, 7, nx, ny)
+        f8 = _pull_channel(post_collision, solid_mask, y, x, 8, nx, ny)
 
         if x == 0:
             rho = (f0 + f2 + f4 + 2.0 * (f3 + f6 + f7)) / (1.0 - inlet_velocity_lu)
@@ -239,15 +249,15 @@ def channel_boundaries_kernel(
 
         elif x == nx - 1:
             neighbor_x = nx - 2
-            g0 = _pull_channel(post_collision, y, neighbor_x, 0, nx, ny)
-            g1 = _pull_channel(post_collision, y, neighbor_x, 1, nx, ny)
-            g2 = _pull_channel(post_collision, y, neighbor_x, 2, nx, ny)
-            g3 = _pull_channel(post_collision, y, neighbor_x, 3, nx, ny)
-            g4 = _pull_channel(post_collision, y, neighbor_x, 4, nx, ny)
-            g5 = _pull_channel(post_collision, y, neighbor_x, 5, nx, ny)
-            g6 = _pull_channel(post_collision, y, neighbor_x, 6, nx, ny)
-            g7 = _pull_channel(post_collision, y, neighbor_x, 7, nx, ny)
-            g8 = _pull_channel(post_collision, y, neighbor_x, 8, nx, ny)
+            g0 = _pull_channel(post_collision, solid_mask, y, neighbor_x, 0, nx, ny)
+            g1 = _pull_channel(post_collision, solid_mask, y, neighbor_x, 1, nx, ny)
+            g2 = _pull_channel(post_collision, solid_mask, y, neighbor_x, 2, nx, ny)
+            g3 = _pull_channel(post_collision, solid_mask, y, neighbor_x, 3, nx, ny)
+            g4 = _pull_channel(post_collision, solid_mask, y, neighbor_x, 4, nx, ny)
+            g5 = _pull_channel(post_collision, solid_mask, y, neighbor_x, 5, nx, ny)
+            g6 = _pull_channel(post_collision, solid_mask, y, neighbor_x, 6, nx, ny)
+            g7 = _pull_channel(post_collision, solid_mask, y, neighbor_x, 7, nx, ny)
+            g8 = _pull_channel(post_collision, solid_mask, y, neighbor_x, 8, nx, ny)
             neighbor_rho = g0 + g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8
             neighbor_u = (g1 - g3 + g5 - g6 - g7 + g8) / neighbor_rho
             neighbor_v = (g2 - g4 + g5 + g6 - g7 - g8) / neighbor_rho
@@ -324,6 +334,10 @@ def upload_state(
     )
 
 
+def upload_mask(mask: npt.NDArray[np.bool_], device: str) -> WarpArray:
+    return wp.array(mask.astype(np.uint8), dtype=wp.uint8, device=device)
+
+
 def launch_collision(
     populations: WarpArray,
     post_collision: WarpArray,
@@ -387,6 +401,7 @@ def launch_sponge(
 def launch_channel_boundaries(
     post_collision: WarpArray,
     streamed: WarpArray,
+    solid_mask: WarpArray,
     inlet_velocity_lu: float,
     shape: tuple[int, int],
     device: str,
@@ -395,7 +410,7 @@ def launch_channel_boundaries(
     wp.launch(
         channel_boundaries_kernel,
         dim=(ny, nx),
-        inputs=[post_collision, wp.float32(inlet_velocity_lu), nx, ny],
+        inputs=[post_collision, solid_mask, wp.float32(inlet_velocity_lu), nx, ny],
         outputs=[streamed],
         device=device,
         record_tape=False,
@@ -444,5 +459,6 @@ __all__ = [
     "resolve_device",
     "sponge_kernel",
     "synchronize",
+    "upload_mask",
     "upload_state",
 ]

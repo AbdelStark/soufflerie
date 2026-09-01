@@ -18,12 +18,19 @@ from soufflerie.errors import (
 )
 from soufflerie.schemas import SolverDiagnostics, validate_array
 from soufflerie.solver.boundaries import numpy_channel_step
+from soufflerie.solver.forces import (
+    ForceHistoryRecorder,
+    ObstacleForceHistory,
+    ObstacleLinks,
+    enumerate_obstacle_links,
+)
 from soufflerie.solver.kernels import LatticeState, WarpKernelAdapter
 from soufflerie.solver.lattice import (
     DerivedLatticeConfig,
     inlet_ramp,
 )
 from soufflerie.solver.numpy_oracle import initialize_numpy, numpy_periodic_step
+from soufflerie.solver.obstacle import numpy_obstacle_step
 
 MIN_AVERAGING_STEPS = 4_000
 MIN_AVERAGING_SAMPLES = 200
@@ -283,6 +290,49 @@ class NumpyChannelStepper(NumpyPeriodicStepper):
         state.velocity = next_state.velocity
 
 
+class NumpyObstacleStepper(NumpyChannelStepper):
+    """NumPy channel driver with obstacle bounce-back and sampled force history."""
+
+    def __init__(self) -> None:
+        self._links: ObstacleLinks | None = None
+        self._history = ForceHistoryRecorder()
+
+    def initialize(self, config: DerivedLatticeConfig, mask: npt.NDArray[np.bool_]) -> object:
+        self._links = enumerate_obstacle_links(mask)
+        self._history = ForceHistoryRecorder()
+        return super().initialize(config, mask)
+
+    def advance(
+        self,
+        state: object,
+        config: DerivedLatticeConfig,
+        mask: npt.NDArray[np.bool_],
+        *,
+        completed_step: int,
+        inlet_velocity_lu: float,
+    ) -> None:
+        if not isinstance(state, NumpyPeriodicState) or self._links is None:
+            raise InternalInvariantError("NumPy obstacle lifecycle is not initialized")
+        result = numpy_obstacle_step(
+            state.f,
+            config,
+            mask,
+            self._links,
+            inlet_velocity_lu=inlet_velocity_lu,
+        )
+        state.f = result.state.f
+        state.rho = result.state.rho
+        state.velocity = result.state.velocity
+        if (
+            completed_step > config.warmup_steps
+            and (completed_step - config.warmup_steps) % config.sample_interval == 0
+        ):
+            self._history.record(completed_step, result.force)
+
+    def force_history(self) -> ObstacleForceHistory:
+        return self._history.snapshot()
+
+
 class WarpPeriodicStepper:
     """Optional Warp driver for the periodic kernel stage sequence."""
 
@@ -346,6 +396,51 @@ class WarpChannelStepper(WarpPeriodicStepper):
             mask,
             inlet_velocity_lu=inlet_velocity_lu,
         )
+
+
+class WarpObstacleStepper(WarpChannelStepper):
+    """Warp obstacle driver with deterministic host-ordered force reduction."""
+
+    def __init__(self, device: str = "cpu") -> None:
+        super().__init__(device)
+        self._links: ObstacleLinks | None = None
+        self._history = ForceHistoryRecorder()
+
+    def initialize(self, config: DerivedLatticeConfig, mask: npt.NDArray[np.bool_]) -> object:
+        self._links = enumerate_obstacle_links(mask)
+        self._history = ForceHistoryRecorder()
+        return super().initialize(config, mask)
+
+    def advance(
+        self,
+        state: object,
+        config: DerivedLatticeConfig,
+        mask: npt.NDArray[np.bool_],
+        *,
+        completed_step: int,
+        inlet_velocity_lu: float,
+    ) -> None:
+        if not isinstance(state, LatticeState) or self._links is None:
+            raise InternalInvariantError("Warp obstacle lifecycle is not initialized")
+        sample_due = (
+            completed_step > config.warmup_steps
+            and (completed_step - config.warmup_steps) % config.sample_interval == 0
+        )
+        force = self._adapter.step_obstacle(
+            state,
+            config,
+            mask,
+            self._links,
+            inlet_velocity_lu=inlet_velocity_lu,
+            measure_force=sample_due,
+        )
+        if sample_due:
+            if force is None:
+                raise InternalInvariantError("Warp force sample was not reduced")
+            self._history.record(completed_step, force)
+
+    def force_history(self) -> ObstacleForceHistory:
+        return self._history.snapshot()
 
 
 def averaging_sample_steps(config: DerivedLatticeConfig) -> tuple[int, ...]:
@@ -628,6 +723,7 @@ __all__ = [
     "LifecycleStepper",
     "MeanFlowFields",
     "NumpyChannelStepper",
+    "NumpyObstacleStepper",
     "NumpyPeriodicState",
     "NumpyPeriodicStepper",
     "RawLatticeSnapshot",
@@ -635,6 +731,7 @@ __all__ = [
     "SolverStabilityFailure",
     "StepDiagnostics",
     "WarpChannelStepper",
+    "WarpObstacleStepper",
     "WarpPeriodicStepper",
     "averaging_sample_steps",
     "run_lifecycle",
