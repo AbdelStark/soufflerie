@@ -9,7 +9,7 @@ Generated from the specification corpus in [PR #1](https://github.com/AbdelStark
 - Implementation issues: 56
 - RFC tracking issues: 13
 - Total issues: 69
-- Current state: 51 open, 18 closed
+- Current state: 50 open, 19 closed
 - Scope: PRD milestones M0-M5; stretch tracks excluded
 
 Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, surrogate 4, training 4, validation 4, API 5, UI 4, infrastructure/performance 6, observability 1, security 3, and release 7.
@@ -33,7 +33,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #13 | [solver: implement Strouhal and field-drag diagnostics](https://github.com/AbdelStark/soufflerie/issues/13) | geometry | p1 | m | RFC-0003 | closed |
 | #14 | [solver: pass cylinder reference and grid-sensitivity acceptance](https://github.com/AbdelStark/soufflerie/issues/14) | geometry | p0 | l | RFC-0002, RFC-0003, RFC-0011 | open |
 | #15 | [datagen: implement deterministic LHS design and frozen splits](https://github.com/AbdelStark/soufflerie/issues/15) | datagen | p0 | m | RFC-0004 | open |
-| #16 | [datagen: implement safe run codecs and local artifact store](https://github.com/AbdelStark/soufflerie/issues/16) | datagen | p0 | l | RFC-0005 | open |
+| #16 | [datagen: implement safe run codecs and local artifact store](https://github.com/AbdelStark/soufflerie/issues/16) | datagen | p0 | l | RFC-0005 | closed |
 | #17 | [datagen: implement leased resumable sweep state](https://github.com/AbdelStark/soufflerie/issues/17) | datagen | p0 | l | RFC-0005 | open |
 | #18 | [datagen: build and validate the immutable dataset manifest](https://github.com/AbdelStark/soufflerie/issues/18) | datagen | p0 | l | RFC-0005 | open |
 | #19 | [datagen: produce the canonical 1,000-case dataset](https://github.com/AbdelStark/soufflerie/issues/19) | datagen | p0 | l | RFC-0005, RFC-0011 | open |

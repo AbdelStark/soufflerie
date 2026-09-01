@@ -17,6 +17,7 @@ from soufflerie.config import (
     load_config,
     rendered_config_schema_documents,
 )
+from soufflerie.datagen import rendered_datagen_schema_documents
 from soufflerie.observability import rendered_observability_schema_documents
 from soufflerie.schemas import CaseConfig, rendered_schema_documents
 
@@ -54,6 +55,7 @@ def test_all_generated_schema_documents_are_checked_in() -> None:
     expected = {
         **rendered_schema_documents(),
         **rendered_config_schema_documents(),
+        **rendered_datagen_schema_documents(),
         **rendered_observability_schema_documents(),
         **rendered_cli_schema_documents(),
         **rendered_artifact_schema_documents(),
