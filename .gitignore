@@ -1,0 +1,71 @@
+# Environment and local state
+.env
+.env.*
+!.env.example
+.envrc
+
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# uv / pip
+.venv/
+venv/
+.python-version
+
+# Local agent harness (not part of the public repo)
+.agents/
+.claude/
+
+
+# Pipeline artifact output
+**/artifacts/
+
+# Local release/eval smoke + pipeline output directories
+.eval-smoke/
+.release/
+.release-smoke/
+
+# Auxiliary local virtualenvs (e.g. torch-enabled ML dev env)
+.venv-ml/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS-generated thumbnails
+Thumbs.db
+
+# MkDocs build artifact
+/site/
+
+# Local benchmark results (bench/_harness.py persists machine-specific
+# JSON under bench/results/<machine>/...; the canonical baseline lives
+# in bench/results/baseline/ and is committed).
+/bench/results/*/
+!/bench/results/baseline/
+
+# Local model downloads and serving scratch
+checkpoints/
