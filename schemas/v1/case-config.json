@@ -1,0 +1,100 @@
+{
+  "$defs": {
+    "ShapeParams": {
+      "additionalProperties": false,
+      "description": "Ellipse parameters at the public degree/lattice-unit boundary.",
+      "properties": {
+        "aspect_ratio": {
+          "maximum": 1.0,
+          "minimum": 0.3,
+          "title": "Aspect Ratio",
+          "type": "number"
+        },
+        "rotation_deg": {
+          "maximum": 30.0,
+          "minimum": 0.0,
+          "title": "Rotation Deg",
+          "type": "number"
+        },
+        "scale": {
+          "maximum": 1.25,
+          "minimum": 0.75,
+          "title": "Scale",
+          "type": "number"
+        }
+      },
+      "required": [
+        "aspect_ratio",
+        "rotation_deg",
+        "scale"
+      ],
+      "title": "ShapeParams",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/case-config.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "One validated physical and numerical solver case.",
+  "properties": {
+    "inlet_velocity_lu": {
+      "exclusiveMinimum": 0.0,
+      "maximum": 0.1,
+      "title": "Inlet Velocity Lu",
+      "type": "number"
+    },
+    "nx": {
+      "minimum": 3,
+      "title": "Nx",
+      "type": "integer"
+    },
+    "ny": {
+      "minimum": 3,
+      "title": "Ny",
+      "type": "integer"
+    },
+    "reynolds": {
+      "maximum": 300.0,
+      "minimum": 40.0,
+      "title": "Reynolds",
+      "type": "number"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seed": {
+      "maximum": 18446744073709551615,
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "shape": {
+      "$ref": "#/$defs/ShapeParams"
+    },
+    "steps": {
+      "minimum": 1,
+      "title": "Steps",
+      "type": "integer"
+    },
+    "warmup_steps": {
+      "minimum": 0,
+      "title": "Warmup Steps",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "shape",
+    "reynolds",
+    "nx",
+    "ny",
+    "steps",
+    "warmup_steps",
+    "inlet_velocity_lu",
+    "seed"
+  ],
+  "title": "CaseConfig",
+  "type": "object"
+}

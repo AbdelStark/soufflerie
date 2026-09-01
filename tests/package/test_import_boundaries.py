@@ -69,7 +69,8 @@ def _top_level_module(module_name: str) -> str | None:
 
 
 def test_public_package_is_typed_and_versioned() -> None:
-    assert soufflerie.__all__ == ["__version__"]
+    assert "__version__" in soufflerie.__all__
+    assert "CaseConfig" in soufflerie.__all__
     assert soufflerie.__version__ == "0.1.0"
     assert importlib.resources.files("soufflerie").joinpath("py.typed").is_file()
 

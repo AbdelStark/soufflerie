@@ -1,0 +1,126 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/provenance.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Reproducibility and direct-lineage record for a durable artifact.",
+  "properties": {
+    "architecture": {
+      "minLength": 1,
+      "title": "Architecture",
+      "type": "string"
+    },
+    "completed_at": {
+      "format": "date-time",
+      "title": "Completed At",
+      "type": "string"
+    },
+    "config_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Sha256",
+      "type": "string"
+    },
+    "deterministic": {
+      "title": "Deterministic",
+      "type": "boolean"
+    },
+    "device_class": {
+      "minLength": 1,
+      "title": "Device Class",
+      "type": "string"
+    },
+    "dtype_policy": {
+      "minLength": 1,
+      "title": "Dtype Policy",
+      "type": "string"
+    },
+    "gpu_seconds": {
+      "minimum": 0.0,
+      "title": "Gpu Seconds",
+      "type": "number"
+    },
+    "lock_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Lock Sha256",
+      "type": "string"
+    },
+    "os": {
+      "minLength": 1,
+      "title": "Os",
+      "type": "string"
+    },
+    "packages": {
+      "additionalProperties": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minProperties": 1,
+      "propertyNames": {
+        "minLength": 1
+      },
+      "title": "Packages",
+      "type": "object"
+    },
+    "parent_sha256": {
+      "additionalProperties": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "propertyNames": {
+        "minLength": 1
+      },
+      "title": "Parent Sha256",
+      "type": "object"
+    },
+    "python_version": {
+      "minLength": 1,
+      "title": "Python Version",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seeds": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Seeds",
+      "type": "array"
+    },
+    "source_dirty": {
+      "title": "Source Dirty",
+      "type": "boolean"
+    },
+    "source_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Source Revision",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_revision",
+    "source_dirty",
+    "python_version",
+    "lock_sha256",
+    "packages",
+    "os",
+    "architecture",
+    "device_class",
+    "dtype_policy",
+    "config_sha256",
+    "seeds",
+    "deterministic",
+    "started_at",
+    "completed_at",
+    "gpu_seconds"
+  ],
+  "title": "Provenance",
+  "type": "object"
+}

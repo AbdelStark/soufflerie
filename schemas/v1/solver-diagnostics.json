@@ -1,0 +1,85 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/solver-diagnostics.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Finite, internally coherent scalar solver diagnostics.",
+  "properties": {
+    "converged": {
+      "title": "Converged",
+      "type": "boolean"
+    },
+    "final_mass": {
+      "exclusiveMinimum": 0.0,
+      "title": "Final Mass",
+      "type": "number"
+    },
+    "initial_mass": {
+      "exclusiveMinimum": 0.0,
+      "title": "Initial Mass",
+      "type": "number"
+    },
+    "mass_drift_ratio": {
+      "minimum": 0.0,
+      "title": "Mass Drift Ratio",
+      "type": "number"
+    },
+    "max_rho": {
+      "exclusiveMinimum": 0.0,
+      "title": "Max Rho",
+      "type": "number"
+    },
+    "max_speed_lu": {
+      "minimum": 0.0,
+      "title": "Max Speed Lu",
+      "type": "number"
+    },
+    "messages": {
+      "default": [],
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Messages",
+      "type": "array"
+    },
+    "min_rho": {
+      "exclusiveMinimum": 0.0,
+      "title": "Min Rho",
+      "type": "number"
+    },
+    "sample_count": {
+      "minimum": 0,
+      "title": "Sample Count",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "steps_completed": {
+      "minimum": 0,
+      "title": "Steps Completed",
+      "type": "integer"
+    },
+    "valid": {
+      "title": "Valid",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "steps_completed",
+    "sample_count",
+    "initial_mass",
+    "final_mass",
+    "mass_drift_ratio",
+    "min_rho",
+    "max_rho",
+    "max_speed_lu",
+    "converged",
+    "valid"
+  ],
+  "title": "SolverDiagnostics",
+  "type": "object"
+}

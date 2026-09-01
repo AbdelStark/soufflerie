@@ -7,24 +7,34 @@ Shared scalar records are frozen dataclasses or strict Pydantic v2 models. Array
 
 ```python
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Literal
 import numpy as np
 import numpy.typing as npt
+from pydantic import BaseModel, ConfigDict, Field
 
 SchemaVersion = Literal[1]
 Split = Literal["train", "validation", "test"]
 RunState = Literal["pending", "running", "succeeded", "failed"]
 
-@dataclass(frozen=True, slots=True)
-class ShapeParams:
-    aspect_ratio: float       # minor / major axis, [0.3, 1.0]
-    rotation_deg: float       # counter-clockwise, [0, 30]
-    scale: float              # reference-diameter multiplier, [0.75, 1.25]
+class StrictFrozenModel(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
-@dataclass(frozen=True, slots=True)
-class CaseConfig:
-    schema_version: SchemaVersion
+
+class ShapeParams(StrictFrozenModel):
+    aspect_ratio: float = Field(ge=0.3, le=1.0)
+    rotation_deg: float = Field(ge=0.0, le=30.0)
+    scale: float = Field(ge=0.75, le=1.25)
+
+
+class GridSpec(StrictFrozenModel):
+    schema_version: SchemaVersion = 1
+    nx: int = Field(ge=3)
+    ny: int = Field(ge=3)
+    axis_order: Literal["yx"] = "yx"
+
+
+class CaseConfig(StrictFrozenModel):
+    schema_version: SchemaVersion = 1
     shape: ShapeParams
     reynolds: float
     nx: int
@@ -56,7 +66,30 @@ class SolverResult:
     provenance: Provenance
 ```
 
-The full manifest, checkpoint, validation, and HTTP models are fixed by RFC-0005, RFC-0006, RFC-0008, and RFC-0009. JSON schemas generated from Pydantic models are checked in under `schemas/v1/` and compared in CI.
+The shared implementation additionally defines:
+
+- `GridSpec`: `nx`, `ny`, fixed `yx` axis order, and explicit lattice spacing/time units;
+- `ArrayDescriptor`: dtype, shape, unit, C order, finite-only, and
+  `allow_pickle=false` declarations;
+- `SolverDiagnostics`: progress/sample counts, initial/final mass and derived
+  drift, density/speed bounds, convergence/validity, and typed messages;
+- `Provenance`: exact source/lock/config identities, environment and dtype
+  policy, direct parent digests, seeds, determinism, aware timestamps, and GPU
+  seconds;
+- `ArtifactRef`: artifact type, full digest, matching 20-character display ID,
+  byte size, and normalized artifact-root-relative URI.
+
+These scalar records are strict, frozen Pydantic models: unknown fields and
+implicit string/boolean coercions fail. Array-bearing `FlowFields` and
+`SolverResult` remain frozen dataclasses whose construction performs runtime
+array and coherence checks. The full manifest, checkpoint, validation, and HTTP
+models are fixed by RFC-0005, RFC-0006, RFC-0008, and RFC-0009.
+
+JSON Schema draft 2020-12 documents generated from the shared scalar records
+are checked in under `schemas/v1/`. `scripts/export_schemas.py --check` compares
+the generated contract byte-for-byte with those files. Unknown integer schema
+versions raise `SchemaVersionError`; no schema migration beyond version 1 is
+implemented.
 
 <a id="units-and-coordinates"></a>
 ## Units and coordinates
@@ -88,7 +121,11 @@ Device transfers and dtype casts occur at adapter boundaries. Model code MUST NO
 <a id="identities"></a>
 ## Stable identities
 
-Canonical JSON uses UTF-8, sorted keys, no insignificant whitespace, decimal numbers normalized through the typed model, and no NaN/infinity. IDs are lowercase SHA-256 prefixes:
+Canonical JSON uses UTF-8, sorted keys, no insignificant whitespace, decimal
+numbers normalized through the typed model (including `-0.0` to `0.0`), UTC
+microsecond timestamps, and no NaN/infinity. Array bytes and array descriptors
+are hashed separately rather than silently converting arrays to lists. IDs are
+lowercase SHA-256 prefixes:
 
 - `case_id = sha256(canonical CaseConfig)[:20]`
 - `dataset_id = sha256(canonical manifest rows + schema metadata)[:20]`
@@ -113,3 +150,17 @@ All durable artifacts start at integer `schema_version: 1`. Readers reject unkno
 - `DM-6 SPLIT`: a `case_id` occurs in exactly one split and split membership never changes for a `dataset_id`.
 - `DM-7 PROVENANCE`: every child artifact names all direct parent digests.
 - `DM-8 UNITS`: every scalar/array field uses the units declared in this document; conversions occur only at named boundaries.
+
+<a id="executable-invariants"></a>
+## Executable invariant map
+
+| Invariant | Authoritative executor |
+|---|---|
+| DM-1 SHAPE | `validate_array`, `FlowFields`, `SolverResult` |
+| DM-2 FINITE | strict scalar fields plus `validate_array` and result constructors |
+| DM-3 DTYPE | exact `ArrayDescriptor`/`validate_array` dtype comparison; no implicit cast |
+| DM-4 IDENTITY | `canonical_sha256`, `verify_sha256`, and `ArtifactRef` prefix/full-digest coherence |
+| DM-5 NO_PICKLE | `ArrayDescriptor.allow_pickle=false` and object-dtype rejection |
+| DM-6 SPLIT | `validate_split_membership`; manifest-specific cardinality remains RFC-0005 work |
+| DM-7 PROVENANCE | strict `Provenance.parent_sha256` plus `validate_parent_digests` |
+| DM-8 UNITS | fixed `GridSpec` units, `ArrayDescriptor.unit`, and `validate_field_units` |

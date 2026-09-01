@@ -1,0 +1,33 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/shape-params.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Ellipse parameters at the public degree/lattice-unit boundary.",
+  "properties": {
+    "aspect_ratio": {
+      "maximum": 1.0,
+      "minimum": 0.3,
+      "title": "Aspect Ratio",
+      "type": "number"
+    },
+    "rotation_deg": {
+      "maximum": 30.0,
+      "minimum": 0.0,
+      "title": "Rotation Deg",
+      "type": "number"
+    },
+    "scale": {
+      "maximum": 1.25,
+      "minimum": 0.75,
+      "title": "Scale",
+      "type": "number"
+    }
+  },
+  "required": [
+    "aspect_ratio",
+    "rotation_deg",
+    "scale"
+  ],
+  "title": "ShapeParams",
+  "type": "object"
+}
