@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 
+from soufflerie.cli import rendered_cli_schema_documents
 from soufflerie.config import rendered_config_schema_documents
 from soufflerie.errors import ArtifactIntegrityError, SchemaVersionError
 from soufflerie.observability import rendered_observability_schema_documents
@@ -237,6 +238,7 @@ def test_checked_in_schema_v1_documents_are_current() -> None:
         **rendered_schema_documents(),
         **rendered_config_schema_documents(),
         **rendered_observability_schema_documents(),
+        **rendered_cli_schema_documents(),
     }
     assert {path.name for path in root.glob("*.json")} == set(expected)
     for name, content in expected.items():

@@ -18,6 +18,8 @@ def test_python_and_build_contract() -> None:
     assert isinstance(project, dict)
     assert project["name"] == "soufflerie"
     assert project["requires-python"] == ">=3.11,<3.12"
+    assert project["readme"] == "README.md"
+    assert project["scripts"] == {"soufflerie": "soufflerie.cli:app"}
     assert document["build-system"]["build-backend"] == "hatchling.build"
 
 

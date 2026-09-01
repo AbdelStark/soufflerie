@@ -1,0 +1,44 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/dataset-validation-result.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Machine-readable successful dataset validation summary.",
+  "properties": {
+    "case_count": {
+      "minimum": 0,
+      "title": "Case Count",
+      "type": "integer"
+    },
+    "dataset_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "manifest": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Manifest",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "valid": {
+      "const": true,
+      "default": true,
+      "title": "Valid",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "manifest",
+    "dataset_id",
+    "case_count"
+  ],
+  "title": "DatasetValidationResult",
+  "type": "object"
+}

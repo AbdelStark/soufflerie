@@ -6,6 +6,7 @@ build-backend = "hatchling.build"
 name = "soufflerie"
 version = "0.1.0"
 description = "A reproducible wind-tunnel workflow for numerical and learned flow models."
+readme = "README.md"
 authors = [{ name = "AbdelStark" }]
 requires-python = ">=3.11,<3.12"
 dependencies = [
@@ -34,6 +35,9 @@ keywords = ["computational-fluid-dynamics", "machine-learning", "wind-tunnel"]
 Homepage = "https://github.com/AbdelStark/soufflerie"
 Repository = "https://github.com/AbdelStark/soufflerie.git"
 Issues = "https://github.com/AbdelStark/soufflerie/issues"
+
+[project.scripts]
+soufflerie = "soufflerie.cli:app"
 
 [project.optional-dependencies]
 solver = ["warp-lang==1.17.0"]
@@ -88,6 +92,7 @@ include = [
   "/scripts",
   "/src",
   "/tests",
+  "/README.md",
   "/SPEC.md",
   "/pyproject.toml",
   "/uv.lock",

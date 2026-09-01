@@ -1,0 +1,52 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/model-inspection-result.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Machine-readable successful model bundle inspection summary.",
+  "properties": {
+    "architecture": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Architecture",
+      "type": "string"
+    },
+    "bundle": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Bundle",
+      "type": "string"
+    },
+    "dataset_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "model_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Model Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "valid": {
+      "const": true,
+      "default": true,
+      "title": "Valid",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "bundle",
+    "model_id",
+    "dataset_id",
+    "architecture"
+  ],
+  "title": "ModelInspectionResult",
+  "type": "object"
+}
