@@ -19,6 +19,8 @@ def test_python_and_build_contract() -> None:
     assert project["name"] == "soufflerie"
     assert project["requires-python"] == ">=3.11,<3.12"
     assert project["readme"] == "README.md"
+    assert project["license"] == "Apache-2.0"
+    assert project["license-files"] == ["LICENSE", "NOTICE"]
     assert project["scripts"] == {"soufflerie": "soufflerie.cli:app"}
     assert document["build-system"]["build-backend"] == "hatchling.build"
 
