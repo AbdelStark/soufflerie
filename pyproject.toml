@@ -81,6 +81,7 @@ packages = ["src/soufflerie"]
 include = [
   "/docs",
   "/configs",
+  "/reports",
   "/schemas",
   "/scripts",
   "/src",
