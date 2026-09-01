@@ -53,6 +53,24 @@ reports the required extra without a traceback.
 See [`docs/cli.md`](docs/cli.md) for JSON fields, failure codes, dependency
 profiles, and automation guidance.
 
+## Remote solver smoke
+
+Authenticated CUDA execution uses one locked Modal app, image, and persistent
+volume. From a clean commit, run the resumable non-release eight-case smoke with:
+
+```bash
+uv run --extra remote modal run infra/sweep.py \
+  --config configs/sweeps/mvp-v1.yaml \
+  --n 8
+```
+
+The command injects one retryable first-attempt failure on a fresh smoke
+identity, resumes only missing work, verifies committed digests, and returns a
+small typed summary. `--n 8` is intentionally distinct from and cannot satisfy
+the 1,000-case release dataset. See
+[`docs/operations/remote-runtime.md`](docs/operations/remote-runtime.md) for
+single-solve commands, identity rules, persistence, fallback, and cost controls.
+
 ## Development checks
 
 The default development environment is CPU-first:
