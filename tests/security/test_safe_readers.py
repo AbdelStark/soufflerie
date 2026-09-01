@@ -70,12 +70,15 @@ def test_root_keys_reject_traversal_urls_alternate_separators_and_symlinks(
 def test_bounded_byte_reader_checks_size_digest_and_regular_file(tmp_path: Path) -> None:
     content = b"verified"
     (tmp_path / "artifact.bin").write_bytes(content)
-    assert safe_read_bytes(
-        tmp_path,
-        "artifact.bin",
-        max_bytes=len(content),
-        expected_sha256=sha256_bytes(content),
-    ) == content
+    assert (
+        safe_read_bytes(
+            tmp_path,
+            "artifact.bin",
+            max_bytes=len(content),
+            expected_sha256=sha256_bytes(content),
+        )
+        == content
+    )
     with pytest.raises(ArtifactIntegrityError, match="byte limit"):
         safe_read_bytes(tmp_path, "artifact.bin", max_bytes=len(content) - 1)
     with pytest.raises(ArtifactIntegrityError, match="SHA-256"):

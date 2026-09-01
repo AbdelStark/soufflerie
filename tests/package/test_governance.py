@@ -7,6 +7,7 @@ import tarfile
 import tomllib
 from pathlib import Path
 
+import pytest
 import yaml  # type: ignore[import-untyped]
 
 from scripts.check_governance import check_governance
@@ -81,6 +82,7 @@ def test_license_citation_and_ownership_metadata_agree() -> None:
     assert all(words[-1] == f"@{OWNER}" for words in active_lines)
 
 
+@pytest.mark.integration
 def test_source_distribution_contains_governance_and_templates(tmp_path: Path) -> None:
     result = subprocess.run(
         ["uv", "build", "--sdist", "--out-dir", str(tmp_path)],

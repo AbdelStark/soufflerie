@@ -87,6 +87,7 @@ packages = ["src/soufflerie"]
 include = [
   "/.env.example",
   "/.github",
+  "/.pre-commit-config.yaml",
   "/CITATION.cff",
   "/CODE_OF_CONDUCT.md",
   "/CONTRIBUTING.md",
@@ -128,6 +129,11 @@ markers = [
 # Warp DSL bodies execute through its JIT, outside Python's line tracer. Their
 # behavior is covered by CPU oracle and determinism tests instead.
 omit = ["src/soufflerie/solver/_warp_backend.py"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = false
 
 [tool.ruff]
 target-version = "py311"

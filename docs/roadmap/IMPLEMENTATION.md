@@ -9,7 +9,7 @@ Generated from the specification corpus in [PR #1](https://github.com/AbdelStark
 - Implementation issues: 56
 - RFC tracking issues: 13
 - Total issues: 69
-- Current state: 57 open, 12 closed
+- Current state: 56 open, 13 closed
 - Scope: PRD milestones M0-M5; stretch tracks excluded
 
 Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, surrogate 4, training 4, validation 4, API 5, UI 4, infrastructure/performance 6, observability 1, security 3, and release 7.
@@ -69,7 +69,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #49 | [security: enforce rate, budget, and readiness controls](https://github.com/AbdelStark/soufflerie/issues/49) | security | p0 | m | RFC-0012 | open |
 | #50 | [security: add hostile-artifact, secret, and dependency gates](https://github.com/AbdelStark/soufflerie/issues/50) | security | p0 | m | RFC-0012, RFC-0013 | open |
 | #51 | [docs: add license, governance, security, and citation files](https://github.com/AbdelStark/soufflerie/issues/51) | release | p1 | m | RFC-0013 | closed |
-| #52 | [ci: enforce CPU lint, typing, tests, schemas, and docs](https://github.com/AbdelStark/soufflerie/issues/52) | release | p0 | l | RFC-0013 | open |
+| #52 | [ci: enforce CPU lint, typing, tests, schemas, and docs](https://github.com/AbdelStark/soufflerie/issues/52) | release | p0 | l | RFC-0013 | closed |
 | #53 | [release: verify distributions and installed-wheel behavior](https://github.com/AbdelStark/soufflerie/issues/53) | release | p0 | m | RFC-0013 | open |
 | #54 | [ci: add protected security and remote acceptance workflows](https://github.com/AbdelStark/soufflerie/issues/54) | release | p0 | l | RFC-0011, RFC-0012, RFC-0013 | open |
 | #55 | [docs: author evidence-bound README and fresh-clone guides](https://github.com/AbdelStark/soufflerie/issues/55) | release | p1 | l | RFC-0013 | open |

@@ -38,12 +38,25 @@ Run the narrowest relevant tests while developing, then the complete CPU-safe
 gate before requesting review:
 
 ```bash
+scripts/check.sh
+```
+
+The wrapper runs the exact specification gate below. The pre-commit policy adds
+the governance and CI self-checks that protect the workflow definition itself:
+
+```bash
+uv run pre-commit run --all-files
 uv lock --check
 uv run ruff check .
+uv run ruff format --check .
 uv run mypy
 uv run python scripts/export_schemas.py --check
 uv run python scripts/check_governance.py
+uv run python scripts/check_ci_policy.py
+uv run python scripts/check_docs.py
 uv run pytest -m "not remote"
+uv build
+uv run python scripts/check_distribution.py dist/*
 ```
 
 Tests without a marker must be deterministic and safe on a CPU-only pull
@@ -53,6 +66,23 @@ multi-component paths, `slow` for intentionally longer local checks, and
 GPU. Every remote test must carry `remote`; ordinary CI excludes it. Do not make
 network access, credentials, or paid execution a prerequisite for the default
 test suite.
+
+Pull-request CI keeps failures attributable to three jobs:
+
+| Job | Contract |
+|---|---|
+| `lint-type` | lock, Ruff lint/format, strict typing, generated schemas, docs, governance, and CI policy |
+| `unit-contract` | all non-remote CPU tests with a 90% source-coverage floor |
+| `integration` | explicitly marked CPU integrations plus wheel/sdist content and metadata |
+
+All jobs use Python 3.11, immutable action revisions, read-only repository
+permissions, a lock-keyed dependency cache, and branch concurrency cancellation.
+The CPU test jobs sync the locked `solver` extra before test and build steps run
+with uv offline; this keeps the Warp-backed numerical contract present on clean
+runners without permitting test-time downloads.
+Pull-request workflows never receive remote credentials and never invoke remote
+acceptance; that evidence is a separate protected, manually authorized release
+gate.
 
 ## Numerical and generated evidence
 

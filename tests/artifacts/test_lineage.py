@@ -292,20 +292,14 @@ def test_lineage_rejects_missing_wrong_and_disallowed_parents() -> None:
 
     no_model = report.model_copy(
         update={
-            "parents": (
-                ParentLink(role="dataset", artifact_type="dataset", sha256=dataset.sha256),
-            )
+            "parents": (ParentLink(role="dataset", artifact_type="dataset", sha256=dataset.sha256),)
         }
     )
     with pytest.raises(ArtifactIntegrityError, match="required parent types: model"):
         verify_lineage((run, dataset, model, no_model))
 
     forbidden = model.model_copy(
-        update={
-            "parents": (
-                ParentLink(role="run", artifact_type="run", sha256=run.sha256),
-            )
-        }
+        update={"parents": (ParentLink(role="run", artifact_type="run", sha256=run.sha256),)}
     )
     with pytest.raises(ArtifactIntegrityError, match="cannot depend"):
         verify_lineage((run, dataset, forbidden))
@@ -316,17 +310,11 @@ def test_lineage_rejects_cycles_and_swapped_consumer_identities() -> None:
     second = _node("run", "second")
     first = first.model_copy(
         update={
-            "parents": (
-                ParentLink(role="previous", artifact_type="run", sha256=second.sha256),
-            )
+            "parents": (ParentLink(role="previous", artifact_type="run", sha256=second.sha256),)
         }
     )
     second = second.model_copy(
-        update={
-            "parents": (
-                ParentLink(role="previous", artifact_type="run", sha256=first.sha256),
-            )
-        }
+        update={"parents": (ParentLink(role="previous", artifact_type="run", sha256=first.sha256),)}
     )
     cyclic_policy = LineagePolicy(
         rules={"run": ParentTypeRule(required=("run",), allowed=("run",))}

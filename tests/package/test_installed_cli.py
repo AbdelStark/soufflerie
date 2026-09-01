@@ -20,6 +20,7 @@ OPTIONAL_RUNTIME_ROOTS = {
     "torch",
     "warp",
 }
+pytestmark = pytest.mark.integration
 
 
 @dataclass(frozen=True, slots=True)
@@ -38,6 +39,19 @@ class InstalledCli:
         )
 
 
+def _run_checked(arguments: list[str], *, cwd: Path | None = None) -> None:
+    result = subprocess.run(
+        arguments,
+        cwd=cwd,
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    assert result.returncode == 0, (
+        f"command failed: {arguments!r}\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+    )
+
+
 @pytest.fixture(scope="module")
 def installed_cli(tmp_path_factory: pytest.TempPathFactory) -> InstalledCli:
     uv = shutil.which("uv")
@@ -46,27 +60,40 @@ def installed_cli(tmp_path_factory: pytest.TempPathFactory) -> InstalledCli:
     root = tmp_path_factory.mktemp("installed-cli")
     distributions = root / "dist"
     environment = root / "venv"
-    subprocess.run(
+    runtime_lock = root / "pylock.toml"
+    _run_checked(
         [uv, "build", "--wheel", "--out-dir", str(distributions)],
         cwd=PROJECT_ROOT,
-        capture_output=True,
-        check=True,
-        text=True,
     )
-    subprocess.run(
-        [uv, "venv", str(environment)],
-        capture_output=True,
-        check=True,
-        text=True,
+    _run_checked([uv, "venv", str(environment)])
+    _run_checked(
+        [
+            uv,
+            "export",
+            "--frozen",
+            "--no-dev",
+            "--no-emit-project",
+            "--format",
+            "pylock.toml",
+            "--output-file",
+            str(runtime_lock),
+        ],
+        cwd=PROJECT_ROOT,
+    )
+    _run_checked(
+        [
+            uv,
+            "pip",
+            "install",
+            "--python",
+            str(environment),
+            "--requirements",
+            str(runtime_lock),
+        ]
     )
     python = environment / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
     wheel = next(distributions.glob("soufflerie-*.whl"))
-    subprocess.run(
-        [uv, "pip", "install", "--python", str(python), str(wheel)],
-        capture_output=True,
-        check=True,
-        text=True,
-    )
+    _run_checked([uv, "pip", "install", "--python", str(python), "--no-deps", str(wheel)])
     executable = environment / ("Scripts/soufflerie.exe" if os.name == "nt" else "bin/soufflerie")
     assert executable.is_file()
     return InstalledCli(executable=executable, python=python, cwd=root)
