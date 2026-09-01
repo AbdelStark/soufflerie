@@ -1,0 +1,518 @@
+{
+  "$defs": {
+    "ArrayDescriptor": {
+      "additionalProperties": false,
+      "description": "JSON-native contract for one persisted array member.",
+      "properties": {
+        "allow_pickle": {
+          "const": false,
+          "default": false,
+          "title": "Allow Pickle",
+          "type": "boolean"
+        },
+        "dtype": {
+          "enum": [
+            "float16",
+            "float32",
+            "float64",
+            "int64",
+            "uint8",
+            "bool"
+          ],
+          "title": "Dtype",
+          "type": "string"
+        },
+        "finite": {
+          "const": true,
+          "default": true,
+          "title": "Finite",
+          "type": "boolean"
+        },
+        "order": {
+          "const": "C",
+          "default": "C",
+          "title": "Order",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "shape": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 1,
+          "title": "Shape",
+          "type": "array"
+        },
+        "unit": {
+          "enum": [
+            "lattice_velocity",
+            "lattice_density",
+            "lattice_distance",
+            "dimensionless",
+            "step"
+          ],
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dtype",
+        "shape",
+        "unit"
+      ],
+      "title": "ArrayDescriptor",
+      "type": "object"
+    },
+    "CaseConfig": {
+      "additionalProperties": false,
+      "description": "One validated physical and numerical solver case.",
+      "properties": {
+        "inlet_velocity_lu": {
+          "exclusiveMinimum": 0.0,
+          "maximum": 0.1,
+          "title": "Inlet Velocity Lu",
+          "type": "number"
+        },
+        "nx": {
+          "minimum": 3,
+          "title": "Nx",
+          "type": "integer"
+        },
+        "ny": {
+          "minimum": 3,
+          "title": "Ny",
+          "type": "integer"
+        },
+        "reynolds": {
+          "maximum": 300.0,
+          "minimum": 40.0,
+          "title": "Reynolds",
+          "type": "number"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "seed": {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "shape": {
+          "$ref": "#/$defs/ShapeParams"
+        },
+        "steps": {
+          "minimum": 1,
+          "title": "Steps",
+          "type": "integer"
+        },
+        "warmup_steps": {
+          "minimum": 0,
+          "title": "Warmup Steps",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "shape",
+        "reynolds",
+        "nx",
+        "ny",
+        "steps",
+        "warmup_steps",
+        "inlet_velocity_lu",
+        "seed"
+      ],
+      "title": "CaseConfig",
+      "type": "object"
+    },
+    "Provenance": {
+      "$comment": "Release consumers must bind source_revision, lock_sha256, config_sha256, packages, and every direct parent digest to reviewed expected values.",
+      "additionalProperties": false,
+      "description": "Reproducibility and direct-lineage record for a durable artifact.",
+      "properties": {
+        "architecture": {
+          "minLength": 1,
+          "title": "Architecture",
+          "type": "string"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "config_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Config Sha256",
+          "type": "string"
+        },
+        "deterministic": {
+          "title": "Deterministic",
+          "type": "boolean"
+        },
+        "device_class": {
+          "minLength": 1,
+          "title": "Device Class",
+          "type": "string"
+        },
+        "dtype_policy": {
+          "minLength": 1,
+          "title": "Dtype Policy",
+          "type": "string"
+        },
+        "gpu_seconds": {
+          "minimum": 0.0,
+          "title": "Gpu Seconds",
+          "type": "number"
+        },
+        "lock_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Lock Sha256",
+          "type": "string"
+        },
+        "os": {
+          "minLength": 1,
+          "title": "Os",
+          "type": "string"
+        },
+        "packages": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minProperties": 1,
+          "propertyNames": {
+            "minLength": 1
+          },
+          "title": "Packages",
+          "type": "object"
+        },
+        "parent_sha256": {
+          "additionalProperties": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "propertyNames": {
+            "minLength": 1
+          },
+          "title": "Parent Sha256",
+          "type": "object"
+        },
+        "python_version": {
+          "minLength": 1,
+          "title": "Python Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "seeds": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Seeds",
+          "type": "array"
+        },
+        "source_dirty": {
+          "title": "Source Dirty",
+          "type": "boolean"
+        },
+        "source_revision": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Source Revision",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_revision",
+        "source_dirty",
+        "python_version",
+        "lock_sha256",
+        "packages",
+        "os",
+        "architecture",
+        "device_class",
+        "dtype_policy",
+        "config_sha256",
+        "seeds",
+        "deterministic",
+        "started_at",
+        "completed_at",
+        "gpu_seconds"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QuantizationStatistic": {
+      "additionalProperties": false,
+      "description": "Error introduced by one explicit fp32-to-fp16 storage cast.",
+      "properties": {
+        "max_abs_error": {
+          "minimum": 0.0,
+          "title": "Max Abs Error",
+          "type": "number"
+        },
+        "mean_abs_error": {
+          "minimum": 0.0,
+          "title": "Mean Abs Error",
+          "type": "number"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "source_dtype": {
+          "const": "float32",
+          "default": "float32",
+          "title": "Source Dtype",
+          "type": "string"
+        },
+        "stored_dtype": {
+          "const": "float16",
+          "default": "float16",
+          "title": "Stored Dtype",
+          "type": "string"
+        }
+      },
+      "required": [
+        "max_abs_error",
+        "mean_abs_error"
+      ],
+      "title": "QuantizationStatistic",
+      "type": "object"
+    },
+    "ShapeParams": {
+      "additionalProperties": false,
+      "description": "Ellipse parameters at the public degree/lattice-unit boundary.",
+      "properties": {
+        "aspect_ratio": {
+          "maximum": 1.0,
+          "minimum": 0.5,
+          "title": "Aspect Ratio",
+          "type": "number"
+        },
+        "rotation_deg": {
+          "maximum": 30.0,
+          "minimum": 0.0,
+          "title": "Rotation Deg",
+          "type": "number"
+        },
+        "scale": {
+          "maximum": 1.25,
+          "minimum": 0.75,
+          "title": "Scale",
+          "type": "number"
+        }
+      },
+      "required": [
+        "aspect_ratio",
+        "rotation_deg",
+        "scale"
+      ],
+      "title": "ShapeParams",
+      "type": "object"
+    },
+    "SolverDiagnostics": {
+      "additionalProperties": false,
+      "description": "Finite, internally coherent scalar solver diagnostics.",
+      "properties": {
+        "converged": {
+          "title": "Converged",
+          "type": "boolean"
+        },
+        "final_mass": {
+          "exclusiveMinimum": 0.0,
+          "title": "Final Mass",
+          "type": "number"
+        },
+        "initial_mass": {
+          "exclusiveMinimum": 0.0,
+          "title": "Initial Mass",
+          "type": "number"
+        },
+        "mass_drift_ratio": {
+          "minimum": 0.0,
+          "title": "Mass Drift Ratio",
+          "type": "number"
+        },
+        "max_rho": {
+          "exclusiveMinimum": 0.0,
+          "title": "Max Rho",
+          "type": "number"
+        },
+        "max_speed_lu": {
+          "minimum": 0.0,
+          "title": "Max Speed Lu",
+          "type": "number"
+        },
+        "messages": {
+          "default": [],
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Messages",
+          "type": "array"
+        },
+        "min_rho": {
+          "exclusiveMinimum": 0.0,
+          "title": "Min Rho",
+          "type": "number"
+        },
+        "sample_count": {
+          "minimum": 0,
+          "title": "Sample Count",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "steps_completed": {
+          "minimum": 0,
+          "title": "Steps Completed",
+          "type": "integer"
+        },
+        "valid": {
+          "title": "Valid",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "steps_completed",
+        "sample_count",
+        "initial_mass",
+        "final_mass",
+        "mass_drift_ratio",
+        "min_rho",
+        "max_rho",
+        "max_speed_lu",
+        "converged",
+        "valid"
+      ],
+      "title": "SolverDiagnostics",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/run-metadata.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Immutable logical metadata for one checksum-verified run artifact.",
+  "properties": {
+    "artifact_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Artifact Digest",
+      "type": "string"
+    },
+    "case": {
+      "$ref": "#/$defs/CaseConfig"
+    },
+    "case_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "cd": {
+      "title": "Cd",
+      "type": "number"
+    },
+    "cl_mean": {
+      "title": "Cl Mean",
+      "type": "number"
+    },
+    "design_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Design Id",
+      "type": "string"
+    },
+    "diagnostics": {
+      "$ref": "#/$defs/SolverDiagnostics"
+    },
+    "field_members": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ArrayDescriptor"
+      },
+      "title": "Field Members",
+      "type": "object"
+    },
+    "fields_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Fields Sha256",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "quantization": {
+      "additionalProperties": {
+        "$ref": "#/$defs/QuantizationStatistic"
+      },
+      "title": "Quantization",
+      "type": "object"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "split": {
+      "enum": [
+        "train",
+        "validation",
+        "test"
+      ],
+      "title": "Split",
+      "type": "string"
+    },
+    "strouhal": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Strouhal"
+    }
+  },
+  "required": [
+    "case_id",
+    "design_id",
+    "split",
+    "case",
+    "cd",
+    "cl_mean",
+    "diagnostics",
+    "field_members",
+    "quantization",
+    "provenance",
+    "fields_sha256",
+    "artifact_digest"
+  ],
+  "title": "RunMetadata",
+  "type": "object"
+}

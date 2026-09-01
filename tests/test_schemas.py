@@ -10,6 +10,7 @@ from pydantic import ValidationError
 from soufflerie.artifacts import rendered_artifact_schema_documents
 from soufflerie.cli import rendered_cli_schema_documents
 from soufflerie.config import rendered_config_schema_documents
+from soufflerie.datagen import rendered_datagen_schema_documents
 from soufflerie.errors import ArtifactIntegrityError, SchemaVersionError
 from soufflerie.observability import rendered_observability_schema_documents
 from soufflerie.schemas import (
@@ -240,6 +241,7 @@ def test_checked_in_schema_v1_documents_are_current() -> None:
     expected = {
         **rendered_schema_documents(),
         **rendered_config_schema_documents(),
+        **rendered_datagen_schema_documents(),
         **rendered_observability_schema_documents(),
         **rendered_cli_schema_documents(),
         **rendered_artifact_schema_documents(),

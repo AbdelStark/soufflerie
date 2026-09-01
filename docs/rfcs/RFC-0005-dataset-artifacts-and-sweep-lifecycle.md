@@ -64,7 +64,7 @@ cd_history    float32[N]
 cl_history    float32[N]
 ```
 
-Downsampling from canonical solver fields is deterministic area averaging for continuous fields and nearest-center sampling for mask. SDF is recomputed from geometry at output resolution rather than averaged. Scalar labels and all provenance remain in metadata. Dataset field casts to fp16 occur only after numerical gates use fp32 solver output; round-trip quantization statistics are recorded.
+Downsampling from canonical solver fields is deterministic fp64 `2x2` area averaging followed by one fp32 cast for continuous fields. Mask nearest-center indices use round-to-nearest-even over an endpoint-preserving source-grid linspace. SDF is recomputed from geometry at output resolution rather than averaged. Scalar labels and all provenance remain in metadata. Dataset field casts to fp16 occur only after numerical gates use fp32 solver output; per-member max and mean absolute round-trip quantization errors are recorded.
 
 ```python
 class RunMetadata(BaseModel):
@@ -78,7 +78,9 @@ class RunMetadata(BaseModel):
     strouhal: float | None
     diagnostics: SolverDiagnostics
     field_members: dict[str, ArrayDescriptor]
+    quantization: dict[str, QuantizationStatistic]
     provenance: Provenance
+    fields_sha256: str
     artifact_digest: str
 
 class ManifestRow(BaseModel):
@@ -100,7 +102,7 @@ class ManifestRow(BaseModel):
     solver_valid: Literal[True]
 ```
 
-Parquet columns have explicit Arrow types and no inferred object columns. Rows sort by `design_id`; row group size is fixed at 256; writer library/version and schema fingerprint are metadata. `run_uri` is artifact-root relative, never a local absolute path or credential-bearing URL.
+The run digest covers fields bytes, logical metadata, and stable provenance. Physical paths, attempt IDs, start/completion timestamps, and GPU timing remain evidence but are excluded from logical identity, so deterministic duplicate work can be recognized across attempts. Parquet columns have explicit Arrow types and no inferred object columns. Rows sort by `design_id`; row group size is fixed at 256; writer library/version and schema fingerprint are metadata. `run_uri` is artifact-root relative, never a local absolute path or credential-bearing URL.
 
 Sweep state uses:
 

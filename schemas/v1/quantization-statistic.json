@@ -1,0 +1,42 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/quantization-statistic.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Error introduced by one explicit fp32-to-fp16 storage cast.",
+  "properties": {
+    "max_abs_error": {
+      "minimum": 0.0,
+      "title": "Max Abs Error",
+      "type": "number"
+    },
+    "mean_abs_error": {
+      "minimum": 0.0,
+      "title": "Mean Abs Error",
+      "type": "number"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source_dtype": {
+      "const": "float32",
+      "default": "float32",
+      "title": "Source Dtype",
+      "type": "string"
+    },
+    "stored_dtype": {
+      "const": "float16",
+      "default": "float16",
+      "title": "Stored Dtype",
+      "type": "string"
+    }
+  },
+  "required": [
+    "max_abs_error",
+    "mean_abs_error"
+  ],
+  "title": "QuantizationStatistic",
+  "type": "object"
+}
