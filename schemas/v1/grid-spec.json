@@ -1,0 +1,48 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/grid-spec.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A row-major two-dimensional lattice grid.",
+  "properties": {
+    "axis_order": {
+      "const": "yx",
+      "default": "yx",
+      "title": "Axis Order",
+      "type": "string"
+    },
+    "nx": {
+      "minimum": 3,
+      "title": "Nx",
+      "type": "integer"
+    },
+    "ny": {
+      "minimum": 3,
+      "title": "Ny",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "spacing_unit": {
+      "const": "lattice_unit",
+      "default": "lattice_unit",
+      "title": "Spacing Unit",
+      "type": "string"
+    },
+    "timestep_unit": {
+      "const": "lattice_step",
+      "default": "lattice_step",
+      "title": "Timestep Unit",
+      "type": "string"
+    }
+  },
+  "required": [
+    "nx",
+    "ny"
+  ],
+  "title": "GridSpec",
+  "type": "object"
+}

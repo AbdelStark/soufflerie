@@ -1,0 +1,48 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/artifact-ref.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Portable reference to content whose identity is independent of location.",
+  "properties": {
+    "artifact_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "artifact_type": {
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+      "title": "Artifact Type",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "size_bytes": {
+      "minimum": 0,
+      "title": "Size Bytes",
+      "type": "integer"
+    },
+    "uri": {
+      "minLength": 1,
+      "title": "Uri",
+      "type": "string"
+    }
+  },
+  "required": [
+    "artifact_type",
+    "artifact_id",
+    "sha256",
+    "size_bytes",
+    "uri"
+  ],
+  "title": "ArtifactRef",
+  "type": "object"
+}

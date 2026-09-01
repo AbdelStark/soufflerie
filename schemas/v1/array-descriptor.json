@@ -1,0 +1,71 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/array-descriptor.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "JSON-native contract for one persisted array member.",
+  "properties": {
+    "allow_pickle": {
+      "const": false,
+      "default": false,
+      "title": "Allow Pickle",
+      "type": "boolean"
+    },
+    "dtype": {
+      "enum": [
+        "float16",
+        "float32",
+        "float64",
+        "int64",
+        "uint8",
+        "bool"
+      ],
+      "title": "Dtype",
+      "type": "string"
+    },
+    "finite": {
+      "const": true,
+      "default": true,
+      "title": "Finite",
+      "type": "boolean"
+    },
+    "order": {
+      "const": "C",
+      "default": "C",
+      "title": "Order",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "shape": {
+      "items": {
+        "type": "integer"
+      },
+      "maxItems": 4,
+      "minItems": 1,
+      "title": "Shape",
+      "type": "array"
+    },
+    "unit": {
+      "enum": [
+        "lattice_velocity",
+        "lattice_density",
+        "lattice_distance",
+        "dimensionless",
+        "step"
+      ],
+      "title": "Unit",
+      "type": "string"
+    }
+  },
+  "required": [
+    "dtype",
+    "shape",
+    "unit"
+  ],
+  "title": "ArrayDescriptor",
+  "type": "object"
+}
