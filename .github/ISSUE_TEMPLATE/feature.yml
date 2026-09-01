@@ -1,0 +1,45 @@
+name: "Feature proposal"
+description: "Propose a scoped capability or behavior change."
+title: "feature: "
+labels:
+  - type:feature
+assignees:
+  - AbdelStark
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: "Preflight"
+      options:
+        - label: "I searched existing issues and accepted RFCs."
+          required: true
+        - label: "I agree to follow the Code of Conduct."
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Problem"
+      description: "Describe the user or contributor problem, independent of a preferred solution."
+    validations:
+      required: true
+  - type: textarea
+    id: specification
+    attributes:
+      label: "Specification impact"
+      description: "Name the owning spec/RFC and any invariant, schema, or threshold affected."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: "Proposed design"
+      description: "Define scope, interfaces, evidence, trust boundaries, and migration needs."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives and caveats"
+      description: "What else was considered, and what remains out of scope?"
+    validations:
+      required: true

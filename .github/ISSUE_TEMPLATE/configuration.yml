@@ -1,0 +1,46 @@
+name: "Configuration change"
+description: "Propose a change to a canonical or public configuration contract."
+title: "config: "
+labels:
+  - type:feature
+assignees:
+  - AbdelStark
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: "Preflight"
+      options:
+        - label: "I removed credentials, private paths, and account identifiers."
+          required: true
+        - label: "I agree to follow the Code of Conduct."
+          required: true
+  - type: input
+    id: path
+    attributes:
+      label: "Configuration path"
+      description: "Name the checked-in config or strict model field."
+      placeholder: "configs/... or Model.field"
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: "Current contract"
+      description: "Describe the current value, range, schema, and observed limitation."
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: "Proposed contract"
+      description: "Give the exact change and its reproducibility/resource implications."
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: "Evidence and migration"
+      description: "Name tests, regenerated artifacts, affected identities, and migration steps."
+    validations:
+      required: true

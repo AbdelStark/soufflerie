@@ -1,0 +1,60 @@
+name: "Bug report"
+description: "Report reproducible incorrect behavior in Soufflerie."
+title: "bug: "
+labels:
+  - type:bug
+assignees:
+  - AbdelStark
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Do not include credentials, private artifact URLs, or vulnerability details.
+        Report security issues through SECURITY.md instead.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: "Preflight"
+      options:
+        - label: "I searched existing issues and found no duplicate."
+          required: true
+        - label: "This report contains no secrets or private vulnerability details."
+          required: true
+        - label: "I agree to follow the Code of Conduct."
+          required: true
+  - type: input
+    id: revision
+    attributes:
+      label: "Version or source revision"
+      description: "Provide the package version or full Git revision."
+      placeholder: "0.1.0 or 40-character revision"
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: "Observed and expected behavior"
+      description: "Explain what happened and what the specification led you to expect."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "Minimal reproduction"
+      description: "Include deterministic steps and a sanitized minimal config."
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: "Environment"
+      description: "OS, Python, install profile, device class, and relevant package versions."
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: "Sanitized evidence"
+      description: "Paste redacted logs, artifact digests, or screenshots if useful."
+    validations:
+      required: false

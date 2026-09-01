@@ -7,6 +7,8 @@ name = "soufflerie"
 version = "0.1.0"
 description = "A reproducible wind-tunnel workflow for numerical and learned flow models."
 readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "AbdelStark" }]
 requires-python = ">=3.11,<3.12"
 dependencies = [
@@ -84,6 +86,10 @@ packages = ["src/soufflerie"]
 [tool.hatch.build.targets.sdist]
 include = [
   "/.env.example",
+  "/.github",
+  "/CITATION.cff",
+  "/CODE_OF_CONDUCT.md",
+  "/CONTRIBUTING.md",
   "/docs",
   "/configs",
   "/infra",
@@ -93,6 +99,10 @@ include = [
   "/src",
   "/tests",
   "/README.md",
+  "/LICENSE",
+  "/MAINTAINERS.md",
+  "/NOTICE",
+  "/SECURITY.md",
   "/SPEC.md",
   "/pyproject.toml",
   "/uv.lock",
@@ -107,6 +117,12 @@ files = ["src", "tests"]
 addopts = ["--strict-config", "--strict-markers"]
 pythonpath = ["."]
 testpaths = ["tests"]
+markers = [
+  "unit: isolated deterministic CPU behavior",
+  "integration: bounded multi-component CPU behavior",
+  "remote: authenticated, paid, GPU, or networked acceptance",
+  "slow: intentionally longer local validation",
+]
 
 [tool.coverage.run]
 # Warp DSL bodies execute through its JIT, outside Python's line tracer. Their

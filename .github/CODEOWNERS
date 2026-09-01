@@ -1,0 +1,30 @@
+# Default ownership keeps new paths reviewable.
+* @AbdelStark
+
+# Numerical solver and evidence.
+/src/soufflerie/solver/ @AbdelStark
+/tests/solver/ @AbdelStark
+/reports/solver/ @AbdelStark
+
+# Surrogate, training, and validation.
+/src/soufflerie/surrogate/ @AbdelStark
+/src/soufflerie/training/ @AbdelStark
+/src/soufflerie/validation/ @AbdelStark
+/configs/training/ @AbdelStark
+/configs/validation/ @AbdelStark
+
+# Service, infrastructure, and security boundaries.
+/src/soufflerie/service/ @AbdelStark
+/src/soufflerie/artifacts.py @AbdelStark
+/infra/ @AbdelStark
+/docs/security/ @AbdelStark
+/SECURITY.md @AbdelStark
+
+# Packaging, governance, CI, and releases.
+/.github/ @AbdelStark
+/pyproject.toml @AbdelStark
+/uv.lock @AbdelStark
+/LICENSE @AbdelStark
+/NOTICE @AbdelStark
+/CITATION.cff @AbdelStark
+/MAINTAINERS.md @AbdelStark

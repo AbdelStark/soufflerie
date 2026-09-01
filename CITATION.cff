@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use Soufflerie, please cite the software using these metadata."
+title: "Soufflerie"
+type: software
+authors:
+  - name: "AbdelStark"
+abstract: >-
+  A reproducible wind-tunnel workflow for numerical and learned flow models.
+repository-code: "https://github.com/AbdelStark/soufflerie"
+url: "https://github.com/AbdelStark/soufflerie"
+version: "0.1.0"
+license: Apache-2.0
+keywords:
+  - computational fluid dynamics
+  - machine learning
+  - wind tunnel
+  - Fourier neural operator
