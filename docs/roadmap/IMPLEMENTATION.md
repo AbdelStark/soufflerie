@@ -9,7 +9,7 @@ Generated from the specification corpus in [PR #1](https://github.com/AbdelStark
 - Implementation issues: 56
 - RFC tracking issues: 13
 - Total issues: 69
-- Current state: 56 open, 13 closed
+- Current state: 55 open, 14 closed
 - Scope: PRD milestones M0-M5; stretch tracks excluded
 
 Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, surrogate 4, training 4, validation 4, API 5, UI 4, infrastructure/performance 6, observability 1, security 3, and release 7.
@@ -119,7 +119,7 @@ This matrix audits supporting-spec requirements that cut across RFC boundaries. 
 <a id="tracking-issues"></a>
 ## Tracking Issues
 
-- #58 [RFC-0001 tracking](https://github.com/AbdelStark/soufflerie/issues/58): Package and runtime boundaries
+- #58 [RFC-0001 tracking](https://github.com/AbdelStark/soufflerie/issues/58): Package and runtime boundaries (closed; #2-#5 complete)
 - #59 [RFC-0002 tracking](https://github.com/AbdelStark/soufflerie/issues/59): D2Q9 lattice Boltzmann core
 - #60 [RFC-0003 tracking](https://github.com/AbdelStark/soufflerie/issues/60): Geometry, boundaries, and force diagnostics
 - #61 [RFC-0004 tracking](https://github.com/AbdelStark/soufflerie/issues/61): Experiment configuration and design of experiments
