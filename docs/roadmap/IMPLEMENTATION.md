@@ -9,7 +9,7 @@ Generated from the specification corpus in [PR #1](https://github.com/AbdelStark
 - Implementation issues: 56
 - RFC tracking issues: 13
 - Total issues: 69
-- Current state: 62 open, 7 closed
+- Current state: 61 open, 8 closed
 - Scope: PRD milestones M0-M5; stretch tracks excluded
 
 Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, surrogate 4, training 4, validation 4, API 5, UI 4, infrastructure/performance 6, observability 1, security 3, and release 7.
@@ -58,7 +58,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #38 | [ui: build controls and persistent validation states](https://github.com/AbdelStark/soufflerie/issues/38) | ui | p1 | l | RFC-0010 | open |
 | #39 | [ui: integrate solve comparison and local CPU demo](https://github.com/AbdelStark/soufflerie/issues/39) | ui | p1 | l | RFC-0010 | open |
 | #40 | [docs: generate the three evidence-backed README visuals](https://github.com/AbdelStark/soufflerie/issues/40) | ui | p2 | m | RFC-0010, RFC-0013 | open |
-| #41 | [infra: define the locked remote runtime and persistent volume](https://github.com/AbdelStark/soufflerie/issues/41) | infra | p0 | l | RFC-0011 | open |
+| #41 | [infra: define the locked remote runtime and persistent volume](https://github.com/AbdelStark/soufflerie/issues/41) | infra | p0 | l | RFC-0011 | closed |
 | #42 | [infra: expose idempotent remote solve and sweep entrypoints](https://github.com/AbdelStark/soufflerie/issues/42) | infra | p0 | l | RFC-0002, RFC-0005, RFC-0011 | open |
 | #43 | [infra: expose remote training and validation entrypoints](https://github.com/AbdelStark/soufflerie/issues/43) | infra | p0 | l | RFC-0007, RFC-0008, RFC-0011 | open |
 | #44 | [infra: deploy the mounted GPU service and run end-to-end smoke](https://github.com/AbdelStark/soufflerie/issues/44) | infra | p0 | l | RFC-0009, RFC-0010, RFC-0011 | open |

@@ -79,8 +79,10 @@ packages = ["src/soufflerie"]
 
 [tool.hatch.build.targets.sdist]
 include = [
+  "/.env.example",
   "/docs",
   "/configs",
+  "/infra",
   "/reports",
   "/schemas",
   "/scripts",
@@ -98,6 +100,7 @@ files = ["src", "tests"]
 
 [tool.pytest.ini_options]
 addopts = ["--strict-config", "--strict-markers"]
+pythonpath = ["."]
 testpaths = ["tests"]
 
 [tool.coverage.run]
