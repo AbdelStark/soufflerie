@@ -27,7 +27,13 @@ from soufflerie.schemas import (
     canonical_json,
     canonical_sha256,
 )
-from soufflerie.solver import DerivedLatticeConfig, LatticeConfig, derive_lattice
+from soufflerie.solver import (
+    DerivedLatticeConfig,
+    LatticeConfig,
+    LatticeState,
+    WarpKernelAdapter,
+    derive_lattice,
+)
 
 try:
     __version__ = version("soufflerie")
@@ -43,6 +49,7 @@ __all__ = [
     "FlowFields",
     "GridSpec",
     "LatticeConfig",
+    "LatticeState",
     "Provenance",
     "Range",
     "RunSchedule",
@@ -55,6 +62,7 @@ __all__ = [
     "SweepConfig",
     "TrainingConfig",
     "ValidationConfig",
+    "WarpKernelAdapter",
     "__version__",
     "canonical_json",
     "canonical_sha256",

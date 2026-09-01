@@ -1,5 +1,6 @@
 """Numerical solver contracts and lightweight reference implementations."""
 
+from soufflerie.solver.kernels import LatticeState, WarpKernelAdapter, allocate, initialize
 from soufflerie.solver.lattice import (
     CS2,
     D2Q9_OPPOSITE,
@@ -31,10 +32,14 @@ __all__ = [
     "D2Q9_WEIGHTS",
     "DerivedLatticeConfig",
     "LatticeConfig",
+    "LatticeState",
     "NumpyLatticeState",
+    "WarpKernelAdapter",
+    "allocate",
     "collide_numpy",
     "derive_lattice",
     "equilibrium",
+    "initialize",
     "initialize_numpy",
     "inlet_ramp",
     "kinematic_viscosity_lu",
