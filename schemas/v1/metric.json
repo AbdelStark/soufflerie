@@ -1,0 +1,553 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/metric.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "solver_run_seconds"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "device_class": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "outcome": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "device_class",
+              "outcome"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "aggregate"
+          },
+          "unit": {
+            "const": "seconds"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "solver_lups"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "device_class": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "grid": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "device_class",
+              "grid"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "aggregate"
+          },
+          "unit": {
+            "const": "lattice_updates/second"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "solver_mass_drift_ratio"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "case_id": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "case_id"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "offline"
+          },
+          "unit": {
+            "const": "ratio"
+          }
+        },
+        "required": [
+          "scope"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "sweep_cases_total"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "state": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "aggregate"
+          },
+          "unit": {
+            "const": "count"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "remote_gpu_seconds_total"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "device_class": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "milestone": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "operation": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "milestone",
+              "device_class",
+              "operation"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "aggregate"
+          },
+          "unit": {
+            "const": "seconds"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "training_epoch_seconds"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "seed": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "seed"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "aggregate"
+          },
+          "unit": {
+            "const": "seconds"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "training_loss"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "seed": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "split": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "term": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "seed",
+              "split",
+              "term"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "aggregate"
+          },
+          "unit": {
+            "const": "ratio"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "validation_metric"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "gate_status": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "metric": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "metric",
+              "gate_status"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "aggregate"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "prediction_duration_ms"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "device_class": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "validation_status": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "device_class",
+              "validation_status"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "aggregate"
+          },
+          "unit": {
+            "const": "milliseconds"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "solve_queue_depth"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "state": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "aggregate"
+          },
+          "unit": {
+            "const": "count"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "metric": {
+            "const": "http_requests_total"
+          }
+        },
+        "required": [
+          "metric"
+        ]
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "additionalProperties": false,
+            "properties": {
+              "method": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "route": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "status_class": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "route",
+              "method",
+              "status_class"
+            ],
+            "type": "object"
+          },
+          "scope": {
+            "const": "aggregate"
+          },
+          "unit": {
+            "const": "count"
+          }
+        }
+      }
+    }
+  ],
+  "description": "One schema-v1 metric sample validated against ``METRIC_REGISTRY``.",
+  "properties": {
+    "correlation_id": {
+      "anyOf": [
+        {
+          "maxLength": 36,
+          "minLength": 36,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Correlation Id"
+    },
+    "labels": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9_]*$": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "propertyNames": {
+        "maxLength": 64,
+        "minLength": 1
+      },
+      "title": "Labels",
+      "type": "object"
+    },
+    "metric": {
+      "enum": [
+        "solver_run_seconds",
+        "solver_lups",
+        "solver_mass_drift_ratio",
+        "sweep_cases_total",
+        "remote_gpu_seconds_total",
+        "training_epoch_seconds",
+        "training_loss",
+        "validation_metric",
+        "prediction_duration_ms",
+        "solve_queue_depth",
+        "http_requests_total"
+      ],
+      "title": "Metric",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "scope": {
+      "default": "aggregate",
+      "enum": [
+        "aggregate",
+        "offline"
+      ],
+      "title": "Scope",
+      "type": "string"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "unit": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Unit",
+      "type": "string"
+    },
+    "value": {
+      "title": "Value",
+      "type": "number"
+    }
+  },
+  "required": [
+    "timestamp",
+    "metric",
+    "value",
+    "unit",
+    "labels"
+  ],
+  "title": "MetricRecord",
+  "type": "object"
+}

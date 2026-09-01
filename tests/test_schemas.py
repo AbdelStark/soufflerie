@@ -9,6 +9,7 @@ from pydantic import ValidationError
 
 from soufflerie.config import rendered_config_schema_documents
 from soufflerie.errors import ArtifactIntegrityError, SchemaVersionError
+from soufflerie.observability import rendered_observability_schema_documents
 from soufflerie.schemas import (
     ArrayDescriptor,
     CaseConfig,
@@ -232,7 +233,11 @@ def test_dm6_split_and_dm7_parent_validators() -> None:
 
 def test_checked_in_schema_v1_documents_are_current() -> None:
     root = Path(__file__).parents[1] / "schemas" / "v1"
-    expected = {**rendered_schema_documents(), **rendered_config_schema_documents()}
+    expected = {
+        **rendered_schema_documents(),
+        **rendered_config_schema_documents(),
+        **rendered_observability_schema_documents(),
+    }
     assert {path.name for path in root.glob("*.json")} == set(expected)
     for name, content in expected.items():
         assert (root / name).read_text(encoding="utf-8") == content

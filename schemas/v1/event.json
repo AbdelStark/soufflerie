@@ -1,0 +1,191 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/event.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "One bounded schema-v1 application event.",
+  "properties": {
+    "case_id": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Case Id"
+    },
+    "component": {
+      "enum": [
+        "solver",
+        "datagen",
+        "training",
+        "validation",
+        "service",
+        "infra"
+      ],
+      "title": "Component",
+      "type": "string"
+    },
+    "correlation_id": {
+      "maxLength": 36,
+      "minLength": 36,
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "title": "Correlation Id",
+      "type": "string"
+    },
+    "dataset_id": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Dataset Id"
+    },
+    "event": {
+      "enum": [
+        "case_started",
+        "case_completed",
+        "case_failed",
+        "artifact_published",
+        "sweep_progress",
+        "epoch_completed",
+        "checkpoint_selected",
+        "gate_evaluated",
+        "prediction_completed",
+        "solve_admitted",
+        "solve_terminal",
+        "redaction_applied",
+        "operation_started",
+        "operation_completed",
+        "operation_failed"
+      ],
+      "title": "Event",
+      "type": "string"
+    },
+    "fields": {
+      "additionalProperties": false,
+      "maxProperties": 64,
+      "patternProperties": {
+        "^[a-z][a-z0-9_]*$": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "maxItems": 64,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "propertyNames": {
+        "maxLength": 64,
+        "minLength": 1,
+        "not": {
+          "pattern": "(?:^|_)(?:account_id|client_address|client_ip|environment|environment_variables|headers|ip_address|raw_request|request_body|source_address|workspace_id)(?:_|$)"
+        }
+      },
+      "title": "Fields",
+      "type": "object"
+    },
+    "job_id": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Job Id"
+    },
+    "level": {
+      "enum": [
+        "debug",
+        "info",
+        "warning",
+        "error"
+      ],
+      "title": "Level",
+      "type": "string"
+    },
+    "model_id": {
+      "anyOf": [
+        {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Id"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "timestamp",
+    "level",
+    "event",
+    "correlation_id",
+    "component"
+  ],
+  "title": "Event",
+  "type": "object"
+}
