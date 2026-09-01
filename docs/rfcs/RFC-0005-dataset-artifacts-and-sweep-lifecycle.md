@@ -108,9 +108,13 @@ Sweep state uses:
 
 ```python
 class CaseState(BaseModel):
+    schema_version: Literal[1] = 1
+    sweep_digest: str
     case_id: str
     state: Literal["pending", "running", "succeeded", "failed"]
+    revision: int
     attempt: int
+    attempt_id: str | None
     lease_owner: str | None
     lease_expires_at: datetime | None
     run_digest: str | None
@@ -118,7 +122,7 @@ class CaseState(BaseModel):
     updated_at: datetime
 ```
 
-Workers claim pending or expired-running cases with compare-before-write semantics and a 10-minute renewable lease. Each attempt has a unique random ID used only for lease/publication isolation, never dataset identity. Transient remote errors retry up to three attempts; deterministic configuration, stability, integrity, or invariant failures become terminal. A successful state is immutable. If another successful artifact exists, matching full digests make the attempt a no-op; mismatches raise `ArtifactIntegrityError` and stop the sweep.
+Workers claim pending or expired-running cases with compare-before-write semantics and a 10-minute renewable lease. `revision` is monotonic compare-before-write evidence, while `attempt_id` fences stale workers from renewal or completion. Each attempt has a unique random ID used only for lease/publication isolation, never dataset identity. Transient remote errors retry up to three attempts; deterministic configuration, stability, integrity, or invariant failures become terminal. A successful state is immutable and is committed only after the deterministic run root verifies. If another successful artifact exists, matching full digests make the attempt a verified no-op; mismatches raise `ArtifactIntegrityError` and stop the sweep.
 
 The orchestrator maps cases with concurrency configured between 50 and 100, but reduces batch size on provider capacity errors. It never reduces design count. A sweep summary reports counts by state/error, retries, wall time, GPU seconds, and estimated bytes. Resume reads states and verifies every `succeeded` artifact before skipping it.
 
