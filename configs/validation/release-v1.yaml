@@ -1,0 +1,14 @@
+schema_version: 1
+dataset_id: "00000000000000000000"
+ensemble_model_ids:
+  - "00000000000000000001"
+  - "00000000000000000002"
+  - "00000000000000000003"
+baseline_ids:
+  - "00000000000000000004"
+  - "00000000000000000005"
+report_seed: 20260901
+bootstrap_resamples: 2000
+worst_case_count: 20
+ood_geometry_count: 10
+sensitivity_case_count: 10

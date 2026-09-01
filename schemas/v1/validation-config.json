@@ -1,0 +1,94 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/validation-config.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Immutable inputs and sampling policy for release validation.",
+  "properties": {
+    "baseline_ids": {
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        },
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        }
+      ],
+      "title": "Baseline Ids",
+      "type": "array"
+    },
+    "bootstrap_resamples": {
+      "default": 2000,
+      "maximum": 100000,
+      "minimum": 100,
+      "title": "Bootstrap Resamples",
+      "type": "integer"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "ensemble_model_ids": {
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        },
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        },
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        }
+      ],
+      "title": "Ensemble Model Ids",
+      "type": "array"
+    },
+    "ood_geometry_count": {
+      "const": 10,
+      "default": 10,
+      "title": "Ood Geometry Count",
+      "type": "integer"
+    },
+    "report_seed": {
+      "maximum": 18446744073709551615,
+      "minimum": 0,
+      "title": "Report Seed",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "sensitivity_case_count": {
+      "const": 10,
+      "default": 10,
+      "title": "Sensitivity Case Count",
+      "type": "integer"
+    },
+    "worst_case_count": {
+      "const": 20,
+      "default": 20,
+      "title": "Worst Case Count",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "dataset_id",
+    "ensemble_model_ids",
+    "baseline_ids",
+    "report_seed"
+  ],
+  "title": "ValidationConfig",
+  "type": "object"
+}

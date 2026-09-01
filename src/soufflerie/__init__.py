@@ -2,6 +2,17 @@
 
 from importlib.metadata import PackageNotFoundError, version
 
+from soufflerie.config import (
+    Range,
+    RunSchedule,
+    ServiceConfig,
+    SweepConfig,
+    TrainingConfig,
+    ValidationConfig,
+    config_digest,
+    load_config,
+    parse_config,
+)
 from soufflerie.errors import ArtifactIntegrityError, SchemaVersionError, SoufflerieError
 from soufflerie.schemas import (
     ArrayDescriptor,
@@ -30,12 +41,21 @@ __all__ = [
     "FlowFields",
     "GridSpec",
     "Provenance",
+    "Range",
+    "RunSchedule",
     "SchemaVersionError",
+    "ServiceConfig",
     "ShapeParams",
     "SolverDiagnostics",
     "SolverResult",
     "SoufflerieError",
+    "SweepConfig",
+    "TrainingConfig",
+    "ValidationConfig",
     "__version__",
     "canonical_json",
     "canonical_sha256",
+    "config_digest",
+    "load_config",
+    "parse_config",
 ]

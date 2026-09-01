@@ -1,0 +1,15 @@
+schema_version: 1
+model_id: "00000000000000000001"
+dataset_id: "00000000000000000000"
+report_id: "00000000000000000006"
+host: 127.0.0.1
+port: 8000
+predict_concurrency: 1
+predict_queue_capacity: 8
+solve_enabled: false
+solve_concurrency: 0
+solve_queue_capacity: 0
+solve_timeout_seconds: 180
+predictions_per_minute_client: 60
+solves_per_hour_client: 0
+solves_per_day_global: 0

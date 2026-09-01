@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from soufflerie.config import rendered_config_schema_documents
 from soufflerie.schemas import rendered_schema_documents
 
 PROJECT_ROOT = Path(__file__).parents[1]
@@ -12,7 +13,7 @@ OUTPUT_ROOT = PROJECT_ROOT / "schemas" / "v1"
 
 
 def export(*, check: bool) -> tuple[str, ...]:
-    documents = rendered_schema_documents()
+    documents = {**rendered_schema_documents(), **rendered_config_schema_documents()}
     stale: list[str] = []
     if check:
         actual_names = {path.name for path in OUTPUT_ROOT.glob("*.json")}

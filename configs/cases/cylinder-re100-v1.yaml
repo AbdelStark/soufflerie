@@ -1,0 +1,12 @@
+schema_version: 1
+shape:
+  aspect_ratio: 1.0
+  rotation_deg: 0.0
+  scale: 1.0
+reynolds: 100.0
+nx: 512
+ny: 256
+steps: 20000
+warmup_steps: 10000
+inlet_velocity_lu: 0.05
+seed: 20260901

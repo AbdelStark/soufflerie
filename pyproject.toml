@@ -74,11 +74,13 @@ release = [
 packages = ["src/soufflerie"]
 
 [tool.hatch.build.targets.wheel.force-include]
+"configs" = "soufflerie/configs"
 "schemas/v1" = "soufflerie/schemas/v1"
 
 [tool.hatch.build.targets.sdist]
 include = [
   "/docs",
+  "/configs",
   "/schemas",
   "/scripts",
   "/src",
