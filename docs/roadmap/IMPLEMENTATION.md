@@ -97,6 +97,25 @@ Counts overlap when one shippable issue implements multiple RFC boundaries.
 | RFC-0012 | 8 |
 | RFC-0013 | 11 |
 
+<a id="normative-surface-coverage"></a>
+## Normative surface coverage
+
+This matrix audits supporting-spec requirements that cut across RFC boundaries. Terminology-only content has documentation/claim-validation work rather than a separate code issue.
+
+| Specification | Implementable concerns | Issues |
+|---|---|---|
+| [`00-overview.md`](../spec/00-overview.md) | v0.1 goals, success gates, risk resolution, contributor handoff | #2-#57 through the issue graph; terminal audit #57 |
+| [`01-architecture.md`](../spec/01-architecture.md) | module layout, dependency direction, state, concurrency, execution planes | #2, #7, #17, #21, #41-#45, #52 |
+| [`02-public-api.md`](../spec/02-public-api.md) | Python/CLI/HTTP/artifact surfaces and input limits | #3-#5, #22, #32-#39, #42-#44 |
+| [`03-data-model.md`](../spec/03-data-model.md) | records, arrays, units, identities, schemas, invariants | #3, #6, #10, #16, #18, #20, #22, #30, #48 |
+| [`04-error-model.md`](../spec/04-error-model.md) | typed failures, recovery, retries, HTTP and CLI mappings | #5, #8, #17, #26, #32, #34-#35, #42-#45 |
+| [`05-observability.md`](../spec/05-observability.md) | events, metrics, traces, provenance, redaction, retention | #30, #35, #46-#50 |
+| [`06-security.md`](../spec/06-security.md) | trust boundaries, artifact safety, secrets, abuse, vulnerability gates | #16, #22, #32, #35-#36, #45, #48-#50, #54 |
+| [`07-testing-strategy.md`](../spec/07-testing-strategy.md) | numerical/ML/service/security/package test layers and CI | #9, #14, #23, #28-#31, #36, #45, #50, #52-#54, #57 |
+| [`08-performance-budget.md`](../spec/08-performance-budget.md) | reference workloads, resource caps, profiling, regression policy | #14, #19, #27, #33, #44, #46 |
+| [`09-release-and-versioning.md`](../spec/09-release-and-versioning.md) | dependencies, compatibility, governance, distributions, release | #2, #5, #23, #40, #50-#57 |
+| [`10-glossary.md`](../spec/10-glossary.md) | canonical schema/API/docs terminology and claim language | #3, #5, #32, #55 |
+
 <a id="tracking-issues"></a>
 ## Tracking Issues
 
