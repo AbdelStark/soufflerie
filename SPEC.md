@@ -58,3 +58,8 @@ The v0.1 claim is deliberately bounded: it demonstrates a reproducible solver-to
 ## Change control
 
 Normative behavior changes require a pull request that updates affected specs, RFCs, schemas, tests, and the implementation tracker together. A superseding RFC must name the replaced RFC and migration. Generated validation reports cannot amend gates. No implementation convenience may silently weaken a numerical, validation, security, or reproducibility invariant.
+
+<a id="implementation-plan"></a>
+## Implementation plan
+
+[`docs/roadmap/IMPLEMENTATION.md`](docs/roadmap/IMPLEMENTATION.md) maps the accepted corpus to the complete `v0.1` GitHub issue graph. GitHub is authoritative for live state; the tracker is updated whenever issue scope, dependencies, or status change.
