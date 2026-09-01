@@ -20,6 +20,7 @@ OPTIONAL_RUNTIME_ROOTS = {
     "modal",
     "physicsnemo",
     "torch",
+    "warp",
 }
 FOUNDATION_MODULES = {"config", "geometry", "observability", "schemas"}
 DOMAIN_MODULES = {"datagen", "solver", "surrogate"}
