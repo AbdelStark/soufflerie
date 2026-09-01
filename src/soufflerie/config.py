@@ -1,0 +1,1 @@
+"""Strict experiment configuration contracts."""
