@@ -1,0 +1,58 @@
+{
+  "determinism": {
+    "backend": "warp-periodic-cpu",
+    "final_arrays_bitwise_equal": true,
+    "final_state_sha256": "5bae01db71c62d7f42d5b6da1bdc6ea9015a631889f115c44f21fa5cf59e83aa",
+    "histories_bitwise_equal": true,
+    "history_sha256": "0a281421dbab3c1f651697cf42316837206db0eda5c3f4b1cda0f687cad72179",
+    "passed": true,
+    "repetitions": 2,
+    "steps_per_repetition": 20000
+  },
+  "generation_revision": "cpu-gates-v1",
+  "mass": {
+    "backend": "warp-periodic-cpu",
+    "final_mass": 35.0010986328125,
+    "grid_nx": 7,
+    "grid_ny": 5,
+    "initial_mass": 35.001004099845886,
+    "mass_drift_ratio": 2.700864419320638e-06,
+    "passed": true,
+    "steps": 20000,
+    "threshold": 0.001
+  },
+  "numpy_version": "2.2.6",
+  "overall_passed": true,
+  "platform_class": "darwin-arm64-cpu",
+  "poiseuille": [
+    {
+      "backend": "numpy-d2q9-periodic-x-body-force",
+      "body_force_lu": 0.00015625000000000003,
+      "channel_height": 16,
+      "excluded_wall_cells": 1,
+      "max_relative_error": 0.0020760629691329376,
+      "passed": true,
+      "relative_l2_error": 0.0026431602199786727,
+      "steps": 4000,
+      "tau": 0.8,
+      "threshold": 0.01,
+      "width": 2
+    },
+    {
+      "backend": "numpy-d2q9-periodic-x-body-force",
+      "body_force_lu": 3.906250000000001e-05,
+      "channel_height": 32,
+      "excluded_wall_cells": 1,
+      "max_relative_error": 0.0007290509206226673,
+      "passed": true,
+      "relative_l2_error": 0.0008699257849230039,
+      "steps": 12000,
+      "tau": 0.8,
+      "threshold": 0.01,
+      "width": 2
+    }
+  ],
+  "python_version": "3.11.14",
+  "schema_version": 1,
+  "warp_version": "1.17.0"
+}
