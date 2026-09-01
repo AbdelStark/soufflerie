@@ -16,12 +16,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from errno import EEXIST, ENOTEMPTY
 from pathlib import Path
-from types import MappingProxyType
 from typing import Any, ClassVar, Literal, Protocol, Self, cast
 
 import numpy as np
 import numpy.typing as npt
-from pydantic import BaseModel, Field, model_validator
+from pydantic import Field, model_validator
 
 from soufflerie.artifacts import (
     DEFAULT_READER_LIMITS,
@@ -30,6 +29,7 @@ from soufflerie.artifacts import (
     safe_read_json,
     safe_read_npz,
 )
+from soufflerie.datagen._local_files import ensure_real_directory, fsync_directory, fsync_file
 from soufflerie.errors import ArtifactIntegrityError
 from soufflerie.geometry import OUTPUT_GRID_NX, OUTPUT_GRID_NY, ellipse_sdf
 from soufflerie.schemas import (
@@ -483,22 +483,7 @@ class RunArtifactStore(Protocol):
 
     def open_run(self, reference: ArtifactRef) -> RunArtifact: ...
 
-
-def _fsync_file(path: Path) -> None:
-    descriptor = os.open(path, os.O_RDONLY)
-    try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
-
-
-def _fsync_directory(path: Path) -> None:
-    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
-    descriptor = os.open(path, flags)
-    try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+    def verify_run(self, *, case_id: str, run_digest: str) -> ArtifactRef: ...
 
 
 class LocalRunArtifactStore:
@@ -528,34 +513,6 @@ class LocalRunArtifactStore:
     def _inject(self, stage: str) -> None:
         if self._fault_injector is not None:
             self._fault_injector(stage)
-
-    def _ensure_directory(self, *parts: str) -> Path:
-        """Create fixed store prefixes durably and reject non-directory components."""
-
-        current = self.root
-        for part in parts:
-            candidate = current / part
-            created = False
-            try:
-                candidate.mkdir()
-                created = True
-            except FileExistsError:
-                pass
-            try:
-                details = candidate.lstat()
-            except OSError as error:
-                raise ArtifactIntegrityError(
-                    f"RUN-1 PATH: unable to inspect store directory {part!r}"
-                ) from error
-            if not stat.S_ISDIR(details.st_mode):
-                raise ArtifactIntegrityError(
-                    f"RUN-1 PATH: store component {part!r} is not a real directory"
-                )
-            if created:
-                _fsync_directory(candidate)
-                _fsync_directory(current)
-            current = candidate
-        return current
 
     def _committed_size(self, uri: str) -> int:
         fields = safe_read_bytes(
@@ -623,17 +580,17 @@ class LocalRunArtifactStore:
             loaded = self.open_run(reference.model_copy(update={"size_bytes": existing_size}))
             return loaded.reference
 
-        staging_parent = self._ensure_directory(".staging", case.case_id)
+        staging_parent = ensure_real_directory(self.root, ".staging", case.case_id)
         staging = Path(tempfile.mkdtemp(prefix=f"{attempt_id}-", dir=staging_parent))
         try:
             fields_path = staging / RUN_FIELDS_NAME
             fields_path.write_bytes(fields_bytes)
-            _fsync_file(fields_path)
+            fsync_file(fields_path)
             self._inject("fields_written")
 
             metadata_path = staging / RUN_METADATA_NAME
             metadata_path.write_bytes(metadata_bytes)
-            _fsync_file(metadata_path)
+            fsync_file(metadata_path)
             self._inject("metadata_written")
 
             safe_read_npz(
@@ -654,11 +611,11 @@ class LocalRunArtifactStore:
 
             commit_path = staging / RUN_COMMIT_NAME
             commit_path.write_text(metadata_sha256 + "\n", encoding="ascii")
-            _fsync_file(commit_path)
-            _fsync_directory(staging)
+            fsync_file(commit_path)
+            fsync_directory(staging)
             self._inject("committed")
 
-            target_parent = self._ensure_directory(RUN_ROOT_PREFIX, case.case_id)
+            target_parent = ensure_real_directory(self.root, RUN_ROOT_PREFIX, case.case_id)
             try:
                 os.rename(staging, target)
             except OSError as error:
@@ -667,7 +624,7 @@ class LocalRunArtifactStore:
                 existing_size = self._committed_size(relative_root)
                 loaded = self.open_run(reference.model_copy(update={"size_bytes": existing_size}))
                 reference = loaded.reference
-            _fsync_directory(target_parent)
+            fsync_directory(target_parent)
             self._inject("published")
         finally:
             if staging.exists():
@@ -736,34 +693,23 @@ class LocalRunArtifactStore:
             metadata_sha256=marker_digest,
         )
 
+    def verify_run(self, *, case_id: str, run_digest: str) -> ArtifactRef:
+        """Resolve a deterministic run key and fully verify its committed content."""
 
-DATAGEN_SCHEMA_MODELS: Mapping[str, type[BaseModel]] = MappingProxyType(
-    {
-        "quantization-statistic": QuantizationStatistic,
-        "run-metadata": RunMetadata,
-    }
-)
-
-
-def datagen_schema_documents() -> dict[str, dict[str, object]]:
-    result: dict[str, dict[str, object]] = {}
-    for name, model in DATAGEN_SCHEMA_MODELS.items():
-        document = cast(dict[str, object], model.model_json_schema())
-        document["$schema"] = "https://json-schema.org/draft/2020-12/schema"
-        document["$id"] = f"https://github.com/AbdelStark/soufflerie/schemas/v1/{name}.json"
-        result[name] = document
-    return result
-
-
-def rendered_datagen_schema_documents() -> dict[str, str]:
-    return {
-        f"{name}.json": json.dumps(document, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
-        for name, document in datagen_schema_documents().items()
-    }
+        self._validate_identity("case_id", case_id, _CONTENT_ID_PATTERN)
+        self._validate_identity("run_digest", run_digest, _SHA256_PATTERN)
+        uri = f"{RUN_ROOT_PREFIX}/{case_id}/{run_digest}"
+        reference = ArtifactRef(
+            artifact_type="run",
+            artifact_id=run_digest[:20],
+            sha256=run_digest,
+            size_bytes=self._committed_size(uri),
+            uri=uri,
+        )
+        return self.open_run(reference).reference
 
 
 __all__ = [
-    "DATAGEN_SCHEMA_MODELS",
     "OUTPUT_SHAPE",
     "RUN_MEMBER_ORDER",
     "SOLVER_SHAPE",
@@ -774,8 +720,6 @@ __all__ = [
     "RunArtifactStore",
     "RunMetadata",
     "curate_solver_result",
-    "datagen_schema_documents",
     "encode_run_fields",
-    "rendered_datagen_schema_documents",
     "run_member_descriptors",
 ]
