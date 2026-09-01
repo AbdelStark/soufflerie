@@ -27,6 +27,7 @@ from soufflerie.schemas import (
     canonical_json,
     canonical_sha256,
 )
+from soufflerie.solver import DerivedLatticeConfig, LatticeConfig, derive_lattice
 
 try:
     __version__ = version("soufflerie")
@@ -38,8 +39,10 @@ __all__ = [
     "ArtifactIntegrityError",
     "ArtifactRef",
     "CaseConfig",
+    "DerivedLatticeConfig",
     "FlowFields",
     "GridSpec",
+    "LatticeConfig",
     "Provenance",
     "Range",
     "RunSchedule",
@@ -56,6 +59,7 @@ __all__ = [
     "canonical_json",
     "canonical_sha256",
     "config_digest",
+    "derive_lattice",
     "load_config",
     "parse_config",
 ]
