@@ -10,6 +10,7 @@ import numpy as np
 import numpy.typing as npt
 
 from soufflerie.errors import DomainError, NumericalStabilityError
+from soufflerie.geometry import reference_diameter_lu as geometry_reference_diameter_lu
 from soufflerie.schemas import CaseConfig
 
 Q: Final = 9
@@ -284,7 +285,7 @@ def derive_lattice(case: CaseConfig) -> DerivedLatticeConfig:
             sample_interval=DEFAULT_SAMPLE_INTERVAL,
             inlet_velocity_lu=case.inlet_velocity_lu,
             reynolds=case.reynolds,
-            reference_diameter_lu=0.125 * case.ny,
+            reference_diameter_lu=geometry_reference_diameter_lu(case.grid),
         )
     )
 

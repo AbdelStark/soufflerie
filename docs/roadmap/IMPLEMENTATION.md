@@ -9,7 +9,7 @@ Generated from the specification corpus in [PR #1](https://github.com/AbdelStark
 - Implementation issues: 56
 - RFC tracking issues: 13
 - Total issues: 69
-- Current state: 55 open, 14 closed
+- Current state: 54 open, 15 closed
 - Scope: PRD milestones M0-M5; stretch tracks excluded
 
 Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, surrogate 4, training 4, validation 4, API 5, UI 4, infrastructure/performance 6, observability 1, security 3, and release 7.
@@ -27,7 +27,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #7 | [solver: implement deterministic collision and pull-stream kernels](https://github.com/AbdelStark/soufflerie/issues/7) | solver | p0 | l | RFC-0002 | closed |
 | #8 | [solver: add lifecycle, diagnostics, and time averaging](https://github.com/AbdelStark/soufflerie/issues/8) | solver | p0 | l | RFC-0002 | closed |
 | #9 | [solver: verify channel, conservation, and determinism gates](https://github.com/AbdelStark/soufflerie/issues/9) | solver | p0 | l | RFC-0002 | closed |
-| #10 | [geometry: implement ellipse SDF, masks, and preflight](https://github.com/AbdelStark/soufflerie/issues/10) | geometry | p0 | m | RFC-0003 | open |
+| #10 | [geometry: implement ellipse SDF, masks, and preflight](https://github.com/AbdelStark/soufflerie/issues/10) | geometry | p0 | m | RFC-0003 | closed |
 | #11 | [solver: implement channel inlet, outlet, walls, and sponge](https://github.com/AbdelStark/soufflerie/issues/11) | geometry | p0 | l | RFC-0003 | open |
 | #12 | [solver: implement obstacle bounce-back and force reduction](https://github.com/AbdelStark/soufflerie/issues/12) | geometry | p0 | l | RFC-0003 | open |
 | #13 | [solver: implement Strouhal and field-drag diagnostics](https://github.com/AbdelStark/soufflerie/issues/13) | geometry | p1 | m | RFC-0003 | open |

@@ -54,7 +54,7 @@ class SweepConfig(BaseModel):
     split_counts: tuple[Literal[600], Literal[200], Literal[200]]
 ```
 
-Canonical values are exactly: aspect ratio `[0.3,1.0]`, rotation degrees `[0,30]`, scale `[0.75,1.25]`, Reynolds `[40,300]`, sample count `1000`, split counts `(600,200,200)`, and a checked-in 64-bit seed. YAML uses explicit numbers; environment interpolation, anchors, aliases, unknown keys, implicit strings-to-numbers, and non-finite values are rejected. YAML sequences normalize only to the immutable tuple fields declared by the model. `config_digest` derives from validated canonical JSON.
+Canonical values are exactly: aspect ratio `[0.5,1.0]`, rotation degrees `[0,30]`, scale `[0.75,1.25]`, Reynolds `[40,300]`, sample count `1000`, split counts `(600,200,200)`, and a checked-in 64-bit seed. YAML uses explicit numbers; environment interpolation, anchors, aliases, unknown keys, implicit strings-to-numbers, and non-finite values are rejected. YAML sequences normalize only to the immutable tuple fields declared by the model. `config_digest` derives from validated canonical JSON.
 
 Sampling uses a local NumPy `Generator(PCG64(seed))`. For dimension `d=4` and `n=1000`, each axis receives one jittered sample per stratum `(k+u)/n`, permutations are independent per dimension, and 32 deterministic candidates are generated from child seeds. The candidate maximizing minimum pairwise Euclidean distance in normalized `[0,1]^4` space is selected; ties use candidate index. Endpoints are not forced. Values map linearly to physical ranges and are serialized at IEEE-754 double precision before `CaseConfig` derivation.
 

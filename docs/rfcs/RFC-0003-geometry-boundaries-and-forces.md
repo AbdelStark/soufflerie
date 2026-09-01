@@ -48,7 +48,9 @@ def obstacle_mask(sdf: Float32Array) -> BoolArray: ...
 def validate_geometry(shape: ShapeParams, grid: GridSpec) -> GeometryDiagnostics: ...
 ```
 
-Preflight requires at least 12 cells across the scaled minor diameter; at least `2*D_lu` clearance to inlet, `4*D_lu` to outlet, and `1*D_lu` to either channel wall; and one-cell fluid connectivity from inlet to outlet. Canonical `256x512` and CPU test grids define `D_lu` so valid parameter bounds pass. If a smaller requested grid cannot resolve the obstacle, it is rejected rather than rasterized inconsistently.
+Preflight requires at least 12 cells across the scaled minor diameter; at least `2*D_lu` clearance to inlet, `4*D_lu` to outlet, and `1*D_lu` to either channel wall; and one-cell fluid connectivity from inlet to outlet. The public aspect-ratio range is `[0.5,1.0]`, so its minimum with `scale=0.75` is exactly 12 cells on the canonical `(ny=256,nx=512)` grid. Reduced solver smoke grids are internal numerical fixtures, not accepted public geometry cases; canonical-grid geometry preflight remains a CPU test. Any requested grid that cannot resolve the obstacle is rejected before solver-state allocation rather than rasterized inconsistently.
+
+This `[0.5,1.0]` floor is the v0.1 resolution decision. Retaining the earlier `0.3` draft bound would produce a 7.2-cell minor diameter while relaxing the 12-cell gate would weaken the accepted boundary model. Increasing the full grid would multiply solver and sweep cost, and increasing `D_lu/ny` would change blockage and invalidate the cylinder reference. The bounded domain cut preserves the numerical, reference, and performance contracts together.
 
 Boundary ownership order is: obstacle links, channel walls, inlet, outlet, then interior. Corner populations have explicit tests. Top/bottom channel walls and obstacles use half-way link bounce-back: when pull streaming crosses a solid link, the destination population receives the opposite post-collision population from the fluid node. Force contribution on each obstacle link is accumulated in fixed direction/tile order:
 

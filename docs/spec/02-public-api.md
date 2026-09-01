@@ -76,7 +76,7 @@ GET  /openapi.json
 
 | Field | Constraint |
 |---|---|
-| `aspect_ratio` | finite float in `[0.3, 1.0]` |
+| `aspect_ratio` | finite float in `[0.5, 1.0]` |
 | `rotation_deg` | finite float in `[0.0, 30.0]` |
 | `scale` | finite float in `[0.75, 1.25]` |
 | `reynolds` | finite float in `[40.0, 300.0]` for public predictions |

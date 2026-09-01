@@ -6,7 +6,7 @@
   "properties": {
     "aspect_ratio": {
       "maximum": 1.0,
-      "minimum": 0.3,
+      "minimum": 0.5,
       "title": "Aspect Ratio",
       "type": "number"
     },

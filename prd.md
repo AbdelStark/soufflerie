@@ -26,7 +26,7 @@ Secondary purpose: a public repo with visuals good enough to explain the solver-
 
 A visitor (or I, locally) opens the demo and:
 
-1. Picks an obstacle shape: ellipse with aspect ratio 0.3-1.0, rotation 0-30 degrees, size scale.
+1. Picks an obstacle shape: ellipse with aspect ratio 0.5-1.0, rotation 0-30 degrees, size scale.
 2. Picks a Reynolds number in 40-300.
 3. Gets, in under 100 ms on GPU: predicted velocity and pressure fields rendered as images, a drag coefficient, and a consistency panel (divergence residual, out-of-distribution flag).
 4. Can press **Solve for real**: the Warp solver runs the same case in seconds and displays solver vs surrogate side by side with the error field.
