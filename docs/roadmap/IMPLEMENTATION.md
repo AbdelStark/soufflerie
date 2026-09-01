@@ -9,7 +9,7 @@ Generated from the specification corpus in [PR #1](https://github.com/AbdelStark
 - Implementation issues: 56
 - RFC tracking issues: 13
 - Total issues: 69
-- Current state: 60 open, 9 closed
+- Current state: 59 open, 10 closed
 - Scope: PRD milestones M0-M5; stretch tracks excluded
 
 Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, surrogate 4, training 4, validation 4, API 5, UI 4, infrastructure/performance 6, observability 1, security 3, and release 7.
@@ -22,7 +22,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #2 | [foundation: scaffold the typed package and dependency profiles](https://github.com/AbdelStark/soufflerie/issues/2) | foundation | p0 | l | RFC-0001 | closed |
 | #3 | [foundation: define canonical schemas and artifact identities](https://github.com/AbdelStark/soufflerie/issues/3) | foundation | p0 | l | RFC-0001 | closed |
 | #4 | [foundation: implement strict configuration and schema export](https://github.com/AbdelStark/soufflerie/issues/4) | foundation | p0 | m | RFC-0001, RFC-0004 | closed |
-| #5 | [cli: expose installed public commands and import isolation](https://github.com/AbdelStark/soufflerie/issues/5) | foundation | p1 | m | RFC-0001 | open |
+| #5 | [cli: expose installed public commands and import isolation](https://github.com/AbdelStark/soufflerie/issues/5) | foundation | p1 | m | RFC-0001 | closed |
 | #6 | [solver: implement D2Q9 configuration and NumPy oracle](https://github.com/AbdelStark/soufflerie/issues/6) | solver | p0 | m | RFC-0002 | closed |
 | #7 | [solver: implement deterministic collision and pull-stream kernels](https://github.com/AbdelStark/soufflerie/issues/7) | solver | p0 | l | RFC-0002 | closed |
 | #8 | [solver: add lifecycle, diagnostics, and time averaging](https://github.com/AbdelStark/soufflerie/issues/8) | solver | p0 | l | RFC-0002 | closed |

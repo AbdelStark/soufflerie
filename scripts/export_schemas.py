@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from soufflerie.cli import rendered_cli_schema_documents
 from soufflerie.config import rendered_config_schema_documents
 from soufflerie.observability import rendered_observability_schema_documents
 from soufflerie.schemas import rendered_schema_documents
@@ -18,6 +19,7 @@ def export(*, check: bool) -> tuple[str, ...]:
         **rendered_schema_documents(),
         **rendered_config_schema_documents(),
         **rendered_observability_schema_documents(),
+        **rendered_cli_schema_documents(),
     }
     stale: list[str] = []
     if check:

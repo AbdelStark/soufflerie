@@ -1,0 +1,38 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/cli-version.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Machine-readable installed distribution identity.",
+  "properties": {
+    "package": {
+      "const": "soufflerie",
+      "default": "soufflerie",
+      "title": "Package",
+      "type": "string"
+    },
+    "python": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Python",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "version": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "python"
+  ],
+  "title": "VersionResult",
+  "type": "object"
+}

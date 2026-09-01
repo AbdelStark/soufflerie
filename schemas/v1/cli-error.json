@@ -1,0 +1,53 @@
+{
+  "$defs": {
+    "CliErrorDetail": {
+      "additionalProperties": false,
+      "description": "Stable automation-safe CLI error body.",
+      "properties": {
+        "code": {
+          "maxLength": 64,
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "title": "CliErrorDetail",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/cli-error.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Structured stderr contract for command execution failures.",
+  "properties": {
+    "error": {
+      "$ref": "#/$defs/CliErrorDetail"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "error"
+  ],
+  "title": "CliError",
+  "type": "object"
+}
