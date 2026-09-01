@@ -34,7 +34,7 @@ Pydantic v2 models use strict types, `extra="forbid"`, finite floats, and schema
 
 ```python
 class ShapeRequest(BaseModel):
-    aspect_ratio: Annotated[float, Field(ge=0.3, le=1.0, allow_inf_nan=False)]
+    aspect_ratio: Annotated[float, Field(ge=0.5, le=1.0, allow_inf_nan=False)]
     rotation_deg: Annotated[float, Field(ge=0.0, le=30.0, allow_inf_nan=False)]
     scale: Annotated[float, Field(ge=0.75, le=1.25, allow_inf_nan=False)]
 

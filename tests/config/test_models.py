@@ -25,11 +25,16 @@ def test_range_and_canonical_sweep_constraints() -> None:
     assert sweep.samples == 1_000
     assert sweep.split_counts == (600, 200, 200)
     assert sweep.grid.shape == (256, 512)
+    assert sweep.aspect_ratio.minimum == 0.5
     assert len(sweep.config_digest) == 64
 
     with pytest.raises(ValidationError, match="canonical"):
         SweepConfig.model_validate(
             {**sweep.model_dump(), "reynolds": {"minimum": 50.0, "maximum": 300.0}}
+        )
+    with pytest.raises(ValidationError, match="canonical"):
+        SweepConfig.model_validate(
+            {**sweep.model_dump(), "aspect_ratio": {"minimum": 0.3, "maximum": 1.0}}
         )
 
 

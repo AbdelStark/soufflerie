@@ -69,7 +69,7 @@ class VersionedModel(StrictFrozenModel):
 class ShapeParams(StrictFrozenModel):
     """Ellipse parameters at the public degree/lattice-unit boundary."""
 
-    aspect_ratio: float = Field(ge=0.3, le=1.0, allow_inf_nan=False)
+    aspect_ratio: float = Field(ge=0.5, le=1.0, allow_inf_nan=False)
     rotation_deg: float = Field(ge=0.0, le=30.0, allow_inf_nan=False)
     scale: float = Field(ge=0.75, le=1.25, allow_inf_nan=False)
 

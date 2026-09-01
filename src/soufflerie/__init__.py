@@ -26,6 +26,14 @@ from soufflerie.config import (
     parse_config,
 )
 from soufflerie.errors import ArtifactIntegrityError, SchemaVersionError, SoufflerieError
+from soufflerie.geometry import (
+    GeometryDiagnostics,
+    ellipse_sdf,
+    normalized_sdf_input,
+    obstacle_mask,
+    reference_diameter_lu,
+    validate_geometry,
+)
 from soufflerie.schemas import (
     ArrayDescriptor,
     ArtifactRef,
@@ -65,6 +73,7 @@ __all__ = [
     "CompletedLatticeRun",
     "DerivedLatticeConfig",
     "FlowFields",
+    "GeometryDiagnostics",
     "GridSpec",
     "LatticeConfig",
     "LatticeState",
@@ -90,13 +99,18 @@ __all__ = [
     "canonical_sha256",
     "config_digest",
     "derive_lattice",
+    "ellipse_sdf",
     "load_config",
+    "normalized_sdf_input",
+    "obstacle_mask",
     "parse_config",
+    "reference_diameter_lu",
     "run_lifecycle",
     "safe_read_json",
     "safe_read_npz",
     "safe_read_parquet",
     "safe_read_tensors",
+    "validate_geometry",
     "validate_release_provenance",
     "verify_consumer_identities",
     "verify_lineage",

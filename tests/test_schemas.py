@@ -84,6 +84,8 @@ def test_shared_records_are_strict_frozen_and_versioned() -> None:
     with pytest.raises(ValidationError):
         ShapeParams.model_validate({"aspect_ratio": "0.75", "rotation_deg": 12.0, "scale": 1.0})
     with pytest.raises(ValidationError):
+        ShapeParams(aspect_ratio=0.499, rotation_deg=12.0, scale=1.0)
+    with pytest.raises(ValidationError):
         ShapeParams(aspect_ratio=0.75, rotation_deg=12.0, scale=1.0, unknown=True)  # type: ignore[call-arg]
     with pytest.raises(ValidationError):
         CaseConfig(**{**case.model_dump(), "warmup_steps": 500})

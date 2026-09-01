@@ -21,7 +21,7 @@ class StrictFrozenModel(BaseModel):
 
 
 class ShapeParams(StrictFrozenModel):
-    aspect_ratio: float = Field(ge=0.3, le=1.0)
+    aspect_ratio: float = Field(ge=0.5, le=1.0)
     rotation_deg: float = Field(ge=0.0, le=30.0)
     scale: float = Field(ge=0.75, le=1.25)
 

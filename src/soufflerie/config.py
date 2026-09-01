@@ -87,7 +87,7 @@ class SweepConfig(CanonicalConfig):
     @model_validator(mode="after")
     def _canonical_domain_is_frozen(self) -> Self:
         expected = {
-            "aspect_ratio": (0.3, 1.0),
+            "aspect_ratio": (0.5, 1.0),
             "rotation_deg": (0.0, 30.0),
             "scale": (0.75, 1.25),
             "reynolds": (40.0, 300.0),

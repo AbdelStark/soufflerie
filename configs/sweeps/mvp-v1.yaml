@@ -4,7 +4,7 @@ seed: 20260901
 samples: 1000
 shape_family: ellipse
 aspect_ratio:
-  minimum: 0.3
+  minimum: 0.5
   maximum: 1.0
 rotation_deg:
   minimum: 0.0
