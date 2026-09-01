@@ -1,0 +1,191 @@
+{
+  "$defs": {
+    "GridSpec": {
+      "additionalProperties": false,
+      "description": "A row-major two-dimensional lattice grid.",
+      "properties": {
+        "axis_order": {
+          "const": "yx",
+          "default": "yx",
+          "title": "Axis Order",
+          "type": "string"
+        },
+        "nx": {
+          "minimum": 3,
+          "title": "Nx",
+          "type": "integer"
+        },
+        "ny": {
+          "minimum": 3,
+          "title": "Ny",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "spacing_unit": {
+          "const": "lattice_unit",
+          "default": "lattice_unit",
+          "title": "Spacing Unit",
+          "type": "string"
+        },
+        "timestep_unit": {
+          "const": "lattice_step",
+          "default": "lattice_step",
+          "title": "Timestep Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "nx",
+        "ny"
+      ],
+      "title": "GridSpec",
+      "type": "object"
+    },
+    "Range": {
+      "additionalProperties": false,
+      "description": "A finite increasing closed parameter range.",
+      "properties": {
+        "maximum": {
+          "title": "Maximum",
+          "type": "number"
+        },
+        "minimum": {
+          "title": "Minimum",
+          "type": "number"
+        }
+      },
+      "required": [
+        "minimum",
+        "maximum"
+      ],
+      "title": "Range",
+      "type": "object"
+    },
+    "RunSchedule": {
+      "additionalProperties": false,
+      "description": "Numerical run and diagnostic sampling schedule.",
+      "properties": {
+        "inlet_velocity_lu": {
+          "exclusiveMinimum": 0.0,
+          "maximum": 0.1,
+          "title": "Inlet Velocity Lu",
+          "type": "number"
+        },
+        "sample_interval": {
+          "minimum": 1,
+          "title": "Sample Interval",
+          "type": "integer"
+        },
+        "steps": {
+          "minimum": 1,
+          "title": "Steps",
+          "type": "integer"
+        },
+        "warmup_steps": {
+          "minimum": 0,
+          "title": "Warmup Steps",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "steps",
+        "warmup_steps",
+        "sample_interval",
+        "inlet_velocity_lu"
+      ],
+      "title": "RunSchedule",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/sweep-config.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Frozen canonical 1,000-case design and solver policy.",
+  "properties": {
+    "aspect_ratio": {
+      "$ref": "#/$defs/Range"
+    },
+    "grid": {
+      "$ref": "#/$defs/GridSpec"
+    },
+    "name": {
+      "pattern": "^[a-z][a-z0-9-]{0,63}$",
+      "title": "Name",
+      "type": "string"
+    },
+    "reynolds": {
+      "$ref": "#/$defs/Range"
+    },
+    "rotation_deg": {
+      "$ref": "#/$defs/Range"
+    },
+    "run": {
+      "$ref": "#/$defs/RunSchedule"
+    },
+    "samples": {
+      "const": 1000,
+      "title": "Samples",
+      "type": "integer"
+    },
+    "scale": {
+      "$ref": "#/$defs/Range"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seed": {
+      "maximum": 18446744073709551615,
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "shape_family": {
+      "const": "ellipse",
+      "title": "Shape Family",
+      "type": "string"
+    },
+    "split_counts": {
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "const": 600,
+          "type": "integer"
+        },
+        {
+          "const": 200,
+          "type": "integer"
+        },
+        {
+          "const": 200,
+          "type": "integer"
+        }
+      ],
+      "title": "Split Counts",
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "seed",
+    "samples",
+    "shape_family",
+    "aspect_ratio",
+    "rotation_deg",
+    "scale",
+    "reynolds",
+    "grid",
+    "run",
+    "split_counts"
+  ],
+  "title": "SweepConfig",
+  "type": "object"
+}

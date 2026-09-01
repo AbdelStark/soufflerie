@@ -1,0 +1,137 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/training-config.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Deterministic three-seed FNO training configuration.",
+  "properties": {
+    "batch_size": {
+      "default": 8,
+      "minimum": 1,
+      "title": "Batch Size",
+      "type": "integer"
+    },
+    "cd_weight": {
+      "default": 0.5,
+      "exclusiveMinimum": 0.0,
+      "title": "Cd Weight",
+      "type": "number"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "epochs": {
+      "default": 100,
+      "minimum": 1,
+      "title": "Epochs",
+      "type": "integer"
+    },
+    "field_weights": {
+      "default": [
+        1.0,
+        1.0,
+        0.25
+      ],
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "number"
+        },
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "number"
+        },
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "number"
+        }
+      ],
+      "title": "Field Weights",
+      "type": "array"
+    },
+    "gradient_clip_norm": {
+      "default": 1.0,
+      "exclusiveMinimum": 0.0,
+      "title": "Gradient Clip Norm",
+      "type": "number"
+    },
+    "learning_rate": {
+      "default": 0.001,
+      "exclusiveMinimum": 0.0,
+      "title": "Learning Rate",
+      "type": "number"
+    },
+    "min_learning_rate": {
+      "default": 1e-05,
+      "exclusiveMinimum": 0.0,
+      "title": "Min Learning Rate",
+      "type": "number"
+    },
+    "num_workers": {
+      "default": 4,
+      "maximum": 64,
+      "minimum": 0,
+      "title": "Num Workers",
+      "type": "integer"
+    },
+    "obstacle_weight": {
+      "default": 0.25,
+      "exclusiveMinimum": 0.0,
+      "title": "Obstacle Weight",
+      "type": "number"
+    },
+    "precision": {
+      "default": "bf16",
+      "enum": [
+        "bf16",
+        "fp16"
+      ],
+      "title": "Precision",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seeds": {
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "type": "integer"
+        }
+      ],
+      "title": "Seeds",
+      "type": "array"
+    },
+    "weight_decay": {
+      "default": 0.0001,
+      "minimum": 0.0,
+      "title": "Weight Decay",
+      "type": "number"
+    }
+  },
+  "required": [
+    "dataset_id",
+    "seeds"
+  ],
+  "title": "TrainingConfig",
+  "type": "object"
+}

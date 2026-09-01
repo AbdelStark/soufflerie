@@ -1,0 +1,30 @@
+schema_version: 1
+name: mvp-v1
+seed: 20260901
+samples: 1000
+shape_family: ellipse
+aspect_ratio:
+  minimum: 0.3
+  maximum: 1.0
+rotation_deg:
+  minimum: 0.0
+  maximum: 30.0
+scale:
+  minimum: 0.75
+  maximum: 1.25
+reynolds:
+  minimum: 40.0
+  maximum: 300.0
+grid:
+  schema_version: 1
+  nx: 512
+  ny: 256
+  axis_order: yx
+  spacing_unit: lattice_unit
+  timestep_unit: lattice_step
+run:
+  steps: 20000
+  warmup_steps: 10000
+  sample_interval: 10
+  inlet_velocity_lu: 0.05
+split_counts: [600, 200, 200]

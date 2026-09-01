@@ -1,0 +1,113 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/service-config.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Bounded public service policy without credentials or remote settings.",
+  "properties": {
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "host": {
+      "default": "127.0.0.1",
+      "enum": [
+        "127.0.0.1",
+        "0.0.0.0"
+      ],
+      "title": "Host",
+      "type": "string"
+    },
+    "model_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "port": {
+      "default": 8000,
+      "maximum": 65535,
+      "minimum": 1,
+      "title": "Port",
+      "type": "integer"
+    },
+    "predict_concurrency": {
+      "default": 1,
+      "maximum": 1,
+      "minimum": 1,
+      "title": "Predict Concurrency",
+      "type": "integer"
+    },
+    "predict_queue_capacity": {
+      "default": 8,
+      "maximum": 8,
+      "minimum": 0,
+      "title": "Predict Queue Capacity",
+      "type": "integer"
+    },
+    "predictions_per_minute_client": {
+      "default": 60,
+      "maximum": 60,
+      "minimum": 1,
+      "title": "Predictions Per Minute Client",
+      "type": "integer"
+    },
+    "report_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Report Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "solve_concurrency": {
+      "default": 0,
+      "maximum": 2,
+      "minimum": 0,
+      "title": "Solve Concurrency",
+      "type": "integer"
+    },
+    "solve_enabled": {
+      "default": false,
+      "title": "Solve Enabled",
+      "type": "boolean"
+    },
+    "solve_queue_capacity": {
+      "default": 0,
+      "maximum": 8,
+      "minimum": 0,
+      "title": "Solve Queue Capacity",
+      "type": "integer"
+    },
+    "solve_timeout_seconds": {
+      "default": 180,
+      "maximum": 180,
+      "minimum": 1,
+      "title": "Solve Timeout Seconds",
+      "type": "integer"
+    },
+    "solves_per_day_global": {
+      "default": 20,
+      "maximum": 20,
+      "minimum": 0,
+      "title": "Solves Per Day Global",
+      "type": "integer"
+    },
+    "solves_per_hour_client": {
+      "default": 2,
+      "maximum": 2,
+      "minimum": 0,
+      "title": "Solves Per Hour Client",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "model_id",
+    "dataset_id",
+    "report_id"
+  ],
+  "title": "ServiceConfig",
+  "type": "object"
+}
