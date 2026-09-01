@@ -1,0 +1,77 @@
+{
+  "$defs": {
+    "ParentLink": {
+      "additionalProperties": false,
+      "description": "One typed edge from an artifact to a direct parent digest.",
+      "properties": {
+        "artifact_type": {
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "role": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "artifact_type",
+        "sha256"
+      ],
+      "title": "ParentLink",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/lineage-node.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Portable artifact identity and all direct typed parent edges.",
+  "properties": {
+    "artifact_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "artifact_type": {
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+      "title": "Artifact Type",
+      "type": "string"
+    },
+    "parents": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ParentLink"
+      },
+      "maxItems": 4096,
+      "title": "Parents",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "artifact_type",
+    "artifact_id",
+    "sha256"
+  ],
+  "title": "LineageNode",
+  "type": "object"
+}

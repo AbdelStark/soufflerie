@@ -43,6 +43,8 @@ venv/
 
 # Pipeline artifact output
 **/artifacts/
+!tests/artifacts/
+!tests/artifacts/**/*.py
 
 # Local release/eval smoke + pipeline output directories
 .eval-smoke/

@@ -1,4 +1,5 @@
 {
+  "$comment": "Release consumers must bind source_revision, lock_sha256, config_sha256, packages, and every direct parent digest to reviewed expected values.",
   "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/provenance.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
