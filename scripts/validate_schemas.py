@@ -20,7 +20,7 @@ from soufflerie.schemas import CaseConfig
 
 PROJECT_ROOT = Path(__file__).parents[1]
 EXAMPLES: Mapping[Path, type[BaseModel]] = {
-    Path("configs/cases/cylinder-re100-v1.yaml"): CaseConfig,
+    Path("configs/cases/cylinder-re100.yaml"): CaseConfig,
     Path("configs/service/demo-v1.yaml"): ServiceConfig,
     Path("configs/sweeps/mvp-v1.yaml"): SweepConfig,
     Path("configs/training/fno-v1.yaml"): TrainingConfig,

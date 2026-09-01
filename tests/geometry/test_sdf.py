@@ -18,8 +18,8 @@ def _shape(*, aspect: float = 0.75, rotation: float = 12.0, scale: float = 1.0) 
 
 
 def test_sdf_layout_sign_mask_and_zero_contour() -> None:
-    grid = GridSpec(nx=101, ny=81)
-    shape = _shape(aspect=1.0, rotation=0.0, scale=80.0 / 81.0)
+    grid = GridSpec(nx=101, ny=201)
+    shape = _shape(aspect=1.0, rotation=0.0, scale=200.0 / 201.0)
     sdf = ellipse_sdf(shape, grid)
     mask = obstacle_mask(sdf)
 
@@ -28,9 +28,9 @@ def test_sdf_layout_sign_mask_and_zero_contour() -> None:
     assert sdf.flags.c_contiguous
     assert not sdf.flags.writeable
     assert np.isfinite(sdf).all()
-    assert sdf[40, 30] < 0.0
+    assert sdf[100, 30] < 0.0
     assert sdf[0, 0] > 0.0
-    assert sdf[40, 35] == pytest.approx(0.0, abs=1e-6)
+    assert sdf[100, 35] == pytest.approx(0.0, abs=1e-6)
     assert mask.dtype == np.bool_
     assert mask.flags.c_contiguous
     assert not mask.flags.writeable
@@ -68,7 +68,7 @@ def test_normalized_model_channel_is_clipped_read_only_fp32() -> None:
     assert not channel.flags.writeable
     assert float(channel.min()) >= -1.0
     assert float(channel.max()) <= 1.0
-    expected = np.clip(ellipse_sdf(shape, grid) / np.float32(0.125 * grid.ny), -1.0, 1.0)
+    expected = np.clip(ellipse_sdf(shape, grid) / np.float32(grid.ny / 20.0), -1.0, 1.0)
     np.testing.assert_array_equal(channel, expected)
 
 

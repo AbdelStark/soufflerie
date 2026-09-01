@@ -22,7 +22,7 @@ def run_case() -> CaseConfig:
         shape=ShapeParams(aspect_ratio=0.75, rotation_deg=12.0, scale=1.0),
         reynolds=100.0,
         nx=512,
-        ny=256,
+        ny=640,
         steps=20_000,
         warmup_steps=10_000,
         inlet_velocity_lu=0.05,

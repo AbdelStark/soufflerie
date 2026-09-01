@@ -29,6 +29,7 @@ from soufflerie.schemas import (
     validate_schema_version,
     validate_split_membership,
 )
+from soufflerie.solver.cylinder_acceptance import rendered_cylinder_schema_documents
 
 
 def _case() -> CaseConfig:
@@ -245,6 +246,7 @@ def test_checked_in_schema_v1_documents_are_current() -> None:
         **rendered_observability_schema_documents(),
         **rendered_cli_schema_documents(),
         **rendered_artifact_schema_documents(),
+        **rendered_cylinder_schema_documents(),
     }
     assert {path.name for path in root.glob("*.json")} == set(expected)
     for name, content in expected.items():

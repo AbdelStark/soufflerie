@@ -105,14 +105,14 @@ implemented.
 <a id="array-contracts"></a>
 ## Array contracts
 
-`FlowFields` arrays MUST be C-contiguous and have identical `(ny, nx)` shapes. Solver arrays are fp32; dataset field arrays are fp16 after time averaging and deterministic area downsampling to `(128, 256)`. The mask is boolean. Values MUST be finite. `rho > 0`; obstacle SDF values are negative, the zero contour is the boundary, and fluid values are positive.
+`FlowFields` arrays MUST be C-contiguous and have identical `(ny, nx)` shapes. Solver arrays are fp32; dataset field arrays are fp16 after time averaging and deterministic area downsampling to `(320, 256)`. The mask is boolean. Values MUST be finite. `rho > 0`; obstacle SDF values are negative, the zero contour is the boundary, and fluid values are positive.
 
 Inference accepts and returns batch-first tensors:
 
 ```text
-input:  float32[B, 2, 128, 256]  # clipped normalized SDF, normalized Re plane
-output: float32[B, 3, 128, 256]  # normalized mean u, v, rho-1
-latent: float32[B, 64, 128, 256]
+input:  float32[B, 2, 320, 256]  # clipped normalized SDF, normalized Re plane
+output: float32[B, 3, 320, 256]  # normalized mean u, v, rho-1
+latent: float32[B, 64, 320, 256]
 cd:     float32[B, 1]
 ```
 

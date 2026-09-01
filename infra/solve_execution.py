@@ -73,7 +73,7 @@ def run_solver_case(
     sdf = ellipse_sdf(case.shape, case.grid)
     mask = obstacle_mask(sdf)
     derived = derive_lattice(case)
-    stepper = WarpObstacleStepper("cuda:0")
+    stepper = WarpObstacleStepper("cuda:0", initial_seed=case.seed)
     started_at = datetime.now(UTC)
     started = time.perf_counter()
     completed = run_lifecycle(derived, mask, stepper=stepper)

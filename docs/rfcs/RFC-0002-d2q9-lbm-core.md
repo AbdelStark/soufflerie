@@ -86,7 +86,9 @@ def solve(case: CaseConfig, *, device: str = "cpu") -> SolverResult: ...
 
 The memory layout is row-major `[ny, nx, q]`; velocity is `[ny, nx, 2]`. Kernels use one thread per cell and fixed-order unrolled nine-direction operations. Pull streaming reads populations from upstream neighbors, applies boundary ownership, and writes each destination exactly once, avoiding atomics. Collision and streaming may fuse only if regression and profiler evidence show unchanged outputs/contracts.
 
-Initialization sets `rho=1`, velocity to the inlet profile in fluid, zero in obstacles, and populations to equilibrium. A deterministic smooth ramp multiplies inlet velocity for the first `min(2_000, warmup_steps)` steps:
+Initialization sets `rho=1`, velocity to the inlet profile in fluid, zero in obstacles, and populations to equilibrium. Canonical obstacle solves then add a bounded, seed-signed wake-mode perturbation derived from an analytic streamfunction centered two diameters downstream. Its dimensionless amplitude is fixed at `0.01` of `U_ref`; it leaves density, the inlet/outlet columns, solid nodes, and wall nodes unchanged, has no random-number-generator dependency, and changes sign with seed parity. This deterministic trigger prevents the exactly reflection-symmetric discrete initial condition from suppressing the physically unstable `Re=100` shedding mode during a bounded run. Periodic and obstacle-free channel fixtures retain the unperturbed equilibrium initialization.
+
+A deterministic smooth ramp multiplies inlet velocity for the first `min(2_000, warmup_steps)` steps:
 
 ```text
 ramp(t) = 0.5 * (1 - cos(pi * min(t/ramp_steps, 1)))

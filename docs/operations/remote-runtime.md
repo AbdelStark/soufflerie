@@ -55,26 +55,30 @@ lock, image, volume, artifact digest, wall time, and GPU seconds.
 The kernel smoke does not publish a solver artifact. Use the domain entrypoints
 below when a durable run is required.
 
-## Idempotent solve
+## Cylinder acceptance and idempotent solve
 
 Run one checked-in case from a clean commit:
 
 ```bash
 uv run --extra remote modal run infra/solve.py \
-  --config configs/cases/cylinder-re100-v1.yaml
+  --config configs/cases/cylinder-re100.yaml
 ```
 
-The local adapter validates the YAML and submits a canonical schema-v1 JSON
-envelope capped at 16 KiB. The worker reparses that envelope, checks its source
-revision and lock digest against the image manifest, reloads the volume, and
-claims a ten-minute fenced lease. Provider retries remain zero. A successful
-worker atomically publishes and verifies the run under
+That exact canonical path runs the three-grid Re=100 study plus an independent
+canonical repeat, then writes the typed JSON and rendered Markdown evidence in
+`reports/solver/`. Other checked-in case paths retain the single-solve behavior.
+Each worker receives a canonical schema-v1 JSON envelope capped at 16 KiB,
+checks its source revision and lock digest against the image manifest, reloads
+the volume, and claims a ten-minute fenced lease. Provider retries remain zero.
+A successful worker atomically publishes and verifies the run under
 `/data/soufflerie/v1/runs/<case_id>/<run_digest>`, commits the artifact, records
 success, commits the state, and returns only an `ArtifactRef`.
 
-Standalone solves use the `standalone-solve-v1` namespace and a non-release
-test role. Their design identity is deliberately unable to masquerade as a
-point from the canonical 1,000-case design.
+Cylinder acceptance uses distinct operation identities for coarse, canonical,
+fine, and repeat runs, so the determinism gate cannot be satisfied by replaying
+one successful state record. Standalone solves use the `standalone-solve-v1`
+namespace. Neither identity can masquerade as a point from the canonical
+1,000-case design.
 
 ## Eight-case resume smoke
 

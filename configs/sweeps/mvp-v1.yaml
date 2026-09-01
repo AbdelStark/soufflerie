@@ -18,7 +18,7 @@ reynolds:
 grid:
   schema_version: 1
   nx: 512
-  ny: 256
+  ny: 640
   axis_order: yx
   spacing_unit: lattice_unit
   timestep_unit: lattice_step

@@ -71,6 +71,24 @@ the 1,000-case release dataset. See
 [`docs/operations/remote-runtime.md`](docs/operations/remote-runtime.md) for
 single-solve commands, identity rules, persistence, fallback, and cost controls.
 
+## Cylinder acceptance
+
+The checked-in Re=100 report binds the canonical and sensitivity runs to exact
+source, lock, configuration, device, field archive, and run artifact digests.
+Regenerate and verify it from a clean authenticated checkout with:
+
+```bash
+uv run --extra remote modal run infra/solve.py \
+  --config configs/cases/cylinder-re100.yaml
+uv run python scripts/check_solver_report.py \
+  reports/solver/cylinder-re100.json
+```
+
+The immutable reference gates are `Cd in [1.1475, 1.5525]`,
+`St in [0.15, 0.19]`, at least eight resolved lift cycles, and mass drift below
+`0.1%`. The command writes the rendered companion to
+`reports/solver/cylinder-re100.md`.
+
 ## Development checks
 
 The default development environment is CPU-first:

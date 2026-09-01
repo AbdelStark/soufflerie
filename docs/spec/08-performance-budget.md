@@ -8,8 +8,8 @@ Performance claims are valid only with a recorded source revision, dependency lo
 <a id="reference-workloads"></a>
 ## Reference workloads
 
-- `solver-full`: fp32, `(ny=256, nx=512)`, 20,000 steps, one valid ellipse case, L40S-class GPU, end-to-end remote invocation including artifact I/O.
-- `predict-gpu`: batch 1, `(128, 256)`, loaded/warm FNO bundle, GPU service worker; includes preprocessing, forward, consistency, and PNG/NPZ encoding.
+- `solver-full`: fp32, `(ny=640, nx=512)`, 20,000 steps, one valid ellipse case, L40S-class GPU, end-to-end remote invocation including artifact I/O.
+- `predict-gpu`: batch 1, `(320, 256)`, loaded/warm FNO bundle, GPU service worker; includes preprocessing, forward, consistency, and PNG/NPZ encoding.
 - `predict-cpu`: same request and bundled model on the documented reference CPU; hardware model and thread count recorded.
 - `sweep-1000`: canonical 1,000 cases with bounded `50-100` task fan-out; measures total wall time and total GPU seconds separately.
 - `train-mvp`: three seeds and selected configuration on one remote GPU per seed, including validation checkpoint production.
@@ -27,7 +27,7 @@ Performance claims are valid only with a recorded source revision, dependency lo
 | Full model training | `< 60 min` per seed | wall time on reference GPU |
 | Dataset payload | `< 2 GiB` for 1,000 curated runs | manifest sum of archive sizes |
 | Service resident GPU memory | `< 12 GiB` | peak allocated after warmup |
-| API response | `< 2 MiB` compressed/body | hard rejection in encoder |
+| API response | `< 4 MiB` compressed/body | hard rejection in encoder |
 | Remote image cold build | recorded, not included in warm prediction | informational |
 
 The A10G fallback must pass functional and memory gates. L40S latency targets do not transfer to it; results must name the device class.

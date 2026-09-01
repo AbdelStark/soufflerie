@@ -188,7 +188,7 @@ def test_case_derivation_uses_canonical_reference_length_and_schedule() -> None:
         shape=ShapeParams(aspect_ratio=1.0, rotation_deg=0.0, scale=1.0),
         reynolds=100.0,
         nx=512,
-        ny=256,
+        ny=640,
         steps=20_000,
         warmup_steps=8_000,
         inlet_velocity_lu=0.05,
@@ -203,7 +203,7 @@ def test_case_derivation_uses_canonical_reference_length_and_schedule() -> None:
     assert derived.rho_ref == 1.0
     assert derived.sample_interval == 10
     assert derived.ramp_steps == 2_000
-    assert derived.base == _lattice(nx=512, ny=256, steps=20_000, warmup_steps=8_000)
+    assert derived.base == _lattice(nx=512, ny=640, steps=20_000, warmup_steps=8_000)
     with pytest.raises(DomainError, match="derived tau"):
         replace(derived, tau=0.6)
     with pytest.raises(DomainError, match="rho_ref"):
