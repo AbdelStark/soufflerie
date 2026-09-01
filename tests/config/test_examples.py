@@ -15,6 +15,7 @@ from soufflerie.config import (
     load_config,
     rendered_config_schema_documents,
 )
+from soufflerie.observability import rendered_observability_schema_documents
 from soufflerie.schemas import CaseConfig, rendered_schema_documents
 
 PROJECT_ROOT = Path(__file__).parents[2]
@@ -48,7 +49,11 @@ def test_config_identity_does_not_read_environment_or_storage_location(
 
 
 def test_all_generated_schema_documents_are_checked_in() -> None:
-    expected = {**rendered_schema_documents(), **rendered_config_schema_documents()}
+    expected = {
+        **rendered_schema_documents(),
+        **rendered_config_schema_documents(),
+        **rendered_observability_schema_documents(),
+    }
     root = PROJECT_ROOT / "schemas" / "v1"
     assert {path.name for path in root.glob("*.json")} == set(expected)
     for name, content in expected.items():
