@@ -2,6 +2,18 @@
 
 from importlib.metadata import PackageNotFoundError, version
 
+from soufflerie.artifacts import (
+    ArtifactEnvelope,
+    LineageNode,
+    ReaderLimits,
+    safe_read_json,
+    safe_read_npz,
+    safe_read_parquet,
+    safe_read_tensors,
+    validate_release_provenance,
+    verify_consumer_identities,
+    verify_lineage,
+)
 from soufflerie.config import (
     Range,
     RunSchedule,
@@ -46,6 +58,7 @@ except PackageNotFoundError:  # pragma: no cover - only for an unpackaged source
 
 __all__ = [
     "ArrayDescriptor",
+    "ArtifactEnvelope",
     "ArtifactIntegrityError",
     "ArtifactRef",
     "CaseConfig",
@@ -55,8 +68,10 @@ __all__ = [
     "GridSpec",
     "LatticeConfig",
     "LatticeState",
+    "LineageNode",
     "Provenance",
     "Range",
+    "ReaderLimits",
     "RunSchedule",
     "SchemaVersionError",
     "ServiceConfig",
@@ -78,4 +93,11 @@ __all__ = [
     "load_config",
     "parse_config",
     "run_lifecycle",
+    "safe_read_json",
+    "safe_read_npz",
+    "safe_read_parquet",
+    "safe_read_tensors",
+    "validate_release_provenance",
+    "verify_consumer_identities",
+    "verify_lineage",
 ]

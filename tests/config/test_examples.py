@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 from pydantic import BaseModel
 
+from soufflerie.artifacts import rendered_artifact_schema_documents
 from soufflerie.cli import rendered_cli_schema_documents
 from soufflerie.config import (
     ServiceConfig,
@@ -55,6 +56,7 @@ def test_all_generated_schema_documents_are_checked_in() -> None:
         **rendered_config_schema_documents(),
         **rendered_observability_schema_documents(),
         **rendered_cli_schema_documents(),
+        **rendered_artifact_schema_documents(),
     }
     root = PROJECT_ROOT / "schemas" / "v1"
     assert {path.name for path in root.glob("*.json")} == set(expected)

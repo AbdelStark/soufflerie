@@ -173,6 +173,15 @@ class SolverDiagnostics(VersionedModel):
 class Provenance(VersionedModel):
     """Reproducibility and direct-lineage record for a durable artifact."""
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "$comment": (
+                "Release consumers must bind source_revision, lock_sha256, config_sha256, "
+                "packages, and every direct parent digest to reviewed expected values."
+            )
+        }
+    )
+
     source_revision: Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{40}$")]
     source_dirty: bool
     python_version: NonEmptyString

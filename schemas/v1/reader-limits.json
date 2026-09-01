@@ -1,0 +1,95 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/reader-limits.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Allocation and parser ceilings applied before format deserialization.",
+  "properties": {
+    "max_archive_members": {
+      "default": 128,
+      "minimum": 1,
+      "title": "Max Archive Members",
+      "type": "integer"
+    },
+    "max_compression_ratio": {
+      "default": 1000.0,
+      "minimum": 1.0,
+      "title": "Max Compression Ratio",
+      "type": "number"
+    },
+    "max_file_bytes": {
+      "default": 536870912,
+      "minimum": 1,
+      "title": "Max File Bytes",
+      "type": "integer"
+    },
+    "max_json_bytes": {
+      "default": 4194304,
+      "minimum": 1,
+      "title": "Max Json Bytes",
+      "type": "integer"
+    },
+    "max_json_depth": {
+      "default": 32,
+      "maximum": 128,
+      "minimum": 1,
+      "title": "Max Json Depth",
+      "type": "integer"
+    },
+    "max_json_keys": {
+      "default": 10000,
+      "minimum": 1,
+      "title": "Max Json Keys",
+      "type": "integer"
+    },
+    "max_member_bytes": {
+      "default": 268435456,
+      "minimum": 1,
+      "title": "Max Member Bytes",
+      "type": "integer"
+    },
+    "max_npy_header_bytes": {
+      "default": 65536,
+      "minimum": 128,
+      "title": "Max Npy Header Bytes",
+      "type": "integer"
+    },
+    "max_parquet_columns": {
+      "default": 128,
+      "minimum": 1,
+      "title": "Max Parquet Columns",
+      "type": "integer"
+    },
+    "max_parquet_row_groups": {
+      "default": 4096,
+      "minimum": 1,
+      "title": "Max Parquet Row Groups",
+      "type": "integer"
+    },
+    "max_parquet_rows": {
+      "default": 1000000,
+      "minimum": 1,
+      "title": "Max Parquet Rows",
+      "type": "integer"
+    },
+    "max_tensor_count": {
+      "default": 512,
+      "minimum": 1,
+      "title": "Max Tensor Count",
+      "type": "integer"
+    },
+    "max_tensor_header_bytes": {
+      "default": 1048576,
+      "minimum": 8,
+      "title": "Max Tensor Header Bytes",
+      "type": "integer"
+    },
+    "max_total_uncompressed_bytes": {
+      "default": 1073741824,
+      "minimum": 1,
+      "title": "Max Total Uncompressed Bytes",
+      "type": "integer"
+    }
+  },
+  "title": "ReaderLimits",
+  "type": "object"
+}

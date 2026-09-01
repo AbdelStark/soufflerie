@@ -9,7 +9,7 @@ Generated from the specification corpus in [PR #1](https://github.com/AbdelStark
 - Implementation issues: 56
 - RFC tracking issues: 13
 - Total issues: 69
-- Current state: 59 open, 10 closed
+- Current state: 58 open, 11 closed
 - Scope: PRD milestones M0-M5; stretch tracks excluded
 
 Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, surrogate 4, training 4, validation 4, API 5, UI 4, infrastructure/performance 6, observability 1, security 3, and release 7.
@@ -65,7 +65,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #45 | [infra: prove volume atomicity, fallback, and recovery](https://github.com/AbdelStark/soufflerie/issues/45) | infra | p0 | m | RFC-0011 | open |
 | #46 | [perf: benchmark solver, training, inference, and resource budgets](https://github.com/AbdelStark/soufflerie/issues/46) | infra | p1 | l | RFC-0011, RFC-0013 | open |
 | #47 | [observability: implement events, metrics, timers, and redaction](https://github.com/AbdelStark/soufflerie/issues/47) | observability | p0 | l | RFC-0012 | closed |
-| #48 | [security: implement provenance, lineage, and safe readers](https://github.com/AbdelStark/soufflerie/issues/48) | security | p0 | l | RFC-0012 | open |
+| #48 | [security: implement provenance, lineage, and safe readers](https://github.com/AbdelStark/soufflerie/issues/48) | security | p0 | l | RFC-0012 | closed |
 | #49 | [security: enforce rate, budget, and readiness controls](https://github.com/AbdelStark/soufflerie/issues/49) | security | p0 | m | RFC-0012 | open |
 | #50 | [security: add hostile-artifact, secret, and dependency gates](https://github.com/AbdelStark/soufflerie/issues/50) | security | p0 | m | RFC-0012, RFC-0013 | open |
 | #51 | [docs: add license, governance, security, and citation files](https://github.com/AbdelStark/soufflerie/issues/51) | release | p1 | m | RFC-0013 | open |
