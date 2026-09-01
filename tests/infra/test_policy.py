@@ -22,7 +22,10 @@ from infra.policy import (
     REMOTE_RETRIES,
     RUNTIME_SECRET_NAME,
     SMOKE_MAX_CONTAINERS,
+    SOLVE_MAX_CONTAINERS,
     SOLVE_TIMEOUT_SECONDS,
+    SWEEP_MAX_CONTAINERS,
+    SWEEP_TIMEOUT_SECONDS,
     UV_VERSION,
     VOLUME_MOUNT,
     VOLUME_NAME,
@@ -201,20 +204,33 @@ def test_stubbed_entrypoint_imports_reuse_the_single_shared_policy(
     _FakeApp.instances.clear()
     monkeypatch.setitem(sys.modules, "modal", _fake_modal())
     monkeypatch.delenv("SOUFFLERIE_REMOTE_GPU", raising=False)
-    for name in ("infra.solve", "infra.app"):
+    for name in ("infra.sweep", "infra.solve", "infra.solve_worker", "infra.app"):
         sys.modules.pop(name, None)
 
     app_module = importlib.import_module("infra.app")
     solve_module = importlib.import_module("infra.solve")
+    sweep_module = importlib.import_module("infra.sweep")
 
     assert len(_FakeApp.instances) == 1
     fake_app = _FakeApp.instances[0]
     assert fake_app.name == APP_NAME
     assert app_module.app is fake_app
     assert solve_module.app is fake_app
+    assert sweep_module.app is fake_app
+    assert list(inspect.signature(solve_module.solve_remote.function).parameters) == [
+        "case_json",
+        "correlation_id",
+    ]
     assert list(inspect.signature(solve_module.kernel_smoke_remote.function).parameters) == [
         "requested_device_class"
     ]
+    assert list(inspect.signature(solve_module.summarize_run_remote.function).parameters) == [
+        "reference"
+    ]
+    assert list(inspect.signature(sweep_module.stage_sweep_request_remote.function).parameters) == [
+        "request_json"
+    ]
+    assert list(inspect.signature(sweep_module.sweep_remote.function).parameters) == ["config_ref"]
     assert _FakeVolume.calls == [(VOLUME_NAME, {"create_if_missing": True})]
 
     registry_calls = [call for call in _FakeImage.calls if call[0] == "from_registry"]
@@ -228,6 +244,10 @@ def test_stubbed_entrypoint_imports_reuse_the_single_shared_policy(
     copy_calls = [call for call in _FakeImage.calls if call[0].startswith("add_local_")]
     assert copy_calls
     assert all(call[2]["copy"] is True for call in copy_calls)
+    local_file_sources = {
+        Path(str(call[1][0])).name for call in copy_calls if call[0] == "add_local_file"
+    }
+    assert local_file_sources == {"pyproject.toml", "uv.lock", "README.md", "LICENSE", "NOTICE"}
 
     assert fake_app.function_policies == [
         {
@@ -235,9 +255,38 @@ def test_stubbed_entrypoint_imports_reuse_the_single_shared_policy(
             "gpu": PRIMARY_GPU,
             "volumes": {VOLUME_MOUNT: app_module.volume},
             "timeout": SOLVE_TIMEOUT_SECONDS,
+            "max_containers": SOLVE_MAX_CONTAINERS,
+            "retries": REMOTE_RETRIES,
+        },
+        {
+            "image": app_module.image,
+            "gpu": PRIMARY_GPU,
+            "volumes": {VOLUME_MOUNT: app_module.volume},
+            "timeout": SOLVE_TIMEOUT_SECONDS,
             "max_containers": SMOKE_MAX_CONTAINERS,
             "retries": REMOTE_RETRIES,
-        }
+        },
+        {
+            "image": app_module.image,
+            "volumes": {VOLUME_MOUNT: app_module.volume},
+            "timeout": SOLVE_TIMEOUT_SECONDS,
+            "max_containers": SMOKE_MAX_CONTAINERS,
+            "retries": REMOTE_RETRIES,
+        },
+        {
+            "image": app_module.image,
+            "volumes": {VOLUME_MOUNT: app_module.volume},
+            "timeout": SOLVE_TIMEOUT_SECONDS,
+            "max_containers": SWEEP_MAX_CONTAINERS,
+            "retries": REMOTE_RETRIES,
+        },
+        {
+            "image": app_module.image,
+            "volumes": {VOLUME_MOUNT: app_module.volume},
+            "timeout": SWEEP_TIMEOUT_SECONDS,
+            "max_containers": SWEEP_MAX_CONTAINERS,
+            "retries": REMOTE_RETRIES,
+        },
     ]
 
 

@@ -1,27 +1,39 @@
-"""Authenticated remote kernel smoke; domain solve orchestration lands in issue #42."""
+"""Authenticated kernel smoke and idempotent remote solver entrypoint."""
 
 from __future__ import annotations
 
 import hashlib
 import json
 import time
+import uuid
+from pathlib import Path
 from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
 
-from infra.app import app, image, settings, volume
+from infra.app import app, checkout, image, settings, volume
 from infra.policy import (
     REMOTE_RETRIES,
     SMOKE_MAX_CONTAINERS,
     SOLVE_TIMEOUT_SECONDS,
     VOLUME_MOUNT,
 )
+from infra.remote_execution import (
+    REMOTE_ARTIFACT_ROOT,
+    RemoteSolveRequest,
+    SolveSummary,
+    encode_remote_model,
+)
 from infra.runtime_manifest import (
     KernelSmokeEvidence,
     KernelSmokeResult,
     load_build_manifest,
 )
+from infra.solve_worker import run_solver_case, solve_remote
+from soufflerie.config import load_config
+from soufflerie.datagen.run_artifact import LocalRunArtifactStore
+from soufflerie.schemas import ArtifactRef, CaseConfig, canonical_sha256
 
 
 def _state_sha256(arrays: tuple[npt.NDArray[np.float32], ...]) -> str:
@@ -99,16 +111,95 @@ def kernel_smoke_remote(requested_device_class: Literal["L40S", "A10G"]) -> str:
     return result.model_dump_json()
 
 
+@app.function(
+    image=image,
+    volumes={VOLUME_MOUNT: volume},
+    timeout=SOLVE_TIMEOUT_SECONDS,
+    max_containers=SMOKE_MAX_CONTAINERS,
+    retries=REMOTE_RETRIES,
+)
+def summarize_run_remote(reference: ArtifactRef) -> SolveSummary:
+    """Reload and verify a committed run before returning its small receipt."""
+
+    parsed = ArtifactRef.model_validate_json(reference.model_dump_json())
+    volume.reload()
+    store = LocalRunArtifactStore(Path(VOLUME_MOUNT) / REMOTE_ARTIFACT_ROOT)
+    run = store.open_run(parsed)
+    provenance = run.metadata.provenance
+    return SolveSummary.create(
+        artifact=run.reference,
+        case_id=run.metadata.case_id,
+        source_revision=provenance.source_revision,
+        device_class=provenance.device_class,
+        wall_seconds=(provenance.completed_at - provenance.started_at).total_seconds(),
+        gpu_seconds=provenance.gpu_seconds,
+        final_state="succeeded",
+    )
+
+
 @app.local_entrypoint()
-def main(smoke: bool = False) -> None:
-    """Run the authenticated two-repetition kernel acceptance smoke."""
+def main(smoke: bool = False, config: str = "") -> None:
+    """Run the kernel smoke or one non-release standalone domain solve."""
 
-    if not smoke:
-        raise RuntimeError("issue #41 exposes only --smoke; domain solve lands in issue #42")
-    first = KernelSmokeResult.model_validate_json(kernel_smoke_remote.remote(settings.remote_gpu))
-    second = KernelSmokeResult.model_validate_json(kernel_smoke_remote.remote(settings.remote_gpu))
-    evidence = KernelSmokeEvidence.create(first, second)
-    print(json.dumps(evidence.model_dump(mode="json"), indent=2, sort_keys=True))
+    if smoke and config:
+        raise RuntimeError("choose either --smoke or --config")
+    if smoke:
+        first = KernelSmokeResult.model_validate_json(
+            kernel_smoke_remote.remote(settings.remote_gpu)
+        )
+        second = KernelSmokeResult.model_validate_json(
+            kernel_smoke_remote.remote(settings.remote_gpu)
+        )
+        evidence = KernelSmokeEvidence.create(first, second)
+        print(json.dumps(evidence.model_dump(mode="json"), indent=2, sort_keys=True))
+        return
+    if not config:
+        raise RuntimeError("one of --smoke or --config is required")
+    if checkout.source_dirty:
+        raise RuntimeError("remote solve submission requires a clean source revision")
+    case = load_config(Path(config), CaseConfig)
+    design_id = canonical_sha256(
+        {
+            "schema_version": 1,
+            "design_kind": "standalone-solve-v1",
+            "shape": case.shape.model_dump(mode="json"),
+            "reynolds": case.reynolds,
+        }
+    )[:20]
+    sweep_digest = canonical_sha256(
+        {
+            "schema_version": 1,
+            "operation_kind": "single",
+            "case_id": case.case_id,
+            "design_id": design_id,
+            "source_revision": checkout.source_revision,
+            "lock_sha256": checkout.lock_sha256,
+            "requested_device_class": settings.remote_gpu,
+        }
+    )
+    request = RemoteSolveRequest.create(
+        operation_kind="single",
+        sweep_digest=sweep_digest,
+        design_id=design_id,
+        split="test",
+        case=case,
+        requested_device_class=settings.remote_gpu,
+        source_revision=checkout.source_revision,
+        lock_sha256=checkout.lock_sha256,
+        attempt_id=f"single-{uuid.uuid4().hex}",
+    )
+    reference = solve_remote.remote(
+        encode_remote_model(request),
+        f"single.{request.case.case_id}.{request.attempt_id}",
+    )
+    summary = summarize_run_remote.remote(reference)
+    print(json.dumps(summary.model_dump(mode="json"), indent=2, sort_keys=True))
 
 
-__all__ = ["kernel_smoke_remote", "main"]
+__all__ = [
+    "kernel_smoke_remote",
+    "main",
+    "run_solver_case",
+    "solve_remote",
+    "summarize_run_remote",
+]
