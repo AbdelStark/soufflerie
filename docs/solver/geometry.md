@@ -29,13 +29,16 @@ analytic constraints first, then raster connectivity:
 1. the scaled minor diameter is at least 12 lattice cells;
 2. inlet, outlet, and wall clearances are at least `2 * D_lu`, `4 * D_lu`, and `D_lu`;
 3. the obstacle remains outside the last `max(16, round(2 * D_lu))` sponge columns; and
-4. a one-cell-wide fluid path connects inlet to outlet between the no-slip walls.
+4. an eight-output-cell control surface fits inside the fluid, sponge-free domain; and
+5. a one-cell-wide fluid path connects inlet to outlet between the no-slip walls.
 
 Invalid cases raise `DomainError` with stable `GEO-1` or `GEO-2` diagnostic text. Resolution,
 clearance, and sponge rejection occur before a dense geometry raster is allocated. Successful
 preflight returns `GeometryDiagnostics`, including the resolved axes, four clearances, sponge
-extent, solid/fluid cell counts, and connectivity result. These finite scalar values are the
-case-level evidence to log when a requested geometry is accepted.
+extent, exact output-grid control surface, solid/fluid cell counts, and connectivity result. The
+surface is selected from an SDF recomputed on the fixed `256 x 128` output grid, so the algebraic
+distance magnitude is checked directly rather than approximated from the ellipse's Euclidean
+extent. These values are the case-level evidence to log when a requested geometry is accepted.
 
 ## Public domain decision
 

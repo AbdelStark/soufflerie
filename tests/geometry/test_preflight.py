@@ -57,6 +57,12 @@ def test_successful_diagnostics_are_coherent() -> None:
     assert diagnostics.reference_diameter_lu == 32.0
     assert diagnostics.sponge_columns == 64
     assert diagnostics.sponge_start_x_lu == 448.0
+    assert diagnostics.control_surface_output.clearance_cells == 8
+    assert diagnostics.control_surface_output.minimum_sdf >= 8.0
+    assert diagnostics.control_surface_output.left_x >= 1
+    assert diagnostics.control_surface_output.right_x < 224
+    assert diagnostics.control_surface_output.bottom_y >= 1
+    assert diagnostics.control_surface_output.top_y < 127
     assert diagnostics.obstacle_cell_count > 0
     assert diagnostics.fluid_cell_count > 0
     assert diagnostics.obstacle_cell_count + diagnostics.fluid_cell_count == 512 * 256

@@ -9,7 +9,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from soufflerie.errors import DomainError
+from soufflerie.errors import DomainError, InternalInvariantError
 from soufflerie.schemas import GridSpec, ShapeParams
 
 Float32Array = npt.NDArray[np.float32]
@@ -24,11 +24,40 @@ OUTLET_CLEARANCE_DIAMETERS = 4.0
 WALL_CLEARANCE_DIAMETERS = 1.0
 SPONGE_LENGTH_DIAMETERS = 2.0
 MIN_SPONGE_COLUMNS = 16
+CONTROL_SURFACE_CLEARANCE_CELLS = 8
+OUTPUT_GRID_NX = 256
+OUTPUT_GRID_NY = 128
+
+
+@dataclass(frozen=True, slots=True)
+class ControlSurface:
+    """An inclusive rectangular surface in output-cell coordinates."""
+
+    left_x: int
+    right_x: int
+    bottom_y: int
+    top_y: int
+    clearance_cells: int
+    minimum_sdf: float
+
+    def __post_init__(self) -> None:
+        if (
+            self.left_x < 1
+            or self.right_x <= self.left_x
+            or self.bottom_y < 1
+            or self.top_y <= self.bottom_y
+            or self.clearance_cells <= 0
+        ):
+            raise InternalInvariantError("GEO-2 CONTROL_SURFACE: rectangle is incoherent")
+        if not math.isfinite(self.minimum_sdf) or self.minimum_sdf < self.clearance_cells:
+            raise InternalInvariantError(
+                "GEO-2 CONTROL_SURFACE: declared clearance is not satisfied"
+            )
 
 
 @dataclass(frozen=True, slots=True)
 class GeometryDiagnostics:
-    """Finite scalar evidence emitted by a successful geometry preflight."""
+    """Finite evidence emitted by a successful geometry preflight."""
 
     grid_shape: tuple[int, int]
     center_x_lu: float
@@ -43,6 +72,7 @@ class GeometryDiagnostics:
     upper_wall_clearance_lu: float
     sponge_columns: int
     sponge_start_x_lu: float
+    control_surface_output: ControlSurface
     obstacle_cell_count: int
     fluid_cell_count: int
     inlet_outlet_connected: bool
@@ -221,6 +251,78 @@ def obstacle_mask(sdf: Float32Array) -> BoolArray:
     return result
 
 
+def _surface_minimum_sdf(
+    sdf: Float32Array,
+    *,
+    left_x: int,
+    right_x: int,
+    bottom_y: int,
+    top_y: int,
+) -> float:
+    values = (
+        sdf[bottom_y : top_y + 1, left_x],
+        sdf[bottom_y : top_y + 1, right_x],
+        sdf[bottom_y, left_x : right_x + 1],
+        sdf[top_y, left_x : right_x + 1],
+    )
+    return min(float(np.min(side)) for side in values)
+
+
+def control_surface_from_sdf(
+    sdf: Float32Array,
+    *,
+    sponge_start_x: int,
+    clearance_cells: int = CONTROL_SURFACE_CLEARANCE_CELLS,
+) -> ControlSurface:
+    """Select the tightest rectangle enclosing an output SDF clearance band."""
+
+    checked = _validated_sdf(sdf)
+    if (
+        isinstance(clearance_cells, bool)
+        or not isinstance(clearance_cells, int)
+        or clearance_cells <= 0
+    ):
+        raise DomainError("GEO-2 CONTROL_SURFACE: clearance_cells must be positive")
+    ny, nx = checked.shape
+    if (
+        isinstance(sponge_start_x, bool)
+        or not isinstance(sponge_start_x, int)
+        or not 2 <= sponge_start_x <= nx
+    ):
+        raise DomainError(
+            "GEO-2 CONTROL_SURFACE: sponge_start_x must leave an interior streamwise cell"
+        )
+    if not np.any(checked <= np.float32(0.0)):
+        raise DomainError("GEO-2 CONTROL_SURFACE: SDF contains no obstacle zero contour")
+
+    clearance_band = checked < np.float32(clearance_cells)
+    band_y, band_x = np.nonzero(clearance_band)
+    left_x = int(np.min(band_x)) - 1
+    right_x = int(np.max(band_x)) + 1
+    bottom_y = int(np.min(band_y)) - 1
+    top_y = int(np.max(band_y)) + 1
+    if left_x < 1 or right_x >= sponge_start_x or bottom_y < 1 or top_y >= ny - 1:
+        raise DomainError(
+            "GEO-2 CONTROL_SURFACE: "
+            f"no {clearance_cells}-cell surface fits inside fluid, sponge-free bounds"
+        )
+
+    return ControlSurface(
+        left_x=left_x,
+        right_x=right_x,
+        bottom_y=bottom_y,
+        top_y=top_y,
+        clearance_cells=clearance_cells,
+        minimum_sdf=_surface_minimum_sdf(
+            checked,
+            left_x=left_x,
+            right_x=right_x,
+            bottom_y=bottom_y,
+            top_y=top_y,
+        ),
+    )
+
+
 def normalized_sdf_input(shape: ShapeParams, grid: GridSpec) -> Float32Array:
     """Return the clipped dimensionless SDF model channel in ``[-1, 1]``."""
 
@@ -282,6 +384,13 @@ def validate_geometry(shape: ShapeParams, grid: GridSpec) -> GeometryDiagnostics
     obstacle_cells = int(np.count_nonzero(solid))
     if obstacle_cells == 0:
         raise DomainError("GEO-2 RESOLUTION: rasterized obstacle contains no solid cells")
+    output_grid = GridSpec(nx=OUTPUT_GRID_NX, ny=OUTPUT_GRID_NY)
+    output_geometry = _analytic_geometry(shape, output_grid)
+    output_sdf = _ellipse_sdf_unchecked(output_geometry, output_grid)
+    control_surface = control_surface_from_sdf(
+        output_sdf,
+        sponge_start_x=int(output_geometry.sponge_start_x),
+    )
     return GeometryDiagnostics(
         grid_shape=grid.shape,
         center_x_lu=geometry.center_x,
@@ -296,6 +405,7 @@ def validate_geometry(shape: ShapeParams, grid: GridSpec) -> GeometryDiagnostics
         upper_wall_clearance_lu=geometry.upper_wall_clearance,
         sponge_columns=geometry.sponge_columns,
         sponge_start_x_lu=geometry.sponge_start_x,
+        control_surface_output=control_surface,
         obstacle_cell_count=obstacle_cells,
         fluid_cell_count=int(solid.size - obstacle_cells),
         inlet_outlet_connected=True,
@@ -303,16 +413,21 @@ def validate_geometry(shape: ShapeParams, grid: GridSpec) -> GeometryDiagnostics
 
 
 __all__ = [
+    "CONTROL_SURFACE_CLEARANCE_CELLS",
     "INLET_CLEARANCE_DIAMETERS",
     "MIN_MINOR_DIAMETER_CELLS",
     "MIN_SPONGE_COLUMNS",
     "OBSTACLE_CENTER_X_FRACTION",
     "OBSTACLE_CENTER_Y_FRACTION",
     "OUTLET_CLEARANCE_DIAMETERS",
+    "OUTPUT_GRID_NX",
+    "OUTPUT_GRID_NY",
     "REFERENCE_DIAMETER_FRACTION",
     "SPONGE_LENGTH_DIAMETERS",
     "WALL_CLEARANCE_DIAMETERS",
+    "ControlSurface",
     "GeometryDiagnostics",
+    "control_surface_from_sdf",
     "ellipse_sdf",
     "normalized_sdf_input",
     "obstacle_mask",
