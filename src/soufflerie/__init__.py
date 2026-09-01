@@ -28,11 +28,15 @@ from soufflerie.schemas import (
     canonical_sha256,
 )
 from soufflerie.solver import (
+    CompletedLatticeRun,
     DerivedLatticeConfig,
     LatticeConfig,
     LatticeState,
+    SolverConvergenceFailure,
+    SolverStabilityFailure,
     WarpKernelAdapter,
     derive_lattice,
+    run_lifecycle,
 )
 
 try:
@@ -45,6 +49,7 @@ __all__ = [
     "ArtifactIntegrityError",
     "ArtifactRef",
     "CaseConfig",
+    "CompletedLatticeRun",
     "DerivedLatticeConfig",
     "FlowFields",
     "GridSpec",
@@ -56,8 +61,10 @@ __all__ = [
     "SchemaVersionError",
     "ServiceConfig",
     "ShapeParams",
+    "SolverConvergenceFailure",
     "SolverDiagnostics",
     "SolverResult",
+    "SolverStabilityFailure",
     "SoufflerieError",
     "SweepConfig",
     "TrainingConfig",
@@ -70,4 +77,5 @@ __all__ = [
     "derive_lattice",
     "load_config",
     "parse_config",
+    "run_lifecycle",
 ]
