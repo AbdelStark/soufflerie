@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import math
 from dataclasses import dataclass
 from types import ModuleType
 from typing import Protocol, cast
@@ -16,6 +17,7 @@ from soufflerie.errors import (
     DomainError,
     InternalInvariantError,
 )
+from soufflerie.solver.boundaries import sponge_columns, validate_sponge_mask
 from soufflerie.solver.lattice import DerivedLatticeConfig, validate_populations
 from soufflerie.solver.numpy_oracle import NumpyLatticeState, initialize_numpy
 
@@ -57,6 +59,25 @@ class _WarpBackend(Protocol):
         self,
         post_collision: WarpArray,
         streamed: WarpArray,
+        shape: tuple[int, int],
+        device: str,
+    ) -> None: ...
+
+    def launch_sponge(
+        self,
+        post_collision: WarpArray,
+        inlet_velocity_lu: float,
+        sponge_start_x: int,
+        sponge_columns: int,
+        shape: tuple[int, int],
+        device: str,
+    ) -> None: ...
+
+    def launch_channel_boundaries(
+        self,
+        post_collision: WarpArray,
+        streamed: WarpArray,
+        inlet_velocity_lu: float,
         shape: tuple[int, int],
         device: str,
     ) -> None: ...
@@ -206,6 +227,62 @@ class WarpKernelAdapter:
         shape = self._validate_state(state)
         self._backend.launch_pull_stream(state.f_next, state.f, shape, self.device)
 
+    @staticmethod
+    def _validate_channel_velocity(
+        config: DerivedLatticeConfig,
+        inlet_velocity_lu: float,
+    ) -> float:
+        if isinstance(inlet_velocity_lu, bool) or not isinstance(inlet_velocity_lu, (int, float)):
+            raise DomainError("BC-1 INLET: inlet velocity must be a finite number")
+        result = float(inlet_velocity_lu)
+        if not math.isfinite(result) or result < 0.0 or result > config.inlet_velocity_lu:
+            raise DomainError(
+                "BC-1 INLET: ramped inlet velocity must be finite and within the configured target"
+            )
+        return result
+
+    def apply_sponge(
+        self,
+        state: LatticeState,
+        config: DerivedLatticeConfig,
+        mask: npt.NDArray[np.bool_],
+        *,
+        inlet_velocity_lu: float,
+    ) -> None:
+        """Damp post-collision populations in the fixed quadratic outlet sponge."""
+
+        shape = self._validate_state(state, config)
+        target = self._validate_channel_velocity(config, inlet_velocity_lu)
+        validate_sponge_mask(config, mask)
+        columns = sponge_columns(config)
+        self._backend.launch_sponge(
+            state.f_next,
+            target,
+            config.nx - columns,
+            columns,
+            shape,
+            self.device,
+        )
+
+    def pull_stream_channel(
+        self,
+        state: LatticeState,
+        config: DerivedLatticeConfig,
+        *,
+        inlet_velocity_lu: float,
+    ) -> None:
+        """Apply exclusive wall, inlet, outlet, and corner ownership while pulling."""
+
+        shape = self._validate_state(state, config)
+        target = self._validate_channel_velocity(config, inlet_velocity_lu)
+        self._backend.launch_channel_boundaries(
+            state.f_next,
+            state.f,
+            target,
+            shape,
+            self.device,
+        )
+
     def reduce_macroscopic(self, state: LatticeState) -> None:
         """Recover density and velocity from the streamed ``state.f``."""
 
@@ -223,6 +300,21 @@ class WarpKernelAdapter:
 
         self.collide(state, config)
         self.pull_stream_periodic(state)
+        self.reduce_macroscopic(state)
+
+    def step_channel(
+        self,
+        state: LatticeState,
+        config: DerivedLatticeConfig,
+        mask: npt.NDArray[np.bool_],
+        *,
+        inlet_velocity_lu: float,
+    ) -> None:
+        """Run collision, sponge, channel pull, and reduction without fusion."""
+
+        self.collide(state, config)
+        self.apply_sponge(state, config, mask, inlet_velocity_lu=inlet_velocity_lu)
+        self.pull_stream_channel(state, config, inlet_velocity_lu=inlet_velocity_lu)
         self.reduce_macroscopic(state)
 
     def synchronize(self) -> None:

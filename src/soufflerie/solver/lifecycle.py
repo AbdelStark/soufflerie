@@ -17,6 +17,7 @@ from soufflerie.errors import (
     NumericalStabilityError,
 )
 from soufflerie.schemas import SolverDiagnostics, validate_array
+from soufflerie.solver.boundaries import numpy_channel_step
 from soufflerie.solver.kernels import LatticeState, WarpKernelAdapter
 from soufflerie.solver.lattice import (
     DerivedLatticeConfig,
@@ -248,6 +249,40 @@ class NumpyPeriodicStepper:
         )
 
 
+class NumpyChannelStepper(NumpyPeriodicStepper):
+    """NumPy channel driver with ramped inlet, walls, outlet, and sponge."""
+
+    def initialize(self, config: DerivedLatticeConfig, mask: npt.NDArray[np.bool_]) -> object:
+        _validate_mask(mask, config.shape)
+        channel_mask = mask.copy()
+        channel_mask[0, :] = True
+        channel_mask[-1, :] = True
+        initial = initialize_numpy(config, channel_mask)
+        return NumpyPeriodicState(initial.f.copy(), initial.rho.copy(), initial.velocity.copy())
+
+    def advance(
+        self,
+        state: object,
+        config: DerivedLatticeConfig,
+        mask: npt.NDArray[np.bool_],
+        *,
+        completed_step: int,
+        inlet_velocity_lu: float,
+    ) -> None:
+        del completed_step
+        if not isinstance(state, NumpyPeriodicState):
+            raise InternalInvariantError("NumPy channel lifecycle received an incompatible state")
+        next_state = numpy_channel_step(
+            state.f,
+            config,
+            mask,
+            inlet_velocity_lu=inlet_velocity_lu,
+        )
+        state.f = next_state.f
+        state.rho = next_state.rho
+        state.velocity = next_state.velocity
+
+
 class WarpPeriodicStepper:
     """Optional Warp driver for the periodic kernel stage sequence."""
 
@@ -280,6 +315,36 @@ class WarpPeriodicStepper:
             f=np.array(state.f.numpy(), dtype=np.float32, order="C", copy=True),
             rho=np.array(state.rho.numpy(), dtype=np.float32, order="C", copy=True),
             velocity=np.array(state.velocity.numpy(), dtype=np.float32, order="C", copy=True),
+        )
+
+
+class WarpChannelStepper(WarpPeriodicStepper):
+    """Warp channel driver matching the NumPy boundary-stage oracle."""
+
+    def initialize(self, config: DerivedLatticeConfig, mask: npt.NDArray[np.bool_]) -> object:
+        _validate_mask(mask, config.shape)
+        channel_mask = mask.copy()
+        channel_mask[0, :] = True
+        channel_mask[-1, :] = True
+        return self._adapter.initialize(config, channel_mask)
+
+    def advance(
+        self,
+        state: object,
+        config: DerivedLatticeConfig,
+        mask: npt.NDArray[np.bool_],
+        *,
+        completed_step: int,
+        inlet_velocity_lu: float,
+    ) -> None:
+        del completed_step
+        if not isinstance(state, LatticeState):
+            raise InternalInvariantError("Warp channel lifecycle received an incompatible state")
+        self._adapter.step_channel(
+            state,
+            config,
+            mask,
+            inlet_velocity_lu=inlet_velocity_lu,
         )
 
 
@@ -562,12 +627,14 @@ __all__ = [
     "FailedSolverRun",
     "LifecycleStepper",
     "MeanFlowFields",
+    "NumpyChannelStepper",
     "NumpyPeriodicState",
     "NumpyPeriodicStepper",
     "RawLatticeSnapshot",
     "SolverConvergenceFailure",
     "SolverStabilityFailure",
     "StepDiagnostics",
+    "WarpChannelStepper",
     "WarpPeriodicStepper",
     "averaging_sample_steps",
     "run_lifecycle",
