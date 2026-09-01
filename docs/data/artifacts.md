@@ -7,22 +7,23 @@ logical bytes, identities, and commit-marker behavior.
 
 ## Curation boundary
 
-`curate_solver_result(case, result)` accepts only the canonical `256 x 512` fp32 solver grid and
-a matching `case_id`. It produces the fixed `128 x 256` output members:
+`curate_solver_result(case, result)` accepts a matching `case_id` and any declared fp32 source
+grid at least as large as the fixed `(ny=320, nx=256)` persisted grid. It produces these members:
 
 ```text
-u_mean        float16[128,256]  lattice_velocity
-v_mean        float16[128,256]  lattice_velocity
-rho_mean      float16[128,256]  lattice_density
-sdf           float16[128,256]  lattice_distance
-obstacle_mask uint8[128,256]    dimensionless, values 0 or 1
+u_mean        float16[320,256]  lattice_velocity
+v_mean        float16[320,256]  lattice_velocity
+rho_mean      float16[320,256]  lattice_density
+sdf           float16[320,256]  lattice_distance
+obstacle_mask uint8[320,256]    dimensionless, values 0 or 1
 force_steps   int64[N]          step
 cd_history    float32[N]        dimensionless
 cl_history    float32[N]        dimensionless
 ```
 
-Continuous solver fields are accumulated as fp64 means over each exact `2 x 2` area and cast
-once to fp32. SDF is recomputed from the shared geometry contract directly on the output grid;
+Continuous solver fields use a conservative separable area reduction in fp64 with a fixed
+left-to-right summation order, including when source and output dimensions have non-integer
+ratios, and are cast once to fp32. SDF is recomputed from the shared geometry contract directly on the output grid;
 it is never averaged. The mask uses nearest-center samples at indices obtained by
 round-to-nearest-even over an endpoint-preserving source-grid linspace. This convention avoids
 an unstated half-cell tie rule and remains deterministic.

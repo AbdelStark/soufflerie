@@ -36,7 +36,7 @@ def test_curation_area_averages_recomputes_sdf_and_records_quantization(
     assert all(not array.flags.writeable for array in fields.members().values())
     expected_first_u = float(np.mean(solver_result.fields.u[:2, :2], dtype=np.float64))
     assert float(fields.u_mean[0, 0]) == pytest.approx(float(np.float16(expected_first_u)), abs=0.0)
-    output_grid = run_case.grid.model_copy(update={"nx": 256, "ny": 128})
+    output_grid = run_case.grid.model_copy(update={"nx": 256, "ny": 320})
     expected_sdf = ellipse_sdf(run_case.shape, output_grid).astype(np.float16)
     np.testing.assert_array_equal(fields.sdf, expected_sdf)
     y_indices = np.rint(np.linspace(0, run_case.ny - 1, OUTPUT_SHAPE[0])).astype(np.int64)
@@ -49,6 +49,46 @@ def test_curation_area_averages_recomputes_sdf_and_records_quantization(
     assert all(
         statistic.max_abs_error >= statistic.mean_abs_error for statistic in statistics.values()
     )
+
+
+def test_curation_conservatively_resamples_noninteger_sensitivity_grid(
+    run_case: CaseConfig,
+    solver_result: SolverResult,
+) -> None:
+    coarse_case = run_case.model_copy(update={"nx": 384, "ny": 480})
+    source_y, source_x = np.mgrid[:480, :384]
+    source = np.ascontiguousarray(source_y + 2.0 * source_x, dtype=np.float32)
+    mask = np.ascontiguousarray(source_y < 12, dtype=np.bool_)
+    sensitivity_result = SolverResult(
+        case_id=coarse_case.case_id,
+        fields=solver_result.fields.__class__(
+            u=source,
+            v=source,
+            rho=np.ascontiguousarray(np.ones_like(source), dtype=np.float32),
+            sdf=np.ascontiguousarray(np.where(mask, -1.0, 1.0), dtype=np.float32),
+            obstacle_mask=mask,
+        ),
+        cd=solver_result.cd,
+        cl_mean=solver_result.cl_mean,
+        strouhal=solver_result.strouhal,
+        force_steps=solver_result.force_steps,
+        cd_history=solver_result.cd_history,
+        cl_history=solver_result.cl_history,
+        diagnostics=solver_result.diagnostics,
+        provenance=solver_result.provenance.model_copy(
+            update={"config_sha256": coarse_case.sha256}
+        ),
+    )
+
+    fields, _ = curate_solver_result(coarse_case, sensitivity_result)
+
+    assert fields.u_mean.shape == OUTPUT_SHAPE
+    assert float(np.mean(fields.u_mean.astype(np.float64))) == pytest.approx(
+        float(np.mean(source, dtype=np.float64)),
+        rel=2e-4,
+    )
+    first = curate_solver_result(coarse_case, sensitivity_result)[0]
+    np.testing.assert_array_equal(fields.u_mean, first.u_mean)
 
 
 def test_npz_encoding_is_byte_reproducible_fixed_member_and_no_pickle(
@@ -189,5 +229,5 @@ def test_curated_fields_reject_wrong_shape_dtype_and_mask_values(
         )
 
     wrong_case = run_case.model_copy(update={"nx": 256})
-    with pytest.raises(ArtifactIntegrityError, match=r"solver result|requires solver shape"):
+    with pytest.raises(ArtifactIntegrityError, match=r"solver result"):
         curate_solver_result(wrong_case, solver_result)

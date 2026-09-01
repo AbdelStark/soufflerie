@@ -285,7 +285,7 @@ def smoke_design(request: RemoteSweepRequest) -> tuple[SmokeDesignPoint, ...]:
 class RemoteSolveRequest(VersionedModel):
     """Canonical solve envelope; attempt mechanics are outside logical run identity."""
 
-    operation_kind: Literal["single", "smoke-sweep"]
+    operation_kind: Literal["single", "smoke-sweep", "cylinder-acceptance"]
     sweep_digest: Sha256
     design_id: ContentId
     split: Split
@@ -322,7 +322,7 @@ class RemoteSolveRequest(VersionedModel):
     def create(
         cls,
         *,
-        operation_kind: Literal["single", "smoke-sweep"],
+        operation_kind: Literal["single", "smoke-sweep", "cylinder-acceptance"],
         sweep_digest: str,
         design_id: str,
         split: Split,

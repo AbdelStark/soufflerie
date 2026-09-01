@@ -27,7 +27,7 @@ FORBIDDEN_PARTS = {
 REQUIRED_WHEEL_MEMBERS = {
     "soufflerie/__init__.py",
     "soufflerie/py.typed",
-    "soufflerie/configs/cases/cylinder-re100-v1.yaml",
+    "soufflerie/configs/cases/cylinder-re100.yaml",
     "soufflerie/configs/service/demo-v1.yaml",
     "soufflerie/schemas/v1/provenance.json",
 }

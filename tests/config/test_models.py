@@ -24,7 +24,7 @@ def test_range_and_canonical_sweep_constraints() -> None:
     sweep = load_config(PROJECT_ROOT / "configs/sweeps/mvp-v1.yaml", SweepConfig)
     assert sweep.samples == 1_000
     assert sweep.split_counts == (600, 200, 200)
-    assert sweep.grid.shape == (256, 512)
+    assert sweep.grid.shape == (640, 512)
     assert sweep.aspect_ratio.minimum == 0.5
     assert len(sweep.config_digest) == 64
 

@@ -47,7 +47,7 @@ def test_publish_open_and_matching_duplicate_are_idempotent(
     )
     marker = (tmp_path / first.uri / "COMMITTED").read_text(encoding="ascii")
     assert marker == loaded.metadata_sha256 + "\n"
-    assert loaded.fields.u_mean.shape == (128, 256)
+    assert loaded.fields.u_mean.shape == (320, 256)
 
 
 @pytest.mark.parametrize(

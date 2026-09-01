@@ -20,6 +20,9 @@ from soufflerie.solver.lattice import (
     validate_populations,
 )
 
+WAKE_PERTURBATION_AMPLITUDE = 0.01
+UINT64_MAX = (1 << 64) - 1
+
 
 @dataclass(frozen=True, slots=True)
 class NumpyLatticeState:
@@ -84,6 +87,46 @@ def initialize_numpy(
     return NumpyLatticeState(f=populations, rho=rho, velocity=velocity)
 
 
+def initialize_wake_perturbed_numpy(
+    config: DerivedLatticeConfig,
+    mask: npt.NDArray[np.bool_],
+    *,
+    seed: int,
+) -> NumpyLatticeState:
+    """Seed a bounded divergence-free wake mode without touching global RNG state."""
+
+    _validate_mask(mask, config.shape)
+    if isinstance(seed, bool) or not isinstance(seed, int) or not 0 <= seed <= UINT64_MAX:
+        raise DomainError("LBM wake perturbation seed must be an unsigned 64-bit integer")
+
+    state = initialize_numpy(config, mask)
+    ny, nx = config.shape
+    y = np.arange(ny, dtype=np.float64)[:, None]
+    x = np.arange(nx, dtype=np.float64)[None, :]
+    channel_height = float(ny - 1)
+    diameter = config.reference_diameter_lu
+    wake_center = 0.30 * float(nx - 1) + 2.0 * diameter
+    x_relative = (x - wake_center) / diameter
+    envelope = np.exp(-0.5 * x_relative * x_relative)
+    wall_phase = np.pi * y / channel_height
+    sign = 1.0 if seed % 2 == 0 else -1.0
+    amplitude = sign * WAKE_PERTURBATION_AMPLITUDE * config.inlet_velocity_lu
+
+    velocity = state.velocity.astype(np.float64)
+    velocity[..., 0] += (
+        amplitude * diameter * (np.pi / channel_height) * envelope * np.sin(2.0 * wall_phase)
+    )
+    velocity[..., 1] += amplitude * x_relative * envelope * np.sin(wall_phase) * np.sin(wall_phase)
+    velocity[:, 0, 0] = config.inlet_velocity_lu
+    velocity[:, 0, 1] = 0.0
+    velocity[:, -1, 0] = config.inlet_velocity_lu
+    velocity[:, -1, 1] = 0.0
+    velocity[mask] = 0.0
+    velocity_fp32 = np.ascontiguousarray(velocity, dtype=np.float32)
+    populations = equilibrium(state.rho, velocity_fp32)
+    return NumpyLatticeState(f=populations, rho=state.rho, velocity=velocity_fp32)
+
+
 def collide_numpy(populations: npt.NDArray[np.float32], *, omega: float) -> npt.NDArray[np.float32]:
     """Apply one fixed-order fp32 BGK collision without mutating input."""
 
@@ -144,9 +187,11 @@ def numpy_periodic_step(
 
 
 __all__ = [
+    "WAKE_PERTURBATION_AMPLITUDE",
     "NumpyLatticeState",
     "collide_numpy",
     "initialize_numpy",
+    "initialize_wake_perturbed_numpy",
     "numpy_periodic_step",
     "pull_stream_periodic_numpy",
 ]

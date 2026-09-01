@@ -29,7 +29,11 @@ from soufflerie.solver.lattice import (
     DerivedLatticeConfig,
     inlet_ramp,
 )
-from soufflerie.solver.numpy_oracle import initialize_numpy, numpy_periodic_step
+from soufflerie.solver.numpy_oracle import (
+    initialize_numpy,
+    initialize_wake_perturbed_numpy,
+    numpy_periodic_step,
+)
 from soufflerie.solver.obstacle import numpy_obstacle_step
 
 MIN_AVERAGING_STEPS = 4_000
@@ -401,15 +405,26 @@ class WarpChannelStepper(WarpPeriodicStepper):
 class WarpObstacleStepper(WarpChannelStepper):
     """Warp obstacle driver with deterministic host-ordered force reduction."""
 
-    def __init__(self, device: str = "cpu") -> None:
+    def __init__(self, device: str = "cpu", *, initial_seed: int | None = None) -> None:
         super().__init__(device)
+        self._initial_seed = initial_seed
         self._links: ObstacleLinks | None = None
         self._history = ForceHistoryRecorder()
 
     def initialize(self, config: DerivedLatticeConfig, mask: npt.NDArray[np.bool_]) -> object:
         self._links = enumerate_obstacle_links(mask)
         self._history = ForceHistoryRecorder()
-        return super().initialize(config, mask)
+        if self._initial_seed is None:
+            return super().initialize(config, mask)
+        channel_mask = mask.copy()
+        channel_mask[0, :] = True
+        channel_mask[-1, :] = True
+        initial = initialize_wake_perturbed_numpy(
+            config,
+            channel_mask,
+            seed=self._initial_seed,
+        )
+        return self._adapter.from_numpy(initial.f, config)
 
     def advance(
         self,

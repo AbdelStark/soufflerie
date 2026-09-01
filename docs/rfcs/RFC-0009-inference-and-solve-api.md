@@ -76,7 +76,7 @@ class PredictionResponse(BaseModel):
     request_ms: float
 ```
 
-The NPZ contains float32 `u`, `v`, `rho`, float32 normalized SDF, and uint8 mask at `[128,256]` with `allow_pickle=False`. The PNG is the canonical three-panel velocity magnitude, pressure proxy, and vorticity rendering from RFC-0010. Payload encoding refuses a combined response over 2 MiB.
+The NPZ contains float32 `u`, `v`, `rho`, float32 normalized SDF, and uint8 mask at `[320,256]` with `allow_pickle=False`. The PNG is the canonical three-panel velocity magnitude, pressure proxy, and vorticity rendering from RFC-0010. Payload encoding refuses a combined response over 4 MiB.
 
 Prediction flow is validate -> derive geometry -> queue admission -> preprocess -> forward -> de-normalize -> field Cd/metrics -> deterministic render/encode -> response. One loaded `ModelBundle` instance is read-only. A bounded worker semaphore serializes GPU forward unless profiling proves safe configured concurrency; queue capacity defaults to eight. Queue wait contributes to `request_ms` but not `inference_ms`. No automatic device fallback occurs after startup.
 
@@ -130,7 +130,7 @@ They support bidirectional communication but the client only needs ordered serve
 
 ### Object-store URLs instead of embedded payloads
 
-They reduce response size but require signed URL lifecycle/CORS and expose an additional trust boundary. v0.1 bounded fields fit the 2 MiB response budget.
+They reduce response size but require signed URL lifecycle/CORS and expose an additional trust boundary. v0.1 bounded fields fit the 4 MiB response budget.
 
 ### Reject serving a red model
 

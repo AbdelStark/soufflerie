@@ -227,6 +227,9 @@ def test_stubbed_entrypoint_imports_reuse_the_single_shared_policy(
     assert list(inspect.signature(solve_module.summarize_run_remote.function).parameters) == [
         "reference"
     ]
+    assert list(
+        inspect.signature(solve_module.summarize_cylinder_run_remote.function).parameters
+    ) == ["reference"]
     assert list(inspect.signature(sweep_module.stage_sweep_request_remote.function).parameters) == [
         "request_json"
     ]
@@ -261,6 +264,13 @@ def test_stubbed_entrypoint_imports_reuse_the_single_shared_policy(
         {
             "image": app_module.image,
             "gpu": PRIMARY_GPU,
+            "volumes": {VOLUME_MOUNT: app_module.volume},
+            "timeout": SOLVE_TIMEOUT_SECONDS,
+            "max_containers": SMOKE_MAX_CONTAINERS,
+            "retries": REMOTE_RETRIES,
+        },
+        {
+            "image": app_module.image,
             "volumes": {VOLUME_MOUNT: app_module.volume},
             "timeout": SOLVE_TIMEOUT_SECONDS,
             "max_containers": SMOKE_MAX_CONTAINERS,

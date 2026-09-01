@@ -26,7 +26,7 @@ silently casting or repairing them.
 ## Lattice derivation and preflight
 
 `derive_lattice(case)` maps `CaseConfig` to `DerivedLatticeConfig`. The
-unscaled reference diameter is `D_lu = 0.125 * ny`, the diagnostic sample
+unscaled reference diameter is `D_lu = ny / 20`, the diagnostic sample
 interval is 10 steps, and the inlet ramp is capped at 2,000 warm-up steps.
 The exact derived quantities are:
 

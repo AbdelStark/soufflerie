@@ -149,25 +149,64 @@ def _readonly(array: npt.NDArray[Any], *, dtype: np.dtype[Any]) -> npt.NDArray[A
     return result
 
 
-def _area_average(array: Float32Array) -> Float32Array:
-    validate_array(array, name="mean_field", dtype=np.dtype(np.float32), shape=SOLVER_SHAPE)
-    averaged = (
-        array.astype(np.float64)
-        .reshape(
-            OUTPUT_GRID_NY,
-            2,
-            OUTPUT_GRID_NX,
-            2,
+def _area_resample_axis(
+    array: npt.NDArray[np.float64],
+    *,
+    output_size: int,
+    axis: int,
+) -> npt.NDArray[np.float64]:
+    """Conservatively reduce one cell-centered axis in a fixed summation order."""
+
+    moved = np.moveaxis(array, axis, 0)
+    input_size = moved.shape[0]
+    if input_size < output_size:
+        raise ArtifactIntegrityError(
+            "RUN-1 SHAPE: solver fields must not be smaller than the persisted grid"
         )
-        .mean(axis=(1, 3), dtype=np.float64)
+    bin_width = input_size / output_size
+    reduced = np.empty((output_size, *moved.shape[1:]), dtype=np.float64)
+    for output_index in range(output_size):
+        start = output_index * input_size / output_size
+        stop = (output_index + 1) * input_size / output_size
+        first = int(np.floor(start))
+        last = int(np.ceil(stop))
+        indices = np.arange(first, last, dtype=np.float64)
+        weights = np.minimum(indices + 1.0, stop) - np.maximum(indices, start)
+        reduced[output_index] = (
+            np.tensordot(
+                weights,
+                moved[first:last],
+                axes=(0, 0),
+            )
+            / bin_width
+        )
+    return np.moveaxis(reduced, 0, axis)
+
+
+def _area_average(array: Float32Array) -> Float32Array:
+    validate_array(array, name="mean_field", dtype=np.dtype(np.float32), ndim=2)
+    averaged = _area_resample_axis(
+        array.astype(np.float64),
+        output_size=OUTPUT_GRID_NY,
+        axis=0,
+    )
+    averaged = _area_resample_axis(
+        averaged,
+        output_size=OUTPUT_GRID_NX,
+        axis=1,
     )
     return cast(Float32Array, np.ascontiguousarray(averaged, dtype=np.float32))
 
 
 def _nearest_center_mask(mask: npt.NDArray[np.bool_]) -> UInt8Array:
-    validate_array(mask, name="obstacle_mask", dtype=np.dtype(np.bool_), shape=SOLVER_SHAPE)
-    y_indices = np.rint(np.linspace(0, SOLVER_SHAPE[0] - 1, OUTPUT_GRID_NY)).astype(np.int64)
-    x_indices = np.rint(np.linspace(0, SOLVER_SHAPE[1] - 1, OUTPUT_GRID_NX)).astype(np.int64)
+    validate_array(mask, name="obstacle_mask", dtype=np.dtype(np.bool_), ndim=2, finite=False)
+    ny, nx = mask.shape
+    if ny < OUTPUT_GRID_NY or nx < OUTPUT_GRID_NX:
+        raise ArtifactIntegrityError(
+            "RUN-1 SHAPE: solver fields must not be smaller than the persisted grid"
+        )
+    y_indices = np.rint(np.linspace(0, ny - 1, OUTPUT_GRID_NY)).astype(np.int64)
+    x_indices = np.rint(np.linspace(0, nx - 1, OUTPUT_GRID_NX)).astype(np.int64)
     sampled = mask[np.ix_(y_indices, x_indices)]
     return cast(UInt8Array, np.ascontiguousarray(sampled, dtype=np.uint8))
 
@@ -198,10 +237,12 @@ def curate_solver_result(
         raise TypeError("result must be a SolverResult instance")
     if result.case_id != case.case_id:
         raise ArtifactIntegrityError("RUN-1 IDENTITY: solver result does not match the case")
-    if result.fields.shape != SOLVER_SHAPE or (case.ny, case.nx) != SOLVER_SHAPE:
+    if result.fields.shape != (case.ny, case.nx):
         raise ArtifactIntegrityError(
-            f"RUN-1 SHAPE: v0.1 run curation requires solver shape {SOLVER_SHAPE}"
+            "RUN-1 SHAPE: solver result fields must match the declared case grid"
         )
+    if case.ny < OUTPUT_GRID_NY or case.nx < OUTPUT_GRID_NX:
+        raise ArtifactIntegrityError(f"RUN-1 SHAPE: solver grid must be at least {OUTPUT_SHAPE}")
 
     output_grid = case.grid.model_copy(update={"nx": OUTPUT_GRID_NX, "ny": OUTPUT_GRID_NY})
     continuous = {

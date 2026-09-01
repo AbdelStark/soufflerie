@@ -54,11 +54,11 @@ soufflerie/v1/
 `fields.npz` is uncompressed or ZIP-deflated NumPy data with `allow_pickle=False` and fixed members:
 
 ```text
-u_mean        float16[128,256]
-v_mean        float16[128,256]
-rho_mean      float16[128,256]
-sdf           float16[128,256]
-obstacle_mask uint8[128,256]
+u_mean        float16[320,256]
+v_mean        float16[320,256]
+rho_mean      float16[320,256]
+sdf           float16[320,256]
+obstacle_mask uint8[320,256]
 force_steps   int64[N]
 cd_history    float32[N]
 cl_history    float32[N]

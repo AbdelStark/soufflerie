@@ -14,6 +14,7 @@ from soufflerie.solver.numpy_oracle import (
     NumpyLatticeState,
     collide_numpy,
     initialize_numpy,
+    initialize_wake_perturbed_numpy,
     numpy_periodic_step,
     pull_stream_periodic_numpy,
 )
@@ -70,6 +71,49 @@ def test_collision_preserves_an_equilibrium_state_with_fp32_tolerance() -> None:
     assert collided.dtype == np.float32
     assert collided.flags.c_contiguous
     np.testing.assert_allclose(collided, state.f, rtol=2e-6, atol=2e-8)
+
+
+def test_seeded_wake_perturbation_is_bounded_mirrored_and_rng_independent() -> None:
+    config = preflight_lattice(
+        LatticeConfig(
+            nx=96,
+            ny=48,
+            steps=100,
+            warmup_steps=20,
+            sample_interval=10,
+            inlet_velocity_lu=0.05,
+            reynolds=100.0,
+            reference_diameter_lu=8.0,
+        )
+    )
+    mask = np.zeros(config.shape, dtype=np.bool_)
+    mask[[0, -1], :] = True
+    mask[20:28, 28:36] = True
+    baseline = initialize_numpy(config, mask)
+    before = np.random.get_state()
+    even = initialize_wake_perturbed_numpy(config, mask, seed=2)
+    repeated = initialize_wake_perturbed_numpy(config, mask, seed=2)
+    odd = initialize_wake_perturbed_numpy(config, mask, seed=3)
+    after = np.random.get_state()
+
+    np.testing.assert_array_equal(even.f, repeated.f)
+    np.testing.assert_array_equal(even.velocity, repeated.velocity)
+    assert not np.array_equal(even.velocity, baseline.velocity)
+    np.testing.assert_allclose(
+        even.velocity - baseline.velocity,
+        -(odd.velocity - baseline.velocity),
+        rtol=0.0,
+        atol=5e-9,
+    )
+    np.testing.assert_array_equal(even.rho, np.ones(config.shape, dtype=np.float32))
+    np.testing.assert_array_equal(even.velocity[mask], 0.0)
+    np.testing.assert_array_equal(even.velocity[:, 0], baseline.velocity[:, 0])
+    np.testing.assert_array_equal(even.velocity[:, -1], baseline.velocity[:, -1])
+    assert float(np.max(np.linalg.norm(even.velocity, axis=-1))) < 0.055
+    assert _rng_state_equal(before, after)
+
+    with pytest.raises(DomainError, match="unsigned 64-bit"):
+        initialize_wake_perturbed_numpy(config, mask, seed=-1)
 
 
 def test_periodic_pull_stream_mapping_is_exhaustive() -> None:

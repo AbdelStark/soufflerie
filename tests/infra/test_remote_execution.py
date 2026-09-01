@@ -303,8 +303,9 @@ def test_cuda_solver_assembly_binds_fields_histories_and_runtime_provenance(
     )
 
     class FakeStepper:
-        def __init__(self, device: str) -> None:
+        def __init__(self, device: str, *, initial_seed: int) -> None:
             assert device == "cuda:0"
+            assert initial_seed == point.case.seed
 
         def force_history(self) -> object:
             return SimpleNamespace(
@@ -344,7 +345,7 @@ def test_cuda_solver_assembly_binds_fields_histories_and_runtime_provenance(
 
     result = run_solver_case(request, _build())
     assert result.case_id == point.case.case_id
-    assert result.fields.shape == (256, 512)
+    assert result.fields.shape == (640, 512)
     assert result.cd == 1.25
     assert result.cl_mean == -0.02
     assert result.strouhal == 0.18

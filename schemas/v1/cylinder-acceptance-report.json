@@ -1,0 +1,586 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "description": "Portable reference to content whose identity is independent of location.",
+      "properties": {
+        "artifact_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_type": {
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        },
+        "uri": {
+          "minLength": 1,
+          "title": "Uri",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_type",
+        "artifact_id",
+        "sha256",
+        "size_bytes",
+        "uri"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "CaseConfig": {
+      "additionalProperties": false,
+      "description": "One validated physical and numerical solver case.",
+      "properties": {
+        "inlet_velocity_lu": {
+          "exclusiveMinimum": 0.0,
+          "maximum": 0.1,
+          "title": "Inlet Velocity Lu",
+          "type": "number"
+        },
+        "nx": {
+          "minimum": 3,
+          "title": "Nx",
+          "type": "integer"
+        },
+        "ny": {
+          "minimum": 3,
+          "title": "Ny",
+          "type": "integer"
+        },
+        "reynolds": {
+          "maximum": 300.0,
+          "minimum": 40.0,
+          "title": "Reynolds",
+          "type": "number"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "seed": {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "shape": {
+          "$ref": "#/$defs/ShapeParams"
+        },
+        "steps": {
+          "minimum": 1,
+          "title": "Steps",
+          "type": "integer"
+        },
+        "warmup_steps": {
+          "minimum": 0,
+          "title": "Warmup Steps",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "shape",
+        "reynolds",
+        "nx",
+        "ny",
+        "steps",
+        "warmup_steps",
+        "inlet_velocity_lu",
+        "seed"
+      ],
+      "title": "CaseConfig",
+      "type": "object"
+    },
+    "CylinderDeterminism": {
+      "additionalProperties": false,
+      "description": "Independent-operation equality evidence for one canonical numerical case.",
+      "properties": {
+        "artifact_digests_equal": {
+          "title": "Artifact Digests Equal",
+          "type": "boolean"
+        },
+        "field_archives_equal": {
+          "title": "Field Archives Equal",
+          "type": "boolean"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "primary_operation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Primary Operation Sha256",
+          "type": "string"
+        },
+        "repeat_operation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Repeat Operation Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "primary_operation_sha256",
+        "repeat_operation_sha256",
+        "artifact_digests_equal",
+        "field_archives_equal",
+        "passed"
+      ],
+      "title": "CylinderDeterminism",
+      "type": "object"
+    },
+    "CylinderGridSensitivity": {
+      "additionalProperties": false,
+      "description": "Three-grid observations without inventing a new reference tolerance.",
+      "properties": {
+        "all_grids_periodic_and_mass_stable": {
+          "title": "All Grids Periodic And Mass Stable",
+          "type": "boolean"
+        },
+        "canonical_to_fine_cd_abs_change": {
+          "minimum": 0.0,
+          "title": "Canonical To Fine Cd Abs Change",
+          "type": "number"
+        },
+        "canonical_to_fine_strouhal_abs_change": {
+          "minimum": 0.0,
+          "title": "Canonical To Fine Strouhal Abs Change",
+          "type": "number"
+        },
+        "cd_change_contracts": {
+          "title": "Cd Change Contracts",
+          "type": "boolean"
+        },
+        "coarse_to_canonical_cd_abs_change": {
+          "minimum": 0.0,
+          "title": "Coarse To Canonical Cd Abs Change",
+          "type": "number"
+        },
+        "coarse_to_canonical_strouhal_abs_change": {
+          "minimum": 0.0,
+          "title": "Coarse To Canonical Strouhal Abs Change",
+          "type": "number"
+        },
+        "normalized_domain_preserved": {
+          "const": true,
+          "default": true,
+          "title": "Normalized Domain Preserved",
+          "type": "boolean"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "scales": {
+          "default": [
+            0.75,
+            1.0,
+            1.25
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Scales",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "strouhal_change_contracts": {
+          "title": "Strouhal Change Contracts",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "coarse_to_canonical_cd_abs_change",
+        "canonical_to_fine_cd_abs_change",
+        "coarse_to_canonical_strouhal_abs_change",
+        "canonical_to_fine_strouhal_abs_change",
+        "cd_change_contracts",
+        "strouhal_change_contracts",
+        "all_grids_periodic_and_mass_stable",
+        "passed"
+      ],
+      "title": "CylinderGridSensitivity",
+      "type": "object"
+    },
+    "CylinderRunEvidence": {
+      "additionalProperties": false,
+      "description": "Small verified projection of one committed remote run artifact.",
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "case": {
+          "$ref": "#/$defs/CaseConfig"
+        },
+        "cd": {
+          "title": "Cd",
+          "type": "number"
+        },
+        "cd_reference_passed": {
+          "title": "Cd Reference Passed",
+          "type": "boolean"
+        },
+        "cl_mean": {
+          "title": "Cl Mean",
+          "type": "number"
+        },
+        "config_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Config Sha256",
+          "type": "string"
+        },
+        "device_class": {
+          "minLength": 1,
+          "title": "Device Class",
+          "type": "string"
+        },
+        "diagnostics_converged": {
+          "const": true,
+          "default": true,
+          "title": "Diagnostics Converged",
+          "type": "boolean"
+        },
+        "diagnostics_valid": {
+          "const": true,
+          "default": true,
+          "title": "Diagnostics Valid",
+          "type": "boolean"
+        },
+        "dtype_policy": {
+          "minLength": 1,
+          "title": "Dtype Policy",
+          "type": "string"
+        },
+        "evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Sha256",
+          "type": "string"
+        },
+        "fields_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Fields Sha256",
+          "type": "string"
+        },
+        "gpu_seconds": {
+          "minimum": 0.0,
+          "title": "Gpu Seconds",
+          "type": "number"
+        },
+        "lift_peak_to_peak": {
+          "minimum": 0.0,
+          "title": "Lift Peak To Peak",
+          "type": "number"
+        },
+        "lift_rms": {
+          "minimum": 0.0,
+          "title": "Lift Rms",
+          "type": "number"
+        },
+        "lock_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Lock Sha256",
+          "type": "string"
+        },
+        "mass_drift_ratio": {
+          "minimum": 0.0,
+          "title": "Mass Drift Ratio",
+          "type": "number"
+        },
+        "mass_passed": {
+          "title": "Mass Passed",
+          "type": "boolean"
+        },
+        "observed_duration_steps": {
+          "minimum": 1,
+          "title": "Observed Duration Steps",
+          "type": "integer"
+        },
+        "periodic_lift_passed": {
+          "title": "Periodic Lift Passed",
+          "type": "boolean"
+        },
+        "resolved_lift_cycles": {
+          "minimum": 0.0,
+          "title": "Resolved Lift Cycles",
+          "type": "number"
+        },
+        "sample_count": {
+          "minimum": 4,
+          "title": "Sample Count",
+          "type": "integer"
+        },
+        "sample_interval_steps": {
+          "minimum": 1,
+          "title": "Sample Interval Steps",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "source_revision": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Source Revision",
+          "type": "string"
+        },
+        "strouhal": {
+          "exclusiveMinimum": 0.0,
+          "title": "Strouhal",
+          "type": "number"
+        },
+        "strouhal_reference_passed": {
+          "title": "Strouhal Reference Passed",
+          "type": "boolean"
+        },
+        "wall_seconds": {
+          "minimum": 0.0,
+          "title": "Wall Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "artifact",
+        "case",
+        "config_sha256",
+        "fields_sha256",
+        "source_revision",
+        "lock_sha256",
+        "device_class",
+        "dtype_policy",
+        "cd",
+        "cl_mean",
+        "strouhal",
+        "mass_drift_ratio",
+        "sample_count",
+        "sample_interval_steps",
+        "observed_duration_steps",
+        "resolved_lift_cycles",
+        "lift_rms",
+        "lift_peak_to_peak",
+        "cd_reference_passed",
+        "strouhal_reference_passed",
+        "periodic_lift_passed",
+        "mass_passed",
+        "wall_seconds",
+        "gpu_seconds",
+        "evidence_sha256"
+      ],
+      "title": "CylinderRunEvidence",
+      "type": "object"
+    },
+    "CylinderThresholds": {
+      "additionalProperties": false,
+      "description": "Immutable numerical-oracle thresholds copied from the testing specification.",
+      "properties": {
+        "cd_max": {
+          "default": 1.5525,
+          "title": "Cd Max",
+          "type": "number"
+        },
+        "cd_min": {
+          "default": 1.1475,
+          "title": "Cd Min",
+          "type": "number"
+        },
+        "mass_drift_max_exclusive": {
+          "default": 0.001,
+          "title": "Mass Drift Max Exclusive",
+          "type": "number"
+        },
+        "resolved_lift_cycles_min": {
+          "default": 8.0,
+          "title": "Resolved Lift Cycles Min",
+          "type": "number"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "strouhal_max": {
+          "default": 0.19,
+          "title": "Strouhal Max",
+          "type": "number"
+        },
+        "strouhal_min": {
+          "default": 0.15,
+          "title": "Strouhal Min",
+          "type": "number"
+        }
+      },
+      "title": "CylinderThresholds",
+      "type": "object"
+    },
+    "ShapeParams": {
+      "additionalProperties": false,
+      "description": "Ellipse parameters at the public degree/lattice-unit boundary.",
+      "properties": {
+        "aspect_ratio": {
+          "maximum": 1.0,
+          "minimum": 0.5,
+          "title": "Aspect Ratio",
+          "type": "number"
+        },
+        "rotation_deg": {
+          "maximum": 30.0,
+          "minimum": 0.0,
+          "title": "Rotation Deg",
+          "type": "number"
+        },
+        "scale": {
+          "maximum": 1.25,
+          "minimum": 0.75,
+          "title": "Scale",
+          "type": "number"
+        }
+      },
+      "required": [
+        "aspect_ratio",
+        "rotation_deg",
+        "scale"
+      ],
+      "title": "ShapeParams",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/cylinder-acceptance-report.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Self-verifying checked-in report for issue #14.",
+  "properties": {
+    "canonical": {
+      "$ref": "#/$defs/CylinderRunEvidence"
+    },
+    "canonical_repeat": {
+      "$ref": "#/$defs/CylinderRunEvidence"
+    },
+    "coarse": {
+      "$ref": "#/$defs/CylinderRunEvidence"
+    },
+    "config_path": {
+      "const": "configs/cases/cylinder-re100.yaml",
+      "default": "configs/cases/cylinder-re100.yaml",
+      "title": "Config Path",
+      "type": "string"
+    },
+    "config_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Sha256",
+      "type": "string"
+    },
+    "determinism": {
+      "$ref": "#/$defs/CylinderDeterminism"
+    },
+    "device_class": {
+      "minLength": 1,
+      "title": "Device Class",
+      "type": "string"
+    },
+    "fine": {
+      "$ref": "#/$defs/CylinderRunEvidence"
+    },
+    "generation_revision": {
+      "const": "cylinder-re100-v1",
+      "default": "cylinder-re100-v1",
+      "title": "Generation Revision",
+      "type": "string"
+    },
+    "grid_sensitivity": {
+      "$ref": "#/$defs/CylinderGridSensitivity"
+    },
+    "lock_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Lock Sha256",
+      "type": "string"
+    },
+    "overall_passed": {
+      "title": "Overall Passed",
+      "type": "boolean"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Source Revision",
+      "type": "string"
+    },
+    "thresholds": {
+      "$ref": "#/$defs/CylinderThresholds"
+    },
+    "total_gpu_seconds": {
+      "minimum": 0.0,
+      "title": "Total Gpu Seconds",
+      "type": "number"
+    }
+  },
+  "required": [
+    "source_revision",
+    "lock_sha256",
+    "config_sha256",
+    "device_class",
+    "thresholds",
+    "coarse",
+    "canonical",
+    "fine",
+    "canonical_repeat",
+    "grid_sensitivity",
+    "determinism",
+    "total_gpu_seconds",
+    "overall_passed",
+    "report_sha256"
+  ],
+  "title": "CylinderAcceptanceReport",
+  "type": "object"
+}

@@ -36,8 +36,8 @@ away from the inlet edge, and strictly before the sponge. A missing zero contour
 that cannot fit raises `DomainError` with `GEO-2 CONTROL_SURFACE`; it cannot yield a misleading
 Cd.
 
-The canonical solver grid is `512 x 256` and its fixed output grid is `256 x 128`, so eight output
-cells correspond to 16 full-grid lattice units. Because the RFC uses an algebraic rather than
+The canonical solver grid is `(ny=640, nx=512)` and its fixed output grid is
+`(ny=320, nx=256)`, so eight output cells correspond to 16 full-grid lattice units. Because the RFC uses an algebraic rather than
 Euclidean SDF magnitude, `validate_geometry` recomputes the exact output-grid SDF and runs the
 same selector used by field drag. Successful `GeometryDiagnostics` retain that output control
 surface; an invalid case is rejected during preflight.

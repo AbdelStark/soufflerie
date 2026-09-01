@@ -20,10 +20,11 @@ from soufflerie.config import (
 from soufflerie.datagen import rendered_datagen_schema_documents
 from soufflerie.observability import rendered_observability_schema_documents
 from soufflerie.schemas import CaseConfig, rendered_schema_documents
+from soufflerie.solver.cylinder_acceptance import rendered_cylinder_schema_documents
 
 PROJECT_ROOT = Path(__file__).parents[2]
 EXAMPLES: Mapping[Path, type[BaseModel]] = {
-    Path("configs/cases/cylinder-re100-v1.yaml"): CaseConfig,
+    Path("configs/cases/cylinder-re100.yaml"): CaseConfig,
     Path("configs/service/demo-v1.yaml"): ServiceConfig,
     Path("configs/sweeps/mvp-v1.yaml"): SweepConfig,
     Path("configs/training/fno-v1.yaml"): TrainingConfig,
@@ -59,6 +60,7 @@ def test_all_generated_schema_documents_are_checked_in() -> None:
         **rendered_observability_schema_documents(),
         **rendered_cli_schema_documents(),
         **rendered_artifact_schema_documents(),
+        **rendered_cylinder_schema_documents(),
     }
     root = PROJECT_ROOT / "schemas" / "v1"
     assert {path.name for path in root.glob("*.json")} == set(expected)

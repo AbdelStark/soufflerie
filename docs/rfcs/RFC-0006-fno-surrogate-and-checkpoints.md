@@ -42,20 +42,20 @@ y[:,2] = ((rho-1) - mean_rho_delta_train) / std_rho_delta_train
 
 Statistics are scalar per output channel, accumulated in fp64 over training-split fluid and obstacle cells according to the stored arrays; standard deviations floor at `1e-6` with a recorded flag. No validation/test data contributes. SDF and Reynolds scaling are fixed by contract and need no fitted statistics.
 
-The input/output contract is batch-first float32 `[B,C,128,256]`. The FNO has lifting projection `2 -> 64`, four spectral blocks, 24 retained modes in each spatial dimension, hidden width 64, GELU activation, and residual pointwise `1x1` convolution per block. The projection head maps `64 -> 128 -> 3` with GELU. No dropout or batch normalization is used. Spectral weights use the framework's documented default complex initialization under the experiment seed; all resolved module arguments are serialized.
+The input/output contract is batch-first float32 `[B,C,320,256]`. The FNO has lifting projection `2 -> 64`, four spectral blocks, 24 retained modes in each spatial dimension, hidden width 64, GELU activation, and residual pointwise `1x1` convolution per block. The projection head maps `64 -> 128 -> 3` with GELU. No dropout or batch normalization is used. Spectral weights use the framework's documented default complex initialization under the experiment seed; all resolved module arguments are serialized.
 
 The Cd head applies fluid-mask-aware global mean pooling of the final latent plus the normalized four design parameters `(aspect_ratio, rotation, scale, Re)` and uses `68 -> 64 -> 32 -> 1` with GELU. The binary fluid mask derives from input SDF but is not an FNO input channel because it is exactly recoverable by sign. The model returns unmasked raw fields. Neither service nor validator zeros obstacle values; obstacle compliance remains observable.
 
 ```python
 @dataclass(frozen=True, slots=True)
 class PredictionBatch:
-    inputs: TorchFloat32Tensor      # [B,2,128,256]
-    fluid_mask: TorchBoolTensor     # [B,1,128,256]
+    inputs: TorchFloat32Tensor      # [B,2,320,256]
+    fluid_mask: TorchBoolTensor     # [B,1,320,256]
     design_params: TorchFloat32Tensor  # [B,4]
 
 @dataclass(frozen=True, slots=True)
 class PredictionBatchResult:
-    fields_normalized: TorchFloat32Tensor  # [B,3,128,256]
+    fields_normalized: TorchFloat32Tensor  # [B,3,320,256]
     cd_head: TorchFloat32Tensor            # [B]
 
 class FnoPredictor(FlowPredictor):
