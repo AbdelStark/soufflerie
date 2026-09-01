@@ -24,11 +24,11 @@ Python is constrained to `>=3.11,<3.12` for v0.1 to match the declared environme
 | Profile | Constraint | Rationale |
 |---|---|---|
 | Solver | `warp-lang==1.17.0` | Kernel/runtime API and CPU fallback |
-| ML remote | `nvidia-physicsnemo[cu12]==2.2.1`, `torch==2.13.0` | FNO/checkpoint and CUDA runtime contract |
+| ML remote | `nvidia-physicsnemo[cu12]==2.2.1`, `torch==2.10.0` | FNO/checkpoint and CUDA 12 runtime contract; later PyTorch releases require CUDA 13 and conflict with the `cu12` profile |
 | Remote operations | `modal==1.5.5` | App/image/volume API contract |
 | Service | `fastapi==0.141.1`, `gradio==6.26.0` | OpenAPI and mounted UI contract |
 | Schemas | `pydantic==2.13.5`, `pydantic-settings==2.15.0` | Strict models and settings |
-| Data | `numpy==2.4.6`, `scipy==1.17.1`, `pandas==3.0.5`, `pyarrow==25.0.1`, `PyYAML==6.0.3` | Arrays, FFT, tabulation, Parquet, strict config input |
+| Data | `numpy==2.2.6`, `scipy==1.17.1`, `pandas==2.3.3`, `pyarrow==23.0.1`, `PyYAML==6.0.3` | Arrays, FFT, tabulation, Parquet, strict config input; NumPy, pandas, and PyArrow remain below the RAPIDS ceilings required by the ML profile |
 | CLI/viz | `typer==0.27.2`, `matplotlib==3.11.1`, `imageio==2.37.4` | Installed CLI and deterministic rendering |
 | Artifact/service support | `safetensors==0.8.0`, `httpx==0.28.1`, `pillow==12.3.0`, `tensorboard==2.21.0` | Safe weights, HTTP tests, image encoding, training event compatibility |
 | Development | `pytest==9.1.1`, `pytest-cov==7.1.0`, `hypothesis==6.167.1`, `ruff==0.16.5`, `mypy==2.3.1`, `pre-commit==4.6.2` | Test, coverage, properties, formatting/lint, typing, local hooks |

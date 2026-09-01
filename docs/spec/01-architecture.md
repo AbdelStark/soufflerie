@@ -46,6 +46,27 @@ tests/               # CPU-default tests and marked remote acceptance tests
 
 The public package name is `soufflerie`. Importing `soufflerie` MUST NOT import CUDA-only, remote-execution, serving, plotting, or training packages.
 
+### Runtime profiles
+
+`pyproject.toml` is the package and direct-dependency source of truth; `uv.lock`
+records the resolved Python 3.11 environment. Base dependencies contain the
+schema, array, table, configuration, safe-artifact, and CLI primitives used by
+public CPU contracts. Optional runtimes have explicit ownership:
+
+| Extra | Owner | Import boundary |
+|---|---|---|
+| `solver` | Warp numerical adapter | Loaded only when a solver adapter is constructed |
+| `ml` | PhysicsNeMo, PyTorch, and training support | Loaded only by surrogate/training adapters |
+| `remote` | Remote execution adapter | Loaded only from `infra` operational entrypoints |
+| `serve` | HTTP and interactive service adapters | Loaded only when a service is constructed |
+| `viz` | Plot and image renderers | Loaded only by rendering call sites |
+
+The `dev` dependency group owns CPU test, lint, formatting, typing, and local
+hook tools. The `release` group owns distribution, SBOM, dependency-audit, and
+lock tooling. Package import tests run in an isolated interpreter, and a static
+AST contract rejects upward package dependencies, peer-domain coupling, and any
+domain import of root-level `infra`.
+
 <a id="dependency-direction"></a>
 ## Dependency direction
 

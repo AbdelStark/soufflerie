@@ -37,7 +37,7 @@ The repository follows [`01-architecture.md#module-map`](../spec/01-architecture
 ```toml
 [project.optional-dependencies]
 solver = ["warp-lang==1.17.0"]
-ml = ["nvidia-physicsnemo[cu12]==2.2.1", "torch==2.13.0"]
+ml = ["nvidia-physicsnemo[cu12]==2.2.1", "torch==2.10.0"]
 remote = ["modal==1.5.5"]
 serve = ["fastapi==0.141.1", "gradio==6.26.0"]
 viz = ["matplotlib==3.11.1", "imageio==2.37.4"]
