@@ -9,8 +9,8 @@ import numpy as np
 import numpy.typing as npt
 
 from soufflerie.errors import DomainError, InternalInvariantError
+from soufflerie.solver.boundaries import pull_stream_halfway_walls_numpy
 from soufflerie.solver.lattice import (
-    D2Q9_OPPOSITE,
     D2Q9_VELOCITIES,
     D2Q9_WEIGHTS,
     MAX_TAU,
@@ -201,18 +201,7 @@ def run_poiseuille_fixture(fixture: PoiseuilleFixture) -> PoiseuilleResult:
                 + forcing
             )
 
-        streamed = np.empty_like(populations)
-        for direction in range(Q):
-            stream_cx = int(D2Q9_VELOCITIES[direction, 0])
-            stream_cy = int(D2Q9_VELOCITIES[direction, 1])
-            streamed[..., direction] = np.roll(
-                post_collision[..., direction], shift=(stream_cy, stream_cx), axis=(0, 1)
-            )
-            opposite = int(D2Q9_OPPOSITE[direction])
-            if stream_cy == 1:
-                streamed[1, :, direction] = post_collision[1, :, opposite]
-            elif stream_cy == -1:
-                streamed[-2, :, direction] = post_collision[-2, :, opposite]
+        streamed = pull_stream_halfway_walls_numpy(post_collision)
         streamed[0] = populations[0]
         streamed[-1] = populations[-1]
         populations = streamed
