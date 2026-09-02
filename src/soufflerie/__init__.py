@@ -25,6 +25,7 @@ from soufflerie.config import (
     load_config,
     parse_config,
 )
+from soufflerie.datagen.manifest import DatasetManifest, ManifestRow, build_manifest
 from soufflerie.errors import ArtifactIntegrityError, SchemaVersionError, SoufflerieError
 from soufflerie.geometry import (
     GeometryDiagnostics,
@@ -71,6 +72,7 @@ __all__ = [
     "ArtifactRef",
     "CaseConfig",
     "CompletedLatticeRun",
+    "DatasetManifest",
     "DerivedLatticeConfig",
     "FlowFields",
     "GeometryDiagnostics",
@@ -78,6 +80,7 @@ __all__ = [
     "LatticeConfig",
     "LatticeState",
     "LineageNode",
+    "ManifestRow",
     "Provenance",
     "Range",
     "ReaderLimits",
@@ -95,6 +98,7 @@ __all__ = [
     "ValidationConfig",
     "WarpKernelAdapter",
     "__version__",
+    "build_manifest",
     "canonical_json",
     "canonical_sha256",
     "config_digest",

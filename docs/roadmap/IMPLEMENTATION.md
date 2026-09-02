@@ -35,7 +35,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #15 | [datagen: implement deterministic LHS design and frozen splits](https://github.com/AbdelStark/soufflerie/issues/15) | datagen | p0 | m | RFC-0004 | closed |
 | #16 | [datagen: implement safe run codecs and local artifact store](https://github.com/AbdelStark/soufflerie/issues/16) | datagen | p0 | l | RFC-0005 | closed |
 | #17 | [datagen: implement leased resumable sweep state](https://github.com/AbdelStark/soufflerie/issues/17) | datagen | p0 | l | RFC-0005 | closed |
-| #18 | [datagen: build and validate the immutable dataset manifest](https://github.com/AbdelStark/soufflerie/issues/18) | datagen | p0 | l | RFC-0005 | open |
+| #18 | [datagen: build and validate the immutable dataset manifest](https://github.com/AbdelStark/soufflerie/issues/18) | datagen | p0 | l | RFC-0005 | closed |
 | #19 | [datagen: produce the canonical 1,000-case dataset](https://github.com/AbdelStark/soufflerie/issues/19) | datagen | p0 | l | RFC-0005, RFC-0011 | open |
 | #20 | [surrogate: implement leakage-safe preprocessing statistics](https://github.com/AbdelStark/soufflerie/issues/20) | surrogate | p0 | m | RFC-0006 | open |
 | #21 | [surrogate: implement the fixed FNO and drag head](https://github.com/AbdelStark/soufflerie/issues/21) | surrogate | p0 | l | RFC-0006 | open |

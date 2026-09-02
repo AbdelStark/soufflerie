@@ -145,7 +145,6 @@ def test_missing_optional_extra_is_typed_and_does_not_traceback(
 @pytest.mark.parametrize(
     "arguments",
     [
-        ["dataset", "validate", "--manifest", "manifest.json"],
         ["model", "inspect", "--bundle", "bundle"],
     ],
 )
@@ -159,6 +158,20 @@ def test_unavailable_domain_backend_fails_explicitly(
     record = CliError.model_validate(json.loads(result.stderr))
     assert record.error.code == "DEPENDENCY_UNAVAILABLE"
     assert "backend is not available in this build" in record.error.message
+
+
+def test_dataset_validation_rejects_a_missing_manifest_as_integrity_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(cli, "_backend_factory", cli.DefaultCliBackend)
+    result = RUNNER.invoke(
+        cli.app,
+        ["dataset", "validate", "--manifest", "missing.parquet"],
+    )
+
+    assert result.exit_code == 4
+    record = CliError.model_validate(json.loads(result.stderr))
+    assert record.error.code == "ARTIFACT_INTEGRITY"
 
 
 def test_click_usage_errors_remain_on_stderr_with_exit_2() -> None:

@@ -483,7 +483,11 @@ def _distribution(values: npt.NDArray[np.float64]) -> DistributionSummary:
     )
 
 
-def _design_digest(points: Sequence[DesignPoint]) -> str:
+def design_sha256(points: Sequence[DesignPoint]) -> str:
+    """Hash the canonical ordered physical design and its presentation IDs."""
+
+    if len(points) != DESIGN_SAMPLE_COUNT:
+        raise ValueError(f"design digest requires exactly {DESIGN_SAMPLE_COUNT} points")
     payload: list[JsonValue] = []
     for point in sorted(points, key=lambda item: item.index):
         payload.append(
@@ -496,7 +500,11 @@ def _design_digest(points: Sequence[DesignPoint]) -> str:
     return canonical_sha256(payload)
 
 
-def _split_digest(points: Sequence[DesignPoint]) -> str:
+def split_sha256(points: Sequence[DesignPoint]) -> str:
+    """Hash design-level split membership independent of execution order."""
+
+    if len(points) != DESIGN_SAMPLE_COUNT:
+        raise ValueError(f"split digest requires exactly {DESIGN_SAMPLE_COUNT} points")
     payload: list[JsonValue] = [
         {"design_id": point.design_id, "split": point.split}
         for point in sorted(points, key=lambda item: item.design_id)
@@ -541,8 +549,8 @@ def generate_design_summary(config: SweepConfig) -> DesignSummary:
         selected_candidate_index=selection.selected_index,
         selected_minimum_distance=selection.minimum_distances[selection.selected_index],
         config_sha256=config.config_digest,
-        design_sha256=_design_digest(points),
-        split_sha256=_split_digest(points),
+        design_sha256=design_sha256(points),
+        split_sha256=split_sha256(points),
         split_counts=DesignSplitCounts(),
         dimension_statistics=DesignDimensionSummaries(
             aspect_ratio=_distribution(physical[:, 0]),
@@ -575,7 +583,9 @@ __all__ = [
     "UnsplitDesignPoint",
     "assign_splits",
     "case_config_for_point",
+    "design_sha256",
     "generate_design_summary",
     "render_design_summary",
     "sample_design",
+    "split_sha256",
 ]

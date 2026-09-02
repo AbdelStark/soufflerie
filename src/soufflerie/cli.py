@@ -31,7 +31,7 @@ from soufflerie.errors import (
     ValidationGateError,
 )
 from soufflerie.observability import Redactor, safe_exception_fields
-from soufflerie.schemas import StrictFrozenModel, VersionedModel
+from soufflerie.schemas import ContentId, StrictFrozenModel, VersionedModel
 
 P = ParamSpec("P")
 
@@ -57,8 +57,8 @@ class DatasetValidationResult(VersionedModel):
 
     valid: Literal[True] = True
     manifest: Annotated[str, Field(min_length=1, max_length=4096)]
-    dataset_id: Annotated[str, Field(min_length=1, max_length=128)]
-    case_count: int = Field(ge=0)
+    dataset_id: ContentId
+    case_count: Literal[1000] = 1000
 
 
 class ModelInspectionResult(VersionedModel):
@@ -155,8 +155,14 @@ class DefaultCliBackend:
         raise _backend_not_implemented("solve")
 
     def validate_dataset(self, manifest: Path) -> DatasetValidationResult:
-        del manifest
-        raise _backend_not_implemented("dataset validation")
+        from soufflerie.datagen.manifest import load_manifest
+
+        validated = load_manifest(manifest)
+        return DatasetValidationResult(
+            manifest=str(manifest),
+            dataset_id=validated.metadata.dataset_id,
+            case_count=1000,
+        )
 
     def inspect_model(self, bundle: Path) -> ModelInspectionResult:
         del bundle

@@ -28,9 +28,7 @@ class FakeBackend:
 
     def validate_dataset(self, manifest: Path) -> DatasetValidationResult:
         self.calls.append(("dataset", manifest))
-        return DatasetValidationResult(
-            manifest=str(manifest), dataset_id="dataset-abc", case_count=1000
-        )
+        return DatasetValidationResult(manifest=str(manifest), dataset_id="d" * 20, case_count=1000)
 
     def inspect_model(self, bundle: Path) -> ModelInspectionResult:
         self.calls.append(("model", bundle))
@@ -117,7 +115,7 @@ def test_dataset_and_model_json_are_schema_valid_and_stdout_only(
     dataset = RUNNER.invoke(app, ["dataset", "validate", "--manifest", str(manifest), "--json"])
     assert dataset.exit_code == 0
     dataset_result = DatasetValidationResult.model_validate(json.loads(dataset.stdout))
-    assert dataset_result.dataset_id == "dataset-abc"
+    assert dataset_result.dataset_id == "d" * 20
     assert dataset_result.case_count == 1000
     assert dataset.stderr == ""
 
@@ -127,6 +125,28 @@ def test_dataset_and_model_json_are_schema_valid_and_stdout_only(
     assert model_result.model_id == "model-abc"
     assert model_result.architecture == "fno-v1"
     assert model.stderr == ""
+
+
+def test_default_backend_validates_the_checked_parquet_fixture(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(cli, "_backend_factory", cli.DefaultCliBackend)
+    result = RUNNER.invoke(
+        app,
+        [
+            "dataset",
+            "validate",
+            "--manifest",
+            "tests/fixtures/dataset/manifest.parquet",
+            "--json",
+        ],
+    )
+
+    assert result.exit_code == 0
+    validated = DatasetValidationResult.model_validate(json.loads(result.stdout))
+    assert validated.dataset_id == "83d400f135848978b152"
+    assert validated.case_count == 1_000
+    assert result.stderr == ""
 
 
 def test_thin_commands_forward_typed_arguments_and_emit_human_stdout(

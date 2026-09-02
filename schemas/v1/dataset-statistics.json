@@ -1,0 +1,222 @@
+{
+  "$defs": {
+    "DatasetColumnStatistics": {
+      "additionalProperties": false,
+      "properties": {
+        "aspect_ratio": {
+          "$ref": "#/$defs/NumericColumnStatistics"
+        },
+        "bytes": {
+          "$ref": "#/$defs/NumericColumnStatistics"
+        },
+        "cd": {
+          "$ref": "#/$defs/NumericColumnStatistics"
+        },
+        "cl_mean": {
+          "$ref": "#/$defs/NumericColumnStatistics"
+        },
+        "reynolds": {
+          "$ref": "#/$defs/NumericColumnStatistics"
+        },
+        "rotation_deg": {
+          "$ref": "#/$defs/NumericColumnStatistics"
+        },
+        "scale": {
+          "$ref": "#/$defs/NumericColumnStatistics"
+        },
+        "strouhal": {
+          "$ref": "#/$defs/NumericColumnStatistics"
+        }
+      },
+      "required": [
+        "aspect_ratio",
+        "rotation_deg",
+        "scale",
+        "reynolds",
+        "bytes",
+        "cd",
+        "cl_mean",
+        "strouhal"
+      ],
+      "title": "DatasetColumnStatistics",
+      "type": "object"
+    },
+    "ManifestSplitCounts": {
+      "additionalProperties": false,
+      "properties": {
+        "test": {
+          "const": 200,
+          "default": 200,
+          "title": "Test",
+          "type": "integer"
+        },
+        "train": {
+          "const": 600,
+          "default": 600,
+          "title": "Train",
+          "type": "integer"
+        },
+        "validation": {
+          "const": 200,
+          "default": 200,
+          "title": "Validation",
+          "type": "integer"
+        }
+      },
+      "title": "ManifestSplitCounts",
+      "type": "object"
+    },
+    "NumericColumnStatistics": {
+      "additionalProperties": false,
+      "description": "Finite fp64 summary for one manifest scalar column.",
+      "properties": {
+        "count": {
+          "maximum": 1000,
+          "minimum": 0,
+          "title": "Count",
+          "type": "integer"
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum"
+        },
+        "mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mean"
+        },
+        "minimum": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum"
+        },
+        "null_count": {
+          "maximum": 1000,
+          "minimum": 0,
+          "title": "Null Count",
+          "type": "integer"
+        },
+        "q05": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Q05"
+        },
+        "q50": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Q50"
+        },
+        "q95": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Q95"
+        },
+        "standard_deviation": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Standard Deviation"
+        }
+      },
+      "required": [
+        "count",
+        "null_count"
+      ],
+      "title": "NumericColumnStatistics",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/dataset-statistics.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Content-derived statistics for one complete manifest.",
+  "properties": {
+    "case_count": {
+      "const": 1000,
+      "default": 1000,
+      "title": "Case Count",
+      "type": "integer"
+    },
+    "columns": {
+      "$ref": "#/$defs/DatasetColumnStatistics"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "split_counts": {
+      "$ref": "#/$defs/ManifestSplitCounts"
+    },
+    "total_payload_bytes": {
+      "exclusiveMaximum": 2147483648,
+      "minimum": 1,
+      "title": "Total Payload Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "dataset_id",
+    "split_counts",
+    "total_payload_bytes",
+    "columns"
+  ],
+  "title": "DatasetStatistics",
+  "type": "object"
+}
