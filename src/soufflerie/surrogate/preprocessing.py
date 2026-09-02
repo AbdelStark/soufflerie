@@ -699,6 +699,46 @@ class PredictionBatch:
             raise ArtifactIntegrityError("PRE-5 TENSOR: batch tensors must share one device")
 
 
+@dataclass(frozen=True, slots=True)
+class PredictionBatchResult:
+    """Strict raw normalized fields and learned drag returned by a predictor."""
+
+    fields_normalized: TensorLike
+    cd_head: TensorLike
+
+    def __post_init__(self) -> None:
+        fields_shape = _tensor_shape(self.fields_normalized, name="fields_normalized")
+        if len(fields_shape) != 4:
+            raise ArtifactIntegrityError(
+                "PRE-6 RESULT: fields_normalized must be batch-first rank four"
+            )
+        batch_size = fields_shape[0]
+        devices = {
+            _validate_tensor(
+                self.fields_normalized,
+                name="fields_normalized",
+                dtype="torch.float32",
+                shape=(batch_size, 3, *MODEL_SPATIAL_SHAPE),
+                finite=True,
+            ),
+            _validate_tensor(
+                self.cd_head,
+                name="cd_head",
+                dtype="torch.float32",
+                shape=(batch_size,),
+                finite=True,
+            ),
+        }
+        if len(devices) != 1:
+            raise ArtifactIntegrityError("PRE-6 RESULT: result tensors must share one device")
+
+
+class FlowPredictor(Protocol):
+    """Framework-neutral structural contract shared by learned and baseline predictors."""
+
+    def predict(self, batch: PredictionBatch) -> PredictionBatchResult: ...
+
+
 def validate_prediction_batch(batch: PredictionBatch, *, expected_device: str) -> None:
     """Fail if an already-validated batch is not on the explicitly requested device."""
 
@@ -764,9 +804,11 @@ __all__ = [
     "MODEL_REFERENCE_DIAMETER_LU",
     "MODEL_SPATIAL_SHAPE",
     "STANDARD_DEVIATION_FLOOR",
+    "FlowPredictor",
     "OutputChannelStatistics",
     "OutputNormalizationStatistics",
     "PredictionBatch",
+    "PredictionBatchResult",
     "PreprocessedBatch",
     "PreprocessedSample",
     "PreprocessingSample",
