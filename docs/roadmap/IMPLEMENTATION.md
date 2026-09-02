@@ -36,7 +36,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #16 | [datagen: implement safe run codecs and local artifact store](https://github.com/AbdelStark/soufflerie/issues/16) | datagen | p0 | l | RFC-0005 | closed |
 | #17 | [datagen: implement leased resumable sweep state](https://github.com/AbdelStark/soufflerie/issues/17) | datagen | p0 | l | RFC-0005 | closed |
 | #18 | [datagen: build and validate the immutable dataset manifest](https://github.com/AbdelStark/soufflerie/issues/18) | datagen | p0 | l | RFC-0005 | closed |
-| #19 | [datagen: produce the canonical 1,000-case dataset](https://github.com/AbdelStark/soufflerie/issues/19) | datagen | p0 | l | RFC-0005, RFC-0011 | open |
+| #19 | [datagen: produce the canonical 1,000-case dataset](https://github.com/AbdelStark/soufflerie/issues/19) | datagen | p0 | l | RFC-0005, RFC-0011 | closed |
 | #20 | [surrogate: implement leakage-safe preprocessing statistics](https://github.com/AbdelStark/soufflerie/issues/20) | surrogate | p0 | m | RFC-0006 | open |
 | #21 | [surrogate: implement the fixed FNO and drag head](https://github.com/AbdelStark/soufflerie/issues/21) | surrogate | p0 | l | RFC-0006 | open |
 | #22 | [surrogate: implement safe model bundle export and load](https://github.com/AbdelStark/soufflerie/issues/22) | surrogate | p0 | l | RFC-0006 | open |
