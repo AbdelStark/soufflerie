@@ -123,7 +123,7 @@ class ArrayDescriptor(VersionedModel):
     """JSON-native contract for one persisted array member."""
 
     dtype: ArrayDType
-    shape: tuple[int, ...] = Field(min_length=1, max_length=4)
+    shape: tuple[int, ...] = Field(min_length=1, max_length=5)
     unit: ArrayUnit
     order: Literal["C"] = "C"
     finite: Literal[True] = True

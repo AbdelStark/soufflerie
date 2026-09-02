@@ -1,0 +1,950 @@
+{
+  "$defs": {
+    "CompatibilityRange": {
+      "additionalProperties": false,
+      "description": "Closed runtime range for the v0.1 FNO bundle format.",
+      "properties": {
+        "maximum_bundle_schema": {
+          "const": 1,
+          "default": 1,
+          "title": "Maximum Bundle Schema",
+          "type": "integer"
+        },
+        "maximum_python_exclusive": {
+          "default": [
+            3,
+            12
+          ],
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "Maximum Python Exclusive",
+          "type": "array"
+        },
+        "maximum_soufflerie_exclusive": {
+          "default": "0.2.0",
+          "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)$",
+          "title": "Maximum Soufflerie Exclusive",
+          "type": "string"
+        },
+        "minimum_bundle_schema": {
+          "const": 1,
+          "default": 1,
+          "title": "Minimum Bundle Schema",
+          "type": "integer"
+        },
+        "minimum_python": {
+          "default": [
+            3,
+            11
+          ],
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "Minimum Python",
+          "type": "array"
+        },
+        "minimum_soufflerie": {
+          "default": "0.1.0",
+          "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)$",
+          "title": "Minimum Soufflerie",
+          "type": "string"
+        },
+        "physicsnemo": {
+          "const": "2.2.1",
+          "default": "2.2.1",
+          "title": "Physicsnemo",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "torch": {
+          "const": "2.10.0",
+          "default": "2.10.0",
+          "title": "Torch",
+          "type": "string"
+        }
+      },
+      "title": "CompatibilityRange",
+      "type": "object"
+    },
+    "ModelCardGate": {
+      "additionalProperties": false,
+      "description": "One required validation gate rendered without recomputation.",
+      "properties": {
+        "evidence_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence Sha256"
+        },
+        "measured": {
+          "anyOf": [
+            {
+              "pattern": "^[^\\r\\n|]{1,240}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Measured"
+        },
+        "name": {
+          "pattern": "^[^\\r\\n|]{1,240}$",
+          "title": "Name",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "not_evaluated",
+            "green",
+            "red"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "threshold": {
+          "pattern": "^[^\\r\\n|]{1,240}$",
+          "title": "Threshold",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "status",
+        "threshold"
+      ],
+      "title": "ModelCardGate",
+      "type": "object"
+    },
+    "ModelCardMetadata": {
+      "additionalProperties": false,
+      "description": "Bounded factual content rendered into the immutable model card.",
+      "properties": {
+        "display_name": {
+          "pattern": "^[^\\r\\n|]{1,240}$",
+          "title": "Display Name",
+          "type": "string"
+        },
+        "gates": {
+          "items": {
+            "$ref": "#/$defs/ModelCardGate"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Gates",
+          "type": "array"
+        },
+        "intended_uses": {
+          "items": {
+            "pattern": "^[^\\r\\n|]{1,240}$",
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Intended Uses",
+          "type": "array"
+        },
+        "license": {
+          "const": "Apache-2.0",
+          "default": "Apache-2.0",
+          "title": "License",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "pattern": "^[^\\r\\n|]{1,240}$",
+            "type": "string"
+          },
+          "maxItems": 12,
+          "minItems": 1,
+          "title": "Limitations",
+          "type": "array"
+        },
+        "summary": {
+          "pattern": "^[^\\r\\n|]{1,240}$",
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "display_name",
+        "summary",
+        "intended_uses",
+        "limitations",
+        "gates"
+      ],
+      "title": "ModelCardMetadata",
+      "type": "object"
+    },
+    "ModelTensorDescriptor": {
+      "additionalProperties": false,
+      "description": "One exact float32 state tensor and its pre-allocation byte count.",
+      "properties": {
+        "dtype": {
+          "const": "float32",
+          "default": "float32",
+          "title": "Dtype",
+          "type": "string"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9_.]{0,127}$",
+          "title": "Name",
+          "type": "string"
+        },
+        "nbytes": {
+          "maximum": 25165824,
+          "minimum": 1,
+          "title": "Nbytes",
+          "type": "integer"
+        },
+        "shape": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Shape",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "shape",
+        "nbytes"
+      ],
+      "title": "ModelTensorDescriptor",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/model-bundle.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Commit-marker-bound identity and member contract for one deployable FNO.",
+  "properties": {
+    "architecture": {
+      "const": "fno2d-v1",
+      "default": "fno2d-v1",
+      "title": "Architecture",
+      "type": "string"
+    },
+    "architecture_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Architecture Sha256",
+      "type": "string"
+    },
+    "code_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Code Revision",
+      "type": "string"
+    },
+    "compatibility": {
+      "$ref": "#/$defs/CompatibilityRange"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "dataset_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dataset Sha256",
+      "type": "string"
+    },
+    "experiment_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "lock_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Lock Digest",
+      "type": "string"
+    },
+    "max_weights_file_bytes": {
+      "const": 201326592,
+      "default": 201326592,
+      "maximum": 201326592,
+      "minimum": 201326592,
+      "title": "Max Weights File Bytes",
+      "type": "integer"
+    },
+    "model_card": {
+      "$ref": "#/$defs/ModelCardMetadata"
+    },
+    "model_card_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Model Card Sha256",
+      "type": "string"
+    },
+    "model_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "model_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Model Sha256",
+      "type": "string"
+    },
+    "preprocessing_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Preprocessing Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seed": {
+      "maximum": 18446744073709551615,
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "selected_epoch": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Selected Epoch",
+      "type": "integer"
+    },
+    "source_dirty": {
+      "const": false,
+      "default": false,
+      "title": "Source Dirty",
+      "type": "boolean"
+    },
+    "tensors": {
+      "const": [
+        {
+          "dtype": "float32",
+          "name": "cd_head.0.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "cd_head.0.weight",
+          "nbytes": 17408,
+          "shape": [
+            64,
+            68
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "cd_head.2.bias",
+          "nbytes": 128,
+          "shape": [
+            32
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "cd_head.2.weight",
+          "nbytes": 8192,
+          "shape": [
+            32,
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "cd_head.4.bias",
+          "nbytes": 4,
+          "shape": [
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "cd_head.4.weight",
+          "nbytes": 128,
+          "shape": [
+            1,
+            32
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.decoder_net.final_layer.linear.bias",
+          "nbytes": 12,
+          "shape": [
+            3
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.decoder_net.final_layer.linear.weight",
+          "nbytes": 1536,
+          "shape": [
+            3,
+            128
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.decoder_net.layers.0.linear.bias",
+          "nbytes": 512,
+          "shape": [
+            128
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.decoder_net.layers.0.linear.weight",
+          "nbytes": 32768,
+          "shape": [
+            128,
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.0.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.0.weight",
+          "nbytes": 16384,
+          "shape": [
+            64,
+            64,
+            1,
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.1.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.1.weight",
+          "nbytes": 16384,
+          "shape": [
+            64,
+            64,
+            1,
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.2.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.2.weight",
+          "nbytes": 16384,
+          "shape": [
+            64,
+            64,
+            1,
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.3.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.3.weight",
+          "nbytes": 16384,
+          "shape": [
+            64,
+            64,
+            1,
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.lift_network.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.lift_network.weight",
+          "nbytes": 512,
+          "shape": [
+            64,
+            2,
+            1,
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.0.weights1",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.0.weights2",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.1.weights1",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.1.weights2",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.2.weights1",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.2.weights2",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.3.weights1",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.3.weights2",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        }
+      ],
+      "default": [
+        {
+          "dtype": "float32",
+          "name": "cd_head.0.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "cd_head.0.weight",
+          "nbytes": 17408,
+          "shape": [
+            64,
+            68
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "cd_head.2.bias",
+          "nbytes": 128,
+          "shape": [
+            32
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "cd_head.2.weight",
+          "nbytes": 8192,
+          "shape": [
+            32,
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "cd_head.4.bias",
+          "nbytes": 4,
+          "shape": [
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "cd_head.4.weight",
+          "nbytes": 128,
+          "shape": [
+            1,
+            32
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.decoder_net.final_layer.linear.bias",
+          "nbytes": 12,
+          "shape": [
+            3
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.decoder_net.final_layer.linear.weight",
+          "nbytes": 1536,
+          "shape": [
+            3,
+            128
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.decoder_net.layers.0.linear.bias",
+          "nbytes": 512,
+          "shape": [
+            128
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.decoder_net.layers.0.linear.weight",
+          "nbytes": 32768,
+          "shape": [
+            128,
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.0.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.0.weight",
+          "nbytes": 16384,
+          "shape": [
+            64,
+            64,
+            1,
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.1.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.1.weight",
+          "nbytes": 16384,
+          "shape": [
+            64,
+            64,
+            1,
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.2.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.2.weight",
+          "nbytes": 16384,
+          "shape": [
+            64,
+            64,
+            1,
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.3.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.conv_layers.3.weight",
+          "nbytes": 16384,
+          "shape": [
+            64,
+            64,
+            1,
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.lift_network.bias",
+          "nbytes": 256,
+          "shape": [
+            64
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.lift_network.weight",
+          "nbytes": 512,
+          "shape": [
+            64,
+            2,
+            1,
+            1
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.0.weights1",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.0.weights2",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.1.weights1",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.1.weights2",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.2.weights1",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.2.weights2",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.3.weights1",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        },
+        {
+          "dtype": "float32",
+          "name": "core.spec_encoder.spconv_layers.3.weights2",
+          "nbytes": 18874368,
+          "shape": [
+            64,
+            64,
+            24,
+            24,
+            2
+          ]
+        }
+      ],
+      "items": {
+        "$ref": "#/$defs/ModelTensorDescriptor"
+      },
+      "maxItems": 28,
+      "minItems": 28,
+      "title": "Tensors",
+      "type": "array"
+    },
+    "weights_file_bytes": {
+      "maximum": 201326592,
+      "minimum": 1,
+      "title": "Weights File Bytes",
+      "type": "integer"
+    },
+    "weights_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Weights Sha256",
+      "type": "string"
+    },
+    "weights_tensor_bytes": {
+      "const": 151123216,
+      "default": 151123216,
+      "maximum": 151123216,
+      "minimum": 151123216,
+      "title": "Weights Tensor Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "model_id",
+    "model_sha256",
+    "dataset_id",
+    "dataset_sha256",
+    "experiment_id",
+    "seed",
+    "selected_epoch",
+    "weights_sha256",
+    "weights_file_bytes",
+    "preprocessing_sha256",
+    "architecture_sha256",
+    "model_card_sha256",
+    "code_revision",
+    "lock_digest",
+    "model_card"
+  ],
+  "title": "ModelBundleMetadata",
+  "type": "object"
+}

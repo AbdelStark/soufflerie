@@ -87,8 +87,8 @@ fields_normalized  float32[B,3,320,256]  # raw, unmasked
 cd_head            float32[B]
 ```
 
-The root state dictionary namespaces members under `core.` and `cd_head.` so
-issue #22 can publish a closed tensor allowlist in safe model bundles.
+The root state dictionary namespaces members under `core.` and `cd_head.`. Safe
+model bundles publish that state through one closed 28-tensor allowlist.
 
 ## Validation
 

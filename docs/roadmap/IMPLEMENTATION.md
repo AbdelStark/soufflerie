@@ -39,7 +39,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #19 | [datagen: produce the canonical 1,000-case dataset](https://github.com/AbdelStark/soufflerie/issues/19) | datagen | p0 | l | RFC-0005, RFC-0011 | closed |
 | #20 | [surrogate: implement leakage-safe preprocessing statistics](https://github.com/AbdelStark/soufflerie/issues/20) | surrogate | p0 | m | RFC-0006 | closed |
 | #21 | [surrogate: implement the fixed FNO and drag head](https://github.com/AbdelStark/soufflerie/issues/21) | surrogate | p0 | l | RFC-0006 | closed |
-| #22 | [surrogate: implement safe model bundle export and load](https://github.com/AbdelStark/soufflerie/issues/22) | surrogate | p0 | l | RFC-0006 | open |
+| #22 | [surrogate: implement safe model bundle export and load](https://github.com/AbdelStark/soufflerie/issues/22) | surrogate | p0 | l | RFC-0006 | closed |
 | #23 | [surrogate: verify the bundled CPU inference contract](https://github.com/AbdelStark/soufflerie/issues/23) | surrogate | p1 | m | RFC-0006, RFC-0013 | open |
 | #24 | [training: implement manifest loader and deterministic baselines](https://github.com/AbdelStark/soufflerie/issues/24) | training | p0 | m | RFC-0007 | open |
 | #25 | [training: implement deterministic mixed-precision optimization](https://github.com/AbdelStark/soufflerie/issues/25) | training | p0 | l | RFC-0007 | open |
