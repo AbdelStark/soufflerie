@@ -110,9 +110,36 @@ lease expires; at most three domain attempts are allowed. Changing the source
 revision, lock, config, or device creates a different smoke identity rather
 than resuming incompatible work.
 
-The release command without `--n 8` intentionally fails until RFC-0004's
-frozen 1,000-point design is implemented. No reduced run may silently become a
-release dataset.
+## Canonical 1,000-case sweep
+
+From a clean commit, omitting `--n` selects only the frozen RFC-0004 maximin
+LHS design:
+
+```bash
+uv run --extra remote modal run infra/sweep.py \
+  --config configs/sweeps/mvp-v1.yaml \
+  --output /tmp/soufflerie-sweep-summary.json
+```
+
+The request binds all 1,000 exact cases, source revision, lock digest, device,
+and configuration under the distinct `canonical-lhs-v1` identity. Modal admits
+at most 100 solve workers, so provider capacity may reduce live concurrency but
+never the design. Every successful state and run archive is reloaded and
+checksum-verified before it is skipped or admitted.
+
+Only a terminal `1000/1000` plan invokes `build_manifest`. That builder opens
+all 1,000 explicit run references again, enforces the design, split,
+provenance, and sub-2 GiB gates, and atomically publishes
+`datasets/<dataset_id>/`. An incomplete or terminally failed sweep returns no
+dataset reference. Rerunning the same clean identity resumes only eligible
+cases; no invalid sample is replaced.
+
+The digest-bound `SweepSummary` records invocation submissions and cumulative
+claimed attempts,
+ordered failure-code counts retained by case state, retries, run references,
+payload bytes, wall/GPU seconds, dataset/manifest/statistics digests, and final
+state. `--output` writes the same JSON outside the repository for evidence
+capture without dirtying a resumable checkout.
 
 ## Persistence and retention
 

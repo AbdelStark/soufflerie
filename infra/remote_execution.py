@@ -1,4 +1,4 @@
-"""Strict provider-neutral contracts for remote solve and smoke-sweep execution."""
+"""Strict provider-neutral contracts for remote solve and sweep execution."""
 
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from pydantic import Field, StringConstraints, ValidationError, field_validator,
 from soufflerie.artifacts import safe_read_bytes
 from soufflerie.config import SweepConfig
 from soufflerie.datagen._local_files import ensure_real_directory, fsync_directory, fsync_file
+from soufflerie.datagen.design import case_config_for_point, sample_design
 from soufflerie.errors import ArtifactIntegrityError, ConfigurationError
 from soufflerie.geometry import validate_geometry
 from soufflerie.schemas import (
@@ -36,6 +37,8 @@ MAX_REMOTE_INPUT_BYTES = 16 * 1024
 REMOTE_ARTIFACT_ROOT = "soufflerie/v1"
 SMOKE_SAMPLE_COUNT: Literal[8] = 8
 SMOKE_DESIGN_KIND: Literal["remote-smoke-v1"] = "remote-smoke-v1"
+CANONICAL_SAMPLE_COUNT: Literal[1000] = 1000
+CANONICAL_DESIGN_KIND: Literal["canonical-lhs-v1"] = "canonical-lhs-v1"
 
 CorrelationId = Annotated[
     str,
@@ -44,8 +47,10 @@ CorrelationId = Annotated[
 AttemptId = Annotated[str, StringConstraints(pattern=r"^[a-z0-9][a-z0-9-]{0,63}$")]
 Revision = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{40}$")]
 DeviceClass = Literal["L40S", "A10G"]
+SweepDesignKind = Literal["remote-smoke-v1", "canonical-lhs-v1"]
 
 _CORRELATION_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{0,127}$")
+_ERROR_CODE_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
 _ModelT = TypeVar("_ModelT", bound=VersionedModel)
 
 
@@ -107,11 +112,11 @@ def validate_correlation_id(value: str) -> str:
 
 
 class RemoteSweepRequest(VersionedModel):
-    """Immutable request for the deliberately non-release eight-case smoke design."""
+    """Immutable request for either the smoke or canonical frozen design."""
 
-    design_kind: Literal["remote-smoke-v1"] = SMOKE_DESIGN_KIND
+    design_kind: SweepDesignKind
     config: SweepConfig
-    sample_count: Literal[8] = SMOKE_SAMPLE_COUNT
+    sample_count: Literal[8, 1000]
     requested_device_class: DeviceClass
     source_revision: Revision
     lock_sha256: Sha256
@@ -146,8 +151,15 @@ class RemoteSweepRequest(VersionedModel):
 
     @model_validator(mode="after")
     def _digest_is_coherent(self) -> Self:
+        expected_count = (
+            SMOKE_SAMPLE_COUNT if self.design_kind == SMOKE_DESIGN_KIND else CANONICAL_SAMPLE_COUNT
+        )
+        if self.sample_count != expected_count:
+            raise ValueError("sample_count does not match the selected sweep design")
+        if self.force_failure_once and self.design_kind != SMOKE_DESIGN_KIND:
+            raise ValueError("forced retryable failure is restricted to smoke sweeps")
         if self.request_digest != canonical_sha256(self.logical_identity()):
-            raise ValueError("request_digest does not match the smoke sweep identity")
+            raise ValueError("request_digest does not match the sweep identity")
         return self
 
     @classmethod
@@ -181,11 +193,43 @@ class RemoteSweepRequest(VersionedModel):
         }
         return cls.model_validate({**values, "request_digest": canonical_sha256(identity)})
 
+    @classmethod
+    def create_canonical(
+        cls,
+        *,
+        config: SweepConfig,
+        requested_device_class: DeviceClass,
+        source_revision: str,
+        lock_sha256: str,
+    ) -> Self:
+        """Create the one release-eligible 1,000-point request identity."""
 
-class SmokeDesignPoint(VersionedModel):
-    """One deterministic point in the smoke-only stratified design."""
+        values: dict[str, object] = {
+            "schema_version": 1,
+            "design_kind": CANONICAL_DESIGN_KIND,
+            "config": config,
+            "sample_count": CANONICAL_SAMPLE_COUNT,
+            "requested_device_class": requested_device_class,
+            "source_revision": source_revision,
+            "lock_sha256": lock_sha256,
+            "force_failure_once": False,
+        }
+        identity = {
+            "schema_version": 1,
+            "design_kind": CANONICAL_DESIGN_KIND,
+            "config": config.model_dump(mode="json"),
+            "sample_count": CANONICAL_SAMPLE_COUNT,
+            "requested_device_class": requested_device_class,
+            "source_revision": source_revision,
+            "lock_sha256": lock_sha256,
+        }
+        return cls.model_validate({**values, "request_digest": canonical_sha256(identity)})
 
-    index: int = Field(ge=0, lt=SMOKE_SAMPLE_COUNT)
+
+class SweepDesignPoint(VersionedModel):
+    """One deterministic design point bound to its exact solver case."""
+
+    index: int = Field(ge=0, lt=CANONICAL_SAMPLE_COUNT)
     design_id: ContentId
     split: Split
     case: CaseConfig
@@ -204,11 +248,13 @@ def _stratum_value(minimum: float, maximum: float, stratum: int) -> float:
     return minimum + (maximum - minimum) * unit
 
 
-def smoke_design(request: RemoteSweepRequest) -> tuple[SmokeDesignPoint, ...]:
+def smoke_design(request: RemoteSweepRequest) -> tuple[SweepDesignPoint, ...]:
     """Build eight fixed stratified points without claiming release LHS semantics."""
 
     if not isinstance(request, RemoteSweepRequest):
         raise TypeError("request must be a RemoteSweepRequest")
+    if request.design_kind != SMOKE_DESIGN_KIND:
+        raise ValueError("smoke_design requires a remote-smoke-v1 request")
     config = request.config
     split_by_index: tuple[Split, ...] = (
         "train",
@@ -220,7 +266,7 @@ def smoke_design(request: RemoteSweepRequest) -> tuple[SmokeDesignPoint, ...]:
         "validation",
         "test",
     )
-    points: list[SmokeDesignPoint] = []
+    points: list[SweepDesignPoint] = []
     for index in range(SMOKE_SAMPLE_COUNT):
         physical = {
             "aspect_ratio": _stratum_value(
@@ -270,7 +316,7 @@ def smoke_design(request: RemoteSweepRequest) -> tuple[SmokeDesignPoint, ...]:
         )
         validate_geometry(case.shape, case.grid)
         points.append(
-            SmokeDesignPoint(
+            SweepDesignPoint(
                 index=index,
                 design_id=design_id,
                 split=split_by_index[index],
@@ -282,10 +328,50 @@ def smoke_design(request: RemoteSweepRequest) -> tuple[SmokeDesignPoint, ...]:
     return tuple(points)
 
 
+def canonical_design(request: RemoteSweepRequest) -> tuple[SweepDesignPoint, ...]:
+    """Bind the frozen maximin LHS design to its exact solver cases."""
+
+    if not isinstance(request, RemoteSweepRequest):
+        raise TypeError("request must be a RemoteSweepRequest")
+    if request.design_kind != CANONICAL_DESIGN_KIND:
+        raise ValueError("canonical_design requires a canonical-lhs-v1 request")
+    points = tuple(
+        SweepDesignPoint(
+            index=point.index,
+            design_id=point.design_id,
+            split=point.split,
+            case=case_config_for_point(point, request.config),
+        )
+        for point in sample_design(request.config)
+    )
+    if len(points) != CANONICAL_SAMPLE_COUNT:
+        raise ArtifactIntegrityError("canonical remote design must contain exactly 1,000 cases")
+    if len({point.case.case_id for point in points}) != CANONICAL_SAMPLE_COUNT:
+        raise ArtifactIntegrityError("canonical remote design produced duplicate case identities")
+    return points
+
+
+def sweep_design(request: RemoteSweepRequest) -> tuple[SweepDesignPoint, ...]:
+    """Dispatch only to the explicitly selected deterministic design."""
+
+    if request.design_kind == SMOKE_DESIGN_KIND:
+        return smoke_design(request)
+    return canonical_design(request)
+
+
+# Compatibility name retained for the issue #42 smoke contract.
+SmokeDesignPoint = SweepDesignPoint
+
+
 class RemoteSolveRequest(VersionedModel):
     """Canonical solve envelope; attempt mechanics are outside logical run identity."""
 
-    operation_kind: Literal["single", "smoke-sweep", "cylinder-acceptance"]
+    operation_kind: Literal[
+        "single",
+        "smoke-sweep",
+        "canonical-sweep",
+        "cylinder-acceptance",
+    ]
     sweep_digest: Sha256
     design_id: ContentId
     split: Split
@@ -322,7 +408,12 @@ class RemoteSolveRequest(VersionedModel):
     def create(
         cls,
         *,
-        operation_kind: Literal["single", "smoke-sweep", "cylinder-acceptance"],
+        operation_kind: Literal[
+            "single",
+            "smoke-sweep",
+            "canonical-sweep",
+            "cylinder-acceptance",
+        ],
         sweep_digest: str,
         design_id: str,
         split: Split,
@@ -365,23 +456,28 @@ class SweepSummary(VersionedModel):
 
     sweep_digest: Sha256
     config_digest: Sha256
-    design_kind: Literal["remote-smoke-v1"] = SMOKE_DESIGN_KIND
+    design_kind: SweepDesignKind
     requested_device_class: DeviceClass
     source_revision: Revision
-    case_count: Literal[8] = SMOKE_SAMPLE_COUNT
-    pending_count: int = Field(ge=0, le=SMOKE_SAMPLE_COUNT)
-    running_count: int = Field(ge=0, le=SMOKE_SAMPLE_COUNT)
-    succeeded_count: int = Field(ge=0, le=SMOKE_SAMPLE_COUNT)
-    failed_count: int = Field(ge=0, le=SMOKE_SAMPLE_COUNT)
+    case_count: Literal[8, 1000]
+    pending_count: int = Field(ge=0, le=CANONICAL_SAMPLE_COUNT)
+    running_count: int = Field(ge=0, le=CANONICAL_SAMPLE_COUNT)
+    succeeded_count: int = Field(ge=0, le=CANONICAL_SAMPLE_COUNT)
+    failed_count: int = Field(ge=0, le=CANONICAL_SAMPLE_COUNT)
     initial_submitted_case_ids: tuple[ContentId, ...]
     resumed_case_ids: tuple[ContentId, ...]
     skipped_case_ids: tuple[ContentId, ...]
     run_references: tuple[ArtifactRef, ...]
     attempt_count: int = Field(ge=0)
+    claimed_attempt_count: int = Field(ge=0)
     retry_count: int = Field(ge=0)
+    failure_counts: dict[str, int] = Field(default_factory=dict)
     estimated_bytes: int = Field(ge=0)
     wall_seconds: float = Field(ge=0.0, allow_inf_nan=False)
     gpu_seconds: float = Field(ge=0.0, allow_inf_nan=False)
+    dataset_reference: ArtifactRef | None = None
+    dataset_manifest_sha256: Sha256 | None = None
+    dataset_statistics_sha256: Sha256 | None = None
     final_state: Literal["succeeded", "incomplete"]
     evidence_sha256: Sha256
 
@@ -398,8 +494,25 @@ class SweepSummary(VersionedModel):
             return tuple(value)
         return value
 
+    @field_validator("failure_counts")
+    @classmethod
+    def _failure_counts_are_bounded(cls, value: dict[str, int]) -> dict[str, int]:
+        if len(value) > 64:
+            raise ValueError("failure_counts contains too many error classes")
+        if any(
+            _ERROR_CODE_PATTERN.fullmatch(code) is None or count < 1
+            for code, count in value.items()
+        ):
+            raise ValueError("failure_counts must contain positive counts by error code")
+        return dict(sorted(value.items()))
+
     @model_validator(mode="after")
     def _summary_is_coherent(self) -> Self:
+        expected_count = (
+            SMOKE_SAMPLE_COUNT if self.design_kind == SMOKE_DESIGN_KIND else CANONICAL_SAMPLE_COUNT
+        )
+        if self.case_count != expected_count:
+            raise ValueError("case_count does not match the selected sweep design")
         total = self.pending_count + self.running_count + self.succeeded_count + self.failed_count
         if total != self.case_count:
             raise ValueError("sweep state counts must sum to case_count")
@@ -414,9 +527,27 @@ class SweepSummary(VersionedModel):
             raise ValueError("sweep run references must have unique full digests")
         if len(self.run_references) != self.succeeded_count:
             raise ValueError("each successful case must have one run reference")
+        failed_attempt_count = sum(self.failure_counts.values())
+        if failed_attempt_count > self.claimed_attempt_count:
+            raise ValueError("failed-attempt evidence exceeds cumulative attempts")
         expected_state = "succeeded" if self.succeeded_count == self.case_count else "incomplete"
         if self.final_state != expected_state:
             raise ValueError("final_state does not match the state counts")
+        if self.final_state == "succeeded" and failed_attempt_count > self.retry_count:
+            raise ValueError("failed-attempt evidence cannot exceed the retry count")
+        dataset_fields = (
+            self.dataset_reference,
+            self.dataset_manifest_sha256,
+            self.dataset_statistics_sha256,
+        )
+        if self.design_kind == CANONICAL_DESIGN_KIND and self.final_state == "succeeded":
+            if any(value is None for value in dataset_fields):
+                raise ValueError("successful canonical sweep requires a published dataset")
+            reference = self.dataset_reference
+            if reference is None or reference.artifact_type != "dataset":
+                raise ValueError("canonical sweep dataset reference must name a dataset")
+        elif any(value is not None for value in dataset_fields):
+            raise ValueError("only a successful canonical sweep may publish a dataset")
         payload = self.model_dump(mode="json", exclude={"evidence_sha256"})
         if self.evidence_sha256 != canonical_sha256(payload):
             raise ValueError("evidence_sha256 does not match the sweep summary")
@@ -554,6 +685,8 @@ def utc_now() -> datetime:
 
 
 __all__ = [
+    "CANONICAL_DESIGN_KIND",
+    "CANONICAL_SAMPLE_COUNT",
     "MAX_REMOTE_INPUT_BYTES",
     "REMOTE_ARTIFACT_ROOT",
     "SMOKE_DESIGN_KIND",
@@ -564,7 +697,10 @@ __all__ = [
     "RemoteSweepRequest",
     "SmokeDesignPoint",
     "SolveSummary",
+    "SweepDesignKind",
+    "SweepDesignPoint",
     "SweepSummary",
+    "canonical_design",
     "encode_remote_model",
     "load_remote_request",
     "parse_remote_model",
@@ -572,6 +708,7 @@ __all__ = [
     "references_digest",
     "remote_request_reference",
     "smoke_design",
+    "sweep_design",
     "utc_now",
     "validate_correlation_id",
 ]

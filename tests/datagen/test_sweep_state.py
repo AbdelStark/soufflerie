@@ -148,6 +148,7 @@ def test_expired_leases_are_reclaimed_and_third_expiry_is_terminal(tmp_path: Pat
     terminal = store.reap_expired(CASE_ID, now=STARTED + timedelta(minutes=30))
     assert terminal.state == "failed"
     assert terminal.error_code == "LEASE_EXPIRED"
+    assert terminal.failure_codes == ("LEASE_EXPIRED",) * 3
     assert (
         store.claim_case(
             CASE_ID,
@@ -180,6 +181,7 @@ def test_failure_policy_retries_only_transient_errors_and_never_more_than_three(
         now=STARTED + timedelta(minutes=1),
     )
     assert retry.state == "pending" and retry.error_code == "REMOTE_EXECUTION"
+    assert retry.failure_codes == ("REMOTE_EXECUTION",)
     duplicate = store.fail_case(
         CASE_ID,
         attempt_id="attempt-1",
@@ -205,6 +207,7 @@ def test_failure_policy_retries_only_transient_errors_and_never_more_than_three(
     )
     assert deterministic.state == "failed"
     assert deterministic.error_code == "CONFIG_INVALID"
+    assert deterministic.failure_codes == ("REMOTE_EXECUTION", "CONFIG_INVALID")
 
     exhausted_case = "d" * 20
     store.initialize_case(exhausted_case, now=STARTED)
@@ -227,6 +230,7 @@ def test_failure_policy_retries_only_transient_errors_and_never_more_than_three(
             now=STARTED + timedelta(minutes=number, seconds=1),
         )
     assert final is not None and final.state == "failed" and final.attempt == 3
+    assert final.failure_codes == ("REMOTE_EXECUTION",) * 3
 
 
 def test_success_is_verified_immutable_and_matching_duplicates_are_noops(tmp_path: Path) -> None:

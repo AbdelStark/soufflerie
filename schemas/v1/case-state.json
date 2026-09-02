@@ -41,6 +41,15 @@
       "default": null,
       "title": "Error Code"
     },
+    "failure_codes": {
+      "default": [],
+      "items": {
+        "pattern": "^[A-Z][A-Z0-9_]{0,63}$",
+        "type": "string"
+      },
+      "title": "Failure Codes",
+      "type": "array"
+    },
     "lease_expires_at": {
       "anyOf": [
         {

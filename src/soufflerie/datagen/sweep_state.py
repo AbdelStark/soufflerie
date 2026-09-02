@@ -86,6 +86,7 @@ class CaseState(VersionedModel):
     lease_expires_at: datetime | None = None
     run_digest: Sha256 | None = None
     error_code: ErrorCode | None = None
+    failure_codes: tuple[ErrorCode, ...] = ()
     updated_at: datetime
 
     @model_validator(mode="before")
@@ -94,6 +95,9 @@ class CaseState(VersionedModel):
         if not isinstance(value, Mapping):
             return value
         normalized = dict(value)
+        failure_codes = normalized.get("failure_codes")
+        if isinstance(failure_codes, list):
+            normalized["failure_codes"] = tuple(failure_codes)
         for name in ("lease_expires_at", "updated_at"):
             timestamp = normalized.get(name)
             if isinstance(timestamp, str):
@@ -107,6 +111,14 @@ class CaseState(VersionedModel):
             raise ValueError("updated_at must be timezone-aware")
         if self.lease_expires_at is not None and self.lease_expires_at.utcoffset() is None:
             raise ValueError("lease_expires_at must be timezone-aware")
+        if len(self.failure_codes) > self.attempt:
+            raise ValueError("failure history cannot exceed the claimed attempt count")
+        if (
+            self.failure_codes
+            and self.error_code is not None
+            and self.failure_codes[-1] != self.error_code
+        ):
+            raise ValueError("current error code must match the latest failure evidence")
 
         leased = self.lease_owner is not None or self.lease_expires_at is not None
         if self.state == "running":
@@ -380,6 +392,7 @@ class LocalSweepStateStore:
                 lease_owner=None,
                 lease_expires_at=None,
                 error_code=LEASE_EXPIRED_CODE,
+                failure_codes=(*state.failure_codes, LEASE_EXPIRED_CODE),
             )
         else:
             expired = _transition(
@@ -389,6 +402,7 @@ class LocalSweepStateStore:
                 lease_owner=None,
                 lease_expires_at=None,
                 error_code=LEASE_EXPIRED_CODE,
+                failure_codes=(*state.failure_codes, LEASE_EXPIRED_CODE),
             )
         self._write_unlocked(expired)
         return expired
@@ -553,6 +567,7 @@ class LocalSweepStateStore:
                 lease_expires_at=None,
                 run_digest=None,
                 error_code=error.code,
+                failure_codes=(*state.failure_codes, error.code),
             )
             self._write_unlocked(failed)
             return failed

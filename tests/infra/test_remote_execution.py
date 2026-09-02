@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -7,13 +8,19 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 
+import infra.remote_execution as remote_execution
 import infra.solve_execution as solve_execution
+import infra.sweep_execution as sweep_execution
 from infra.remote_execution import (
+    CANONICAL_DESIGN_KIND,
+    CANONICAL_SAMPLE_COUNT,
     MAX_REMOTE_INPUT_BYTES,
     RemoteSolveRequest,
     RemoteSweepRequest,
     SolveSummary,
+    SweepDesignPoint,
     SweepSummary,
+    canonical_design,
     encode_remote_model,
     load_remote_request,
     parse_remote_model,
@@ -22,11 +29,13 @@ from infra.remote_execution import (
 )
 from infra.runtime_manifest import RuntimeBuildManifest
 from infra.solve_execution import execute_solve_request, run_solver_case
-from infra.sweep_execution import orchestrate_smoke_sweep
+from infra.sweep_execution import orchestrate_smoke_sweep, orchestrate_sweep
 from soufflerie.config import SweepConfig, load_config
+from soufflerie.datagen.sweep_state import ResumePlan, VerifiedCaseRun
 from soufflerie.errors import ArtifactIntegrityError, ConfigurationError, RemoteExecutionError
 from soufflerie.geometry import ellipse_sdf, obstacle_mask
 from soufflerie.schemas import ArtifactRef, CaseConfig, FlowFields, SolverResult
+from tests.datagen.manifest_helpers import canonical_points
 
 ROOT = Path(__file__).parents[2]
 
@@ -50,6 +59,27 @@ def _sweep_request(*, force_failure_once: bool = True) -> RemoteSweepRequest:
         lock_sha256=build.lock_sha256,
         force_failure_once=force_failure_once,
     )
+
+
+def _canonical_sweep_request() -> RemoteSweepRequest:
+    config = load_config(ROOT / "configs/sweeps/mvp-v1.yaml", SweepConfig)
+    build = _build()
+    return RemoteSweepRequest.create_canonical(
+        config=config,
+        requested_device_class="L40S",
+        source_revision=build.source_revision,
+        lock_sha256=build.lock_sha256,
+    )
+
+
+@pytest.fixture(scope="module")
+def canonical_sweep() -> tuple[RemoteSweepRequest, tuple[SweepDesignPoint, ...]]:
+    request = _canonical_sweep_request()
+    design_points = canonical_points(request.config)
+    with pytest.MonkeyPatch.context() as patcher:
+        patcher.setattr(remote_execution, "sample_design", lambda _config: design_points)
+        points = canonical_design(request)
+    return request, points
 
 
 def _result_for(case: CaseConfig, template: SolverResult) -> SolverResult:
@@ -166,6 +196,30 @@ def test_smoke_design_is_stratified_distinct_and_does_not_touch_global_rng() -> 
         assert strata == set(range(8))
 
 
+def test_canonical_request_reproduces_all_frozen_design_cases(
+    canonical_sweep: tuple[RemoteSweepRequest, tuple[SweepDesignPoint, ...]],
+) -> None:
+    request, points = canonical_sweep
+    encoded = encode_remote_model(request)
+
+    assert len(encoded) < MAX_REMOTE_INPUT_BYTES
+    assert request.design_kind == CANONICAL_DESIGN_KIND
+    assert request.sample_count == CANONICAL_SAMPLE_COUNT
+    assert len(points) == CANONICAL_SAMPLE_COUNT
+    assert tuple(point.design_id for point in points) == tuple(
+        point.design_id for point in canonical_points(request.config)
+    )
+    assert len({point.design_id for point in points}) == CANONICAL_SAMPLE_COUNT
+    assert len({point.case.case_id for point in points}) == CANONICAL_SAMPLE_COUNT
+    assert [point.split for point in points].count("train") == 600
+    assert [point.split for point in points].count("validation") == 200
+    assert [point.split for point in points].count("test") == 200
+
+    tampered = request.model_dump(mode="python") | {"force_failure_once": True}
+    with pytest.raises(ValidationError, match="restricted to smoke"):
+        RemoteSweepRequest.model_validate(tampered)
+
+
 def test_remote_request_publication_is_content_addressed_and_tamper_evident(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -238,7 +292,9 @@ def test_forced_failure_resumes_only_missing_case_and_preserves_success_digests(
     assert first.final_state == "succeeded"
     assert first.succeeded_count == 8
     assert first.attempt_count == 9
+    assert first.claimed_attempt_count == 9
     assert first.retry_count == 1
+    assert first.failure_counts == {"REMOTE_EXECUTION": 1}
     assert [len(round_ids) for round_ids in submitted_rounds] == [8, 1]
     assert submitted_rounds[1] == (smoke_design(sweep_request)[0].case.case_id,)
     assert first.resumed_case_ids == submitted_rounds[1]
@@ -260,11 +316,262 @@ def test_forced_failure_resumes_only_missing_case_and_preserves_success_digests(
     )
     assert submitted_rounds == []
     assert second.attempt_count == 0
+    assert second.claimed_attempt_count == 9
+    assert second.failure_counts == {"REMOTE_EXECUTION": 1}
     assert second.skipped_case_ids == tuple(sorted(final_digests))
     assert {
         reference.uri.split("/")[1]: reference.sha256 for reference in second.run_references
     } == final_digests
     assert SweepSummary.model_validate_json(second.model_dump_json()) == second
+
+
+def test_canonical_orchestrator_submits_all_cases_and_publishes_only_complete_dataset(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    canonical_sweep: tuple[RemoteSweepRequest, tuple[SweepDesignPoint, ...]],
+) -> None:
+    request, points = canonical_sweep
+    submitted = False
+    sync_calls: list[str] = []
+    references = tuple(
+        ArtifactRef(
+            artifact_type="run",
+            artifact_id=f"{index + 1:064x}"[:20],
+            sha256=f"{index + 1:064x}",
+            size_bytes=1_000_000,
+            uri=f"runs/{point.case.case_id}/{index + 1:064x}",
+        )
+        for index, point in enumerate(points)
+    )
+    by_case = dict(zip((point.case.case_id for point in points), references, strict=True))
+
+    class FakeRunStore:
+        def __init__(self, root: Path) -> None:
+            assert root == tmp_path
+
+        def open_run(self, reference: ArtifactRef) -> object:
+            assert reference in references
+            return SimpleNamespace(
+                metadata=SimpleNamespace(provenance=SimpleNamespace(gpu_seconds=0.25))
+            )
+
+    class FakeStateStore:
+        def __init__(self, root: Path, *, sweep_digest: str) -> None:
+            assert root == tmp_path
+            assert sweep_digest == request.request_digest
+
+        def initialize_case(self, case_id: str, *, now: object) -> None:
+            assert case_id in by_case
+            assert now is not None
+
+        def read_case(self, case_id: str) -> object:
+            assert case_id in by_case
+            return SimpleNamespace(
+                attempt=1 if submitted else 0,
+                state="succeeded" if submitted else "pending",
+                failure_codes=(),
+            )
+
+    def fake_fresh_plan(
+        *,
+        points: tuple[SweepDesignPoint, ...],
+        state_store: object,
+        artifact_store: object,
+    ) -> ResumePlan:
+        assert len(points) == CANONICAL_SAMPLE_COUNT
+        assert state_store is not None and artifact_store is not None
+        if not submitted:
+            return ResumePlan(
+                claimable_case_ids=tuple(point.case.case_id for point in points),
+                active_case_ids=(),
+                succeeded_runs=(),
+                failed_case_ids=(),
+            )
+        return ResumePlan(
+            claimable_case_ids=(),
+            active_case_ids=(),
+            succeeded_runs=tuple(
+                VerifiedCaseRun(case_id=case_id, reference=reference)
+                for case_id, reference in by_case.items()
+            ),
+            failed_case_ids=(),
+        )
+
+    def submit(payloads: tuple[bytes, ...], owners: tuple[str, ...]) -> None:
+        nonlocal submitted
+        assert len(payloads) == CANONICAL_SAMPLE_COUNT
+        assert len(set(owners)) == CANONICAL_SAMPLE_COUNT
+        sampled = tuple(
+            parse_remote_model(payloads[index], RemoteSolveRequest)
+            for index in (0, CANONICAL_SAMPLE_COUNT // 2, CANONICAL_SAMPLE_COUNT - 1)
+        )
+        assert {item.operation_kind for item in sampled} == {"canonical-sweep"}
+        decoded = tuple(json.loads(payload) for payload in payloads)
+        assert {item["design_id"] for item in decoded} == {point.design_id for point in points}
+        submitted = True
+
+    manifest = SimpleNamespace(
+        metadata=SimpleNamespace(
+            manifest_sha256="e" * 64,
+            statistics_sha256="f" * 64,
+        )
+    )
+    dataset_reference = ArtifactRef(
+        artifact_type="dataset",
+        artifact_id="d" * 20,
+        sha256="d" * 64,
+        size_bytes=100,
+        uri=f"datasets/{'d' * 20}",
+    )
+
+    def fake_build_manifest(
+        root: Path,
+        *,
+        config: SweepConfig,
+        run_references: tuple[ArtifactRef, ...],
+    ) -> object:
+        assert root == tmp_path
+        assert config == request.config
+        assert len(run_references) == CANONICAL_SAMPLE_COUNT
+        assert set(run_references) == set(references)
+        return manifest
+
+    class FakeDatasetStore:
+        def __init__(self, root: Path) -> None:
+            assert root == tmp_path
+
+        def publish(self, value: object) -> ArtifactRef:
+            assert value is manifest
+            return dataset_reference
+
+        def open(self, reference: ArtifactRef) -> object:
+            assert reference == dataset_reference
+            return SimpleNamespace(manifest=manifest)
+
+    monkeypatch.setattr(sweep_execution, "load_remote_request", lambda _root, _ref: request)
+    monkeypatch.setattr(sweep_execution, "sweep_design", lambda _request: points)
+    monkeypatch.setattr(sweep_execution, "LocalRunArtifactStore", FakeRunStore)
+    monkeypatch.setattr(sweep_execution, "LocalSweepStateStore", FakeStateStore)
+    monkeypatch.setattr(sweep_execution, "_fresh_plan", fake_fresh_plan)
+    monkeypatch.setattr(sweep_execution, "build_manifest", fake_build_manifest)
+    monkeypatch.setattr(sweep_execution, "LocalDatasetArtifactStore", FakeDatasetStore)
+    request_reference = ArtifactRef(
+        artifact_type="sweep_request",
+        artifact_id="a" * 20,
+        sha256="a" * 64,
+        size_bytes=1,
+        uri=f"requests/sweeps/{'a' * 64}.json",
+    )
+
+    summary = orchestrate_sweep(
+        request_reference,
+        root=tmp_path,
+        build=_build(),
+        reload_volume=lambda: sync_calls.append("reload"),
+        commit_volume=lambda: sync_calls.append("commit"),
+        submit=submit,
+    )
+
+    assert summary.final_state == "succeeded"
+    assert summary.case_count == CANONICAL_SAMPLE_COUNT
+    assert summary.succeeded_count == CANONICAL_SAMPLE_COUNT
+    assert summary.attempt_count == CANONICAL_SAMPLE_COUNT
+    assert summary.claimed_attempt_count == CANONICAL_SAMPLE_COUNT
+    assert summary.retry_count == 0
+    assert summary.failure_counts == {}
+    assert summary.dataset_reference == dataset_reference
+    assert summary.dataset_manifest_sha256 == "e" * 64
+    assert summary.dataset_statistics_sha256 == "f" * 64
+    assert sync_calls.count("commit") == 2
+
+
+def test_incomplete_canonical_orchestrator_never_publishes_a_dataset(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    canonical_sweep: tuple[RemoteSweepRequest, tuple[SweepDesignPoint, ...]],
+) -> None:
+    request, points = canonical_sweep
+    failed_case_id = points[0].case.case_id
+    references = {
+        point.case.case_id: ArtifactRef(
+            artifact_type="run",
+            artifact_id=f"{index + 1:064x}"[:20],
+            sha256=f"{index + 1:064x}",
+            size_bytes=1_000_000,
+            uri=f"runs/{point.case.case_id}/{index + 1:064x}",
+        )
+        for index, point in enumerate(points[1:])
+    }
+    plan = ResumePlan(
+        claimable_case_ids=(),
+        active_case_ids=(),
+        succeeded_runs=tuple(
+            VerifiedCaseRun(case_id=case_id, reference=reference)
+            for case_id, reference in references.items()
+        ),
+        failed_case_ids=(failed_case_id,),
+    )
+
+    class FakeRunStore:
+        def __init__(self, root: Path) -> None:
+            assert root == tmp_path
+
+        def open_run(self, reference: ArtifactRef) -> object:
+            assert reference in references.values()
+            return SimpleNamespace(
+                metadata=SimpleNamespace(provenance=SimpleNamespace(gpu_seconds=0.25))
+            )
+
+    class FakeStateStore:
+        def __init__(self, root: Path, *, sweep_digest: str) -> None:
+            assert root == tmp_path
+            assert sweep_digest == request.request_digest
+
+        def initialize_case(self, case_id: str, *, now: object) -> None:
+            assert case_id == failed_case_id or case_id in references
+            assert now is not None
+
+        def read_case(self, case_id: str) -> object:
+            return SimpleNamespace(
+                attempt=1,
+                state="failed" if case_id == failed_case_id else "succeeded",
+                failure_codes=("NUMERICAL_INSTABILITY",) if case_id == failed_case_id else (),
+            )
+
+    monkeypatch.setattr(sweep_execution, "load_remote_request", lambda _root, _ref: request)
+    monkeypatch.setattr(sweep_execution, "sweep_design", lambda _request: points)
+    monkeypatch.setattr(sweep_execution, "LocalRunArtifactStore", FakeRunStore)
+    monkeypatch.setattr(sweep_execution, "LocalSweepStateStore", FakeStateStore)
+    monkeypatch.setattr(sweep_execution, "_fresh_plan", lambda **_kwargs: plan)
+    monkeypatch.setattr(
+        sweep_execution,
+        "build_manifest",
+        lambda *_args, **_kwargs: pytest.fail("incomplete sweep must not build a manifest"),
+    )
+    request_reference = ArtifactRef(
+        artifact_type="sweep_request",
+        artifact_id="a" * 20,
+        sha256="a" * 64,
+        size_bytes=1,
+        uri=f"requests/sweeps/{'a' * 64}.json",
+    )
+
+    summary = orchestrate_sweep(
+        request_reference,
+        root=tmp_path,
+        build=_build(),
+        reload_volume=lambda: None,
+        commit_volume=lambda: None,
+        submit=lambda *_args: pytest.fail("terminal failures must not be resubmitted"),
+    )
+
+    assert summary.final_state == "incomplete"
+    assert summary.succeeded_count == 999
+    assert summary.failed_count == 1
+    assert summary.failure_counts == {"NUMERICAL_INSTABILITY": 1}
+    assert summary.dataset_reference is None
+    assert summary.dataset_manifest_sha256 is None
+    assert summary.dataset_statistics_sha256 is None
 
 
 def test_build_or_device_changes_create_a_distinct_smoke_identity() -> None:

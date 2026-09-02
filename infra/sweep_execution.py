@@ -1,22 +1,25 @@
-"""Provider-neutral resumable orchestration for the remote smoke sweep."""
+"""Provider-neutral resumable orchestration for remote smoke and release sweeps."""
 
 from __future__ import annotations
 
 import time
+from collections import Counter
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
 from infra.remote_execution import (
+    CANONICAL_DESIGN_KIND,
     RemoteSolveRequest,
     RemoteSweepRequest,
-    SmokeDesignPoint,
+    SweepDesignPoint,
     SweepSummary,
     encode_remote_model,
     load_remote_request,
-    smoke_design,
+    sweep_design,
 )
 from infra.runtime_manifest import RuntimeBuildManifest
+from soufflerie.datagen.manifest import LocalDatasetArtifactStore, build_manifest
 from soufflerie.datagen.run_artifact import LocalRunArtifactStore
 from soufflerie.datagen.sweep_state import (
     MAX_SWEEP_ATTEMPTS,
@@ -44,7 +47,7 @@ def assert_sweep_request_matches_build(
 
 def _fresh_plan(
     *,
-    points: tuple[SmokeDesignPoint, ...],
+    points: tuple[SweepDesignPoint, ...],
     state_store: LocalSweepStateStore,
     artifact_store: LocalRunArtifactStore,
 ) -> ResumePlan:
@@ -69,7 +72,7 @@ def _assert_preserved_successes(previous: ResumePlan, current: ResumePlan) -> No
 def _round_inputs(
     *,
     request: RemoteSweepRequest,
-    points_by_case: dict[str, SmokeDesignPoint],
+    points_by_case: dict[str, SweepDesignPoint],
     state_store: LocalSweepStateStore,
     case_ids: tuple[str, ...],
     forced_case_id: str | None,
@@ -83,7 +86,9 @@ def _round_inputs(
         attempt_id = f"s{next_attempt}-{case_id}"
         owner = f"sweep.{request.request_digest[:16]}.{next_attempt}.{case_id}"
         solve_request = RemoteSolveRequest.create(
-            operation_kind="smoke-sweep",
+            operation_kind=(
+                "canonical-sweep" if request.design_kind == CANONICAL_DESIGN_KIND else "smoke-sweep"
+            ),
             sweep_digest=request.request_digest,
             design_id=point.design_id,
             split=point.split,
@@ -99,7 +104,7 @@ def _round_inputs(
     return tuple(payloads), tuple(owners)
 
 
-def orchestrate_smoke_sweep(
+def orchestrate_sweep(
     config_ref: ArtifactRef,
     *,
     root: Path,
@@ -115,7 +120,7 @@ def orchestrate_smoke_sweep(
     reload_volume()
     request = load_remote_request(root, reference)
     assert_sweep_request_matches_build(request, build)
-    points = smoke_design(request)
+    points = sweep_design(request)
     points_by_case = {point.case.case_id: point for point in points}
     artifact_store = LocalRunArtifactStore(root)
     state_store = LocalSweepStateStore(root, sweep_digest=request.request_digest)
@@ -185,6 +190,25 @@ def orchestrate_smoke_sweep(
         state_name: sum(state.state == state_name for state in states)
         for state_name in ("pending", "running", "succeeded", "failed")
     }
+    failure_counts = dict(
+        sorted(Counter(code for state in states for code in state.failure_codes).items())
+    )
+    dataset_reference: ArtifactRef | None = None
+    dataset_manifest_sha256: str | None = None
+    dataset_statistics_sha256: str | None = None
+    if request.design_kind == CANONICAL_DESIGN_KIND and len(references) == request.sample_count:
+        manifest = build_manifest(
+            root,
+            config=request.config,
+            run_references=references,
+        )
+        dataset_store = LocalDatasetArtifactStore(root)
+        dataset_reference = dataset_store.publish(manifest)
+        commit_volume()
+        reload_volume()
+        published = dataset_store.open(dataset_reference)
+        dataset_manifest_sha256 = published.manifest.metadata.manifest_sha256
+        dataset_statistics_sha256 = published.manifest.metadata.statistics_sha256
     elapsed = time.perf_counter() - started
     return SweepSummary.create(
         sweep_digest=request.request_digest,
@@ -202,12 +226,24 @@ def orchestrate_smoke_sweep(
         skipped_case_ids=tuple(sorted(skipped)),
         run_references=references,
         attempt_count=attempts,
+        claimed_attempt_count=sum(state.attempt for state in states),
         retry_count=sum(max(0, state.attempt - 1) for state in states),
+        failure_counts=failure_counts,
         estimated_bytes=sum(reference_value.size_bytes for reference_value in references),
         wall_seconds=elapsed,
         gpu_seconds=gpu_seconds,
+        dataset_reference=dataset_reference,
+        dataset_manifest_sha256=dataset_manifest_sha256,
+        dataset_statistics_sha256=dataset_statistics_sha256,
         final_state="succeeded" if len(references) == request.sample_count else "incomplete",
     )
 
 
-__all__ = ["assert_sweep_request_matches_build", "orchestrate_smoke_sweep"]
+orchestrate_smoke_sweep = orchestrate_sweep
+
+
+__all__ = [
+    "assert_sweep_request_matches_build",
+    "orchestrate_smoke_sweep",
+    "orchestrate_sweep",
+]
