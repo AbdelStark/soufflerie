@@ -1,0 +1,273 @@
+{
+  "$defs": {
+    "OutputChannelStatistics": {
+      "additionalProperties": false,
+      "description": "One fp64-fitted scalar normalization contract.",
+      "properties": {
+        "floored": {
+          "title": "Floored",
+          "type": "boolean"
+        },
+        "mean": {
+          "title": "Mean",
+          "type": "number"
+        },
+        "raw_standard_deviation": {
+          "minimum": 0.0,
+          "title": "Raw Standard Deviation",
+          "type": "number"
+        },
+        "standard_deviation": {
+          "minimum": 1e-06,
+          "title": "Standard Deviation",
+          "type": "number"
+        }
+      },
+      "required": [
+        "mean",
+        "raw_standard_deviation",
+        "standard_deviation",
+        "floored"
+      ],
+      "title": "OutputChannelStatistics",
+      "type": "object"
+    },
+    "OutputNormalizationStatistics": {
+      "additionalProperties": false,
+      "description": "Ordered output-channel statistics for u, v, and density delta.",
+      "properties": {
+        "rho_delta": {
+          "$ref": "#/$defs/OutputChannelStatistics"
+        },
+        "u_mean": {
+          "$ref": "#/$defs/OutputChannelStatistics"
+        },
+        "v_mean": {
+          "$ref": "#/$defs/OutputChannelStatistics"
+        }
+      },
+      "required": [
+        "u_mean",
+        "v_mean",
+        "rho_delta"
+      ],
+      "title": "OutputNormalizationStatistics",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/preprocessing.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Durable training-only preprocessing record embedded in model bundles.",
+  "properties": {
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "design_parameters": {
+      "default": [
+        "aspect_ratio",
+        "rotation_deg",
+        "scale",
+        "reynolds"
+      ],
+      "maxItems": 4,
+      "minItems": 4,
+      "prefixItems": [
+        {
+          "const": "aspect_ratio",
+          "type": "string"
+        },
+        {
+          "const": "rotation_deg",
+          "type": "string"
+        },
+        {
+          "const": "scale",
+          "type": "string"
+        },
+        {
+          "const": "reynolds",
+          "type": "string"
+        }
+      ],
+      "title": "Design Parameters",
+      "type": "array"
+    },
+    "fit_dtype": {
+      "const": "float64",
+      "default": "float64",
+      "title": "Fit Dtype",
+      "type": "string"
+    },
+    "input_channels": {
+      "default": [
+        "sdf_over_reference_diameter",
+        "reynolds_affine"
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "const": "sdf_over_reference_diameter",
+          "type": "string"
+        },
+        {
+          "const": "reynolds_affine",
+          "type": "string"
+        }
+      ],
+      "title": "Input Channels",
+      "type": "array"
+    },
+    "model_dtype": {
+      "const": "float32",
+      "default": "float32",
+      "title": "Model Dtype",
+      "type": "string"
+    },
+    "output_channels": {
+      "default": [
+        "u_mean",
+        "v_mean",
+        "rho_delta"
+      ],
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "const": "u_mean",
+          "type": "string"
+        },
+        {
+          "const": "v_mean",
+          "type": "string"
+        },
+        {
+          "const": "rho_delta",
+          "type": "string"
+        }
+      ],
+      "title": "Output Channels",
+      "type": "array"
+    },
+    "outputs": {
+      "$ref": "#/$defs/OutputNormalizationStatistics"
+    },
+    "reynolds_range": {
+      "const": [
+        40.0,
+        300.0
+      ],
+      "default": [
+        40.0,
+        300.0
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Reynolds Range",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "sdf_clip": {
+      "const": [
+        -1.0,
+        1.0
+      ],
+      "default": [
+        -1.0,
+        1.0
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Sdf Clip",
+      "type": "array"
+    },
+    "sdf_reference_diameter_lu": {
+      "const": 16.0,
+      "default": 16.0,
+      "title": "Sdf Reference Diameter Lu",
+      "type": "number"
+    },
+    "spatial_shape": {
+      "default": [
+        320,
+        256
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "const": 320,
+          "type": "integer"
+        },
+        {
+          "const": 256,
+          "type": "integer"
+        }
+      ],
+      "title": "Spatial Shape",
+      "type": "array"
+    },
+    "standard_deviation_floor": {
+      "const": 1e-06,
+      "default": 1e-06,
+      "title": "Standard Deviation Floor",
+      "type": "number"
+    },
+    "stored_field_dtype": {
+      "const": "float16",
+      "default": "float16",
+      "title": "Stored Field Dtype",
+      "type": "string"
+    },
+    "training_case_count": {
+      "maximum": 600,
+      "minimum": 1,
+      "title": "Training Case Count",
+      "type": "integer"
+    },
+    "training_cell_count": {
+      "maximum": 49152000,
+      "minimum": 81920,
+      "title": "Training Cell Count",
+      "type": "integer"
+    },
+    "training_split": {
+      "const": "train",
+      "default": "train",
+      "title": "Training Split",
+      "type": "string"
+    }
+  },
+  "required": [
+    "dataset_id",
+    "training_case_count",
+    "training_cell_count",
+    "outputs"
+  ],
+  "title": "PreprocessingStatistics",
+  "type": "object"
+}

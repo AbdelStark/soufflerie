@@ -1,1 +1,45 @@
 """Surrogate preprocessing, models, bundles, and inference."""
+
+from soufflerie.surrogate.preprocessing import (
+    MODEL_CELL_COUNT,
+    MODEL_REFERENCE_DIAMETER_LU,
+    MODEL_SPATIAL_SHAPE,
+    STANDARD_DEVIATION_FLOOR,
+    OutputChannelStatistics,
+    OutputNormalizationStatistics,
+    PredictionBatch,
+    PreprocessedBatch,
+    PreprocessedSample,
+    PreprocessingSample,
+    PreprocessingStatistics,
+    TensorLike,
+    denormalize_fields,
+    fit_preprocessing_statistics,
+    prediction_batch_to_torch,
+    preprocess_batch,
+    preprocess_sample,
+    validate_prediction_batch,
+)
+from soufflerie.surrogate.schema_registry import rendered_surrogate_schema_documents
+
+__all__ = [
+    "MODEL_CELL_COUNT",
+    "MODEL_REFERENCE_DIAMETER_LU",
+    "MODEL_SPATIAL_SHAPE",
+    "STANDARD_DEVIATION_FLOOR",
+    "OutputChannelStatistics",
+    "OutputNormalizationStatistics",
+    "PredictionBatch",
+    "PreprocessedBatch",
+    "PreprocessedSample",
+    "PreprocessingSample",
+    "PreprocessingStatistics",
+    "TensorLike",
+    "denormalize_fields",
+    "fit_preprocessing_statistics",
+    "prediction_batch_to_torch",
+    "preprocess_batch",
+    "preprocess_sample",
+    "rendered_surrogate_schema_documents",
+    "validate_prediction_batch",
+]
