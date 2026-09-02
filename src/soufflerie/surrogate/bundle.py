@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import importlib
 import importlib.metadata
+import io
+import json
 import math
 import os
 import re
 import shutil
 import stat
+import struct
 import sys
 import tempfile
 from collections.abc import Callable, Mapping
@@ -552,6 +555,40 @@ def _validate_weight_arrays(
     return validated
 
 
+def _encode_safetensors(
+    weights: Mapping[str, npt.NDArray[np.float32]],
+) -> bytes:
+    """Encode a canonical safetensors header and sorted contiguous tensor region."""
+
+    header: dict[str, object] = {
+        "__metadata__": {"architecture": "fno2d-v1", "format": "soufflerie"}
+    }
+    offset = 0
+    for name in sorted(weights):
+        value = weights[name]
+        end = offset + value.nbytes
+        header[name] = {
+            "dtype": "F32",
+            "shape": list(value.shape),
+            "data_offsets": [offset, end],
+        }
+        offset = end
+    header_bytes = json.dumps(
+        header,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+    header_bytes += b" " * (-len(header_bytes) % 8)
+    output = io.BytesIO()
+    output.write(struct.pack("<Q", len(header_bytes)))
+    output.write(header_bytes)
+    for name in sorted(weights):
+        output.write(weights[name].tobytes(order="C"))
+    return output.getvalue()
+
+
 def build_model_bundle(
     *,
     weights: Mapping[str, npt.NDArray[Any]],
@@ -575,12 +612,7 @@ def build_model_bundle(
         raise ArtifactIntegrityError("BUNDLE-3 ARCHITECTURE: only fno2d-v1 is allowed")
     validated = _validate_weight_arrays(weights)
     try:
-        from safetensors.numpy import save
-
-        weights_bytes = save(
-            {name: validated[name] for name in sorted(validated)},
-            metadata={"architecture": "fno2d-v1", "format": "soufflerie"},
-        )
+        weights_bytes = _encode_safetensors(validated)
     except Exception as error:
         raise ArtifactIntegrityError("BUNDLE-1 TENSORS: safe weight encoding failed") from error
     if len(weights_bytes) > MODEL_WEIGHTS_FILE_CAP_BYTES:

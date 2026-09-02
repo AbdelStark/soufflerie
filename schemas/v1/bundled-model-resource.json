@@ -1,0 +1,212 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "description": "Portable reference to content whose identity is independent of location.",
+      "properties": {
+        "artifact_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_type": {
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "title": "Artifact Type",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        },
+        "uri": {
+          "minLength": 1,
+          "title": "Uri",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_type",
+        "artifact_id",
+        "sha256",
+        "size_bytes",
+        "uri"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "SmokeDatasetParent": {
+      "additionalProperties": false,
+      "description": "Transparent synthetic parent identity for the untrained smoke fixture.",
+      "properties": {
+        "kind": {
+          "const": "synthetic-normalization-fixture-v1",
+          "default": "synthetic-normalization-fixture-v1",
+          "title": "Kind",
+          "type": "string"
+        },
+        "output_means": {
+          "default": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Output Means",
+          "type": "array"
+        },
+        "output_standard_deviations": {
+          "default": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Output Standard Deviations",
+          "type": "array"
+        },
+        "sample_count": {
+          "const": 1,
+          "default": 1,
+          "title": "Sample Count",
+          "type": "integer"
+        },
+        "scientific_evidence": {
+          "const": false,
+          "default": false,
+          "title": "Scientific Evidence",
+          "type": "boolean"
+        }
+      },
+      "title": "SmokeDatasetParent",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/bundled-model-resource.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Outer package record binding compressed bytes to one safe model bundle.",
+  "properties": {
+    "bundle_metadata_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Bundle Metadata Sha256",
+      "type": "string"
+    },
+    "compressed_weights_bytes": {
+      "maximum": 4194304,
+      "minimum": 1,
+      "title": "Compressed Weights Bytes",
+      "type": "integer"
+    },
+    "compressed_weights_name": {
+      "const": "model.safetensors.gz",
+      "default": "model.safetensors.gz",
+      "title": "Compressed Weights Name",
+      "type": "string"
+    },
+    "compressed_weights_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Compressed Weights Sha256",
+      "type": "string"
+    },
+    "expected_cd_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Cd Sha256",
+      "type": "string"
+    },
+    "expected_fields_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Fields Sha256",
+      "type": "string"
+    },
+    "fixture_parent": {
+      "$ref": "#/$defs/SmokeDatasetParent"
+    },
+    "fixture_parent_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Fixture Parent Sha256",
+      "type": "string"
+    },
+    "model": {
+      "$ref": "#/$defs/ArtifactRef"
+    },
+    "representative_of_trained_quality": {
+      "const": false,
+      "default": false,
+      "title": "Representative Of Trained Quality",
+      "type": "boolean"
+    },
+    "resource_kind": {
+      "const": "synthetic-cpu-smoke-v1",
+      "default": "synthetic-cpu-smoke-v1",
+      "title": "Resource Kind",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "uncompressed_weights_bytes": {
+      "maximum": 201326592,
+      "minimum": 1,
+      "title": "Uncompressed Weights Bytes",
+      "type": "integer"
+    },
+    "weights_encoding": {
+      "const": "gzip",
+      "default": "gzip",
+      "title": "Weights Encoding",
+      "type": "string"
+    }
+  },
+  "required": [
+    "model",
+    "bundle_metadata_sha256",
+    "fixture_parent",
+    "fixture_parent_sha256",
+    "compressed_weights_sha256",
+    "compressed_weights_bytes",
+    "uncompressed_weights_bytes",
+    "expected_fields_sha256",
+    "expected_cd_sha256"
+  ],
+  "title": "BundledModelResource",
+  "type": "object"
+}

@@ -24,7 +24,7 @@ Python is constrained to `>=3.11,<3.12` for v0.1 to match the declared environme
 | Profile | Constraint | Rationale |
 |---|---|---|
 | Solver | `warp-lang==1.17.0` | Kernel/runtime API and CPU fallback |
-| ML remote | `nvidia-physicsnemo[cu12]==2.2.1`, `torch==2.10.0` | FNO/checkpoint and CUDA 12 runtime contract; later PyTorch releases require CUDA 13 and conflict with the `cu12` profile |
+| ML remote | Linux: `nvidia-physicsnemo[cu12]==2.2.1`; macOS: `nvidia-physicsnemo==2.2.1`; both: `torch==2.10.0` | FNO/checkpoint contract; Linux retains the CUDA 12 runtime while macOS installs the CPU-capable base distribution because CUDA bindings are unavailable there |
 | Remote operations | `modal==1.5.5` | App/image/volume API contract |
 | Service | `fastapi==0.141.1`, `gradio==6.26.0` | OpenAPI and mounted UI contract |
 | Schemas | `pydantic==2.13.5`, `pydantic-settings==2.15.0` | Strict models and settings |

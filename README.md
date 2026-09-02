@@ -53,6 +53,33 @@ reports the required extra without a traceback.
 See [`docs/cli.md`](docs/cli.md) for JSON fields, failure codes, dependency
 profiles, and automation guidance.
 
+## Bundled CPU smoke model
+
+The wheel and source distribution include a checksum-bound synthetic FNO for a
+real installed-package CPU smoke. It is an untrained plumbing fixture, not a
+scientific model and not evidence of surrogate accuracy. With the ML profile
+installed, materialize its losslessly compressed float32 weights and run the
+fixed PhysicsNeMo predictor with:
+
+```bash
+uv sync --frozen --extra ml
+uv run python - <<'PY'
+from pathlib import Path
+from soufflerie.surrogate import run_bundled_cpu_smoke
+
+result = run_bundled_cpu_smoke(Path("/tmp/soufflerie-model-smoke"))
+print(result.model_dump_json(indent=2))
+PY
+```
+
+The result is schema-v1 JSON with finite `[1,3,320,256]` fields, one drag value,
+and exact output digests. Materialization verifies the packaged descriptor,
+compressed and decoded weight checksums, bundle members, synthetic parent,
+compatibility, and closed 28-tensor allowlist before atomically publishing the
+local bundle. It imports no training, remote, service, or visualization code.
+See the [bundled CPU smoke contract](docs/model/bundled-cpu-smoke.md) for size,
+identity, regeneration, and installed-wheel acceptance details.
+
 ## Remote solver smoke
 
 Authenticated CUDA execution uses one locked Modal app, image, and persistent

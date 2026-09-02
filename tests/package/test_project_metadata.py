@@ -32,7 +32,8 @@ def test_runtime_profiles_match_rfc_0001() -> None:
     assert extras == {
         "solver": ["warp-lang==1.17.0"],
         "ml": [
-            "nvidia-physicsnemo[cu12]==2.2.1",
+            "nvidia-physicsnemo[cu12]==2.2.1; sys_platform == 'linux'",
+            "nvidia-physicsnemo==2.2.1; sys_platform == 'darwin'",
             "tensorboard==2.21.0",
             "torch==2.10.0",
         ],

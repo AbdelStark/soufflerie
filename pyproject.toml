@@ -44,7 +44,8 @@ soufflerie = "soufflerie.cli:app"
 [project.optional-dependencies]
 solver = ["warp-lang==1.17.0"]
 ml = [
-  "nvidia-physicsnemo[cu12]==2.2.1",
+  "nvidia-physicsnemo[cu12]==2.2.1; sys_platform == 'linux'",
+  "nvidia-physicsnemo==2.2.1; sys_platform == 'darwin'",
   "tensorboard==2.21.0",
   "torch==2.10.0",
 ]

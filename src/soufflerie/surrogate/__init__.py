@@ -18,6 +18,15 @@ from soufflerie.surrogate.bundle import (
     render_model_card,
     snapshot_fno_weights,
 )
+from soufflerie.surrogate.bundled import (
+    BUNDLED_RESOURCE_KIND,
+    BundledCpuSmokeResult,
+    BundledModelResource,
+    SmokeDatasetParent,
+    bundled_model_resource,
+    materialize_bundled_cpu_model,
+    run_bundled_cpu_smoke,
+)
 from soufflerie.surrogate.preprocessing import (
     MODEL_CELL_COUNT,
     MODEL_REFERENCE_DIAMETER_LU,
@@ -43,6 +52,7 @@ from soufflerie.surrogate.preprocessing import (
 from soufflerie.surrogate.schema_registry import rendered_surrogate_schema_documents
 
 __all__ = [
+    "BUNDLED_RESOURCE_KIND",
     "EXPECTED_MODEL_TENSORS",
     "MODEL_CELL_COUNT",
     "MODEL_REFERENCE_DIAMETER_LU",
@@ -50,6 +60,8 @@ __all__ = [
     "MODEL_TENSOR_BYTES",
     "MODEL_WEIGHTS_FILE_CAP_BYTES",
     "STANDARD_DEVIATION_FLOOR",
+    "BundledCpuSmokeResult",
+    "BundledModelResource",
     "CompatibilityRange",
     "FlowPredictor",
     "FnoArchitecture",
@@ -68,16 +80,20 @@ __all__ = [
     "PreprocessingSample",
     "PreprocessingStatistics",
     "PublishedModelBundle",
+    "SmokeDatasetParent",
     "TensorLike",
     "build_model_bundle",
+    "bundled_model_resource",
     "denormalize_fields",
     "fit_preprocessing_statistics",
     "instantiate_bundle_predictor",
+    "materialize_bundled_cpu_model",
     "prediction_batch_to_torch",
     "preprocess_batch",
     "preprocess_sample",
     "render_model_card",
     "rendered_surrogate_schema_documents",
+    "run_bundled_cpu_smoke",
     "snapshot_fno_weights",
     "validate_prediction_batch",
 ]
