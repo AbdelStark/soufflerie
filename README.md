@@ -71,6 +71,21 @@ the 1,000-case release dataset. See
 [`docs/operations/remote-runtime.md`](docs/operations/remote-runtime.md) for
 single-solve commands, identity rules, persistence, fallback, and cost controls.
 
+The release-eligible command deliberately has no `--n` override:
+
+```bash
+uv run --extra remote modal run infra/sweep.py \
+  --config configs/sweeps/mvp-v1.yaml \
+  --output /tmp/soufflerie-sweep-summary.json
+```
+
+It binds the frozen 1,000-point maximin LHS design to a clean source and lock,
+uses at most 100 idempotent workers, retains failed-attempt codes across
+retries, and publishes a dataset manifest only after all 1,000 run archives
+verify. Checked release statistics and execution evidence live in
+[`reports/dataset/README.md`](reports/dataset/README.md) once that authenticated
+run completes.
+
 ## Cylinder acceptance
 
 The checked-in Re=100 report binds the canonical and sensitivity runs to exact

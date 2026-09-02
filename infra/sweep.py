@@ -1,4 +1,4 @@
-"""Resumable remote smoke-sweep orchestration over idempotent solve workers."""
+"""Resumable remote sweep orchestration over idempotent solve workers."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ from infra.runtime_manifest import load_build_manifest
 from infra.solve_worker import solve_remote
 from infra.sweep_execution import (
     assert_sweep_request_matches_build,
-    orchestrate_smoke_sweep,
+    orchestrate_sweep,
 )
 from soufflerie.config import SweepConfig, load_config
 from soufflerie.schemas import ArtifactRef
@@ -79,7 +79,7 @@ def sweep_remote(config_ref: ArtifactRef) -> SweepSummary:
             )
         )
 
-    return orchestrate_smoke_sweep(
+    return orchestrate_sweep(
         config_ref,
         root=_artifact_root(),
         build=build,
@@ -90,36 +90,51 @@ def sweep_remote(config_ref: ArtifactRef) -> SweepSummary:
 
 
 @app.local_entrypoint()
-def main(config: str = "", n: int = 0, force_failure_once: bool = True) -> None:
-    """Run the smoke-only eight-case sweep from one clean locked revision."""
+def main(
+    config: str = "",
+    n: int = 0,
+    force_failure_once: bool = True,
+    output: str = "",
+) -> None:
+    """Run the canonical sweep, or the explicitly selected eight-case smoke."""
 
     if not config:
         raise RuntimeError("--config is required")
-    if n != 8:
-        raise RuntimeError(
-            "issue #42 supports only the distinct --n 8 smoke design; "
-            "the 1,000-case release design is owned by issue #15"
-        )
+    if n not in {0, 8}:
+        raise RuntimeError("--n accepts only 8 for smoke; omit it for the 1,000-case design")
     if checkout.source_dirty:
         raise RuntimeError("remote sweep submission requires a clean source revision")
     sweep_config = load_config(Path(config), SweepConfig)
-    request = RemoteSweepRequest.create(
-        config=sweep_config,
-        requested_device_class=settings.remote_gpu,
-        source_revision=checkout.source_revision,
-        lock_sha256=checkout.lock_sha256,
-        force_failure_once=force_failure_once,
-    )
+    if n == 8:
+        request = RemoteSweepRequest.create(
+            config=sweep_config,
+            requested_device_class=settings.remote_gpu,
+            source_revision=checkout.source_revision,
+            lock_sha256=checkout.lock_sha256,
+            force_failure_once=force_failure_once,
+        )
+    else:
+        request = RemoteSweepRequest.create_canonical(
+            config=sweep_config,
+            requested_device_class=settings.remote_gpu,
+            source_revision=checkout.source_revision,
+            lock_sha256=checkout.lock_sha256,
+        )
     request_reference = stage_sweep_request_remote.remote(encode_remote_model(request))
     summary = sweep_remote.remote(request_reference)
-    print(json.dumps(summary.model_dump(mode="json"), indent=2, sort_keys=True))
+    rendered = json.dumps(summary.model_dump(mode="json"), indent=2, sort_keys=True) + "\n"
+    print(rendered, end="")
+    if output:
+        output_path = Path(output).resolve()
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(rendered, encoding="utf-8")
     if summary.final_state != "succeeded":
-        raise RuntimeError("remote smoke sweep is incomplete; rerun to resume eligible cases")
+        raise RuntimeError("remote sweep is incomplete; rerun to resume eligible cases")
 
 
 __all__ = [
     "main",
-    "orchestrate_smoke_sweep",
+    "orchestrate_sweep",
     "stage_sweep_request_remote",
     "sweep_remote",
 ]
