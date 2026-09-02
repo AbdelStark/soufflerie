@@ -1,0 +1,114 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/baseline-metadata.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Content identity and train-only lineage for one fitted baseline.",
+  "properties": {
+    "artifact_type": {
+      "const": "baseline",
+      "default": "baseline",
+      "title": "Artifact Type",
+      "type": "string"
+    },
+    "baseline_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Baseline Id",
+      "type": "string"
+    },
+    "baseline_kind": {
+      "enum": [
+        "mean-field-v1",
+        "nearest-design-v1"
+      ],
+      "title": "Baseline Kind",
+      "type": "string"
+    },
+    "baseline_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Baseline Sha256",
+      "type": "string"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "dataset_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dataset Sha256",
+      "type": "string"
+    },
+    "design_distance": {
+      "enum": [
+        "not-applicable",
+        "unit-interval-euclidean-v1"
+      ],
+      "title": "Design Distance",
+      "type": "string"
+    },
+    "fit_dtype": {
+      "const": "float64",
+      "default": "float64",
+      "title": "Fit Dtype",
+      "type": "string"
+    },
+    "output_contract": {
+      "const": "flow-predictor-normalized-v1",
+      "default": "flow-predictor-normalized-v1",
+      "title": "Output Contract",
+      "type": "string"
+    },
+    "prediction_dtype": {
+      "const": "float32",
+      "default": "float32",
+      "title": "Prediction Dtype",
+      "type": "string"
+    },
+    "preprocessing_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Preprocessing Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "State Sha256",
+      "type": "string"
+    },
+    "training_case_count": {
+      "const": 600,
+      "default": 600,
+      "title": "Training Case Count",
+      "type": "integer"
+    },
+    "training_membership_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Training Membership Sha256",
+      "type": "string"
+    },
+    "training_split": {
+      "const": "train",
+      "default": "train",
+      "title": "Training Split",
+      "type": "string"
+    }
+  },
+  "required": [
+    "baseline_kind",
+    "baseline_id",
+    "baseline_sha256",
+    "dataset_id",
+    "dataset_sha256",
+    "preprocessing_sha256",
+    "training_membership_sha256",
+    "state_sha256",
+    "design_distance"
+  ],
+  "title": "BaselineMetadata",
+  "type": "object"
+}

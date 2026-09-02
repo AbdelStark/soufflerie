@@ -32,9 +32,11 @@ REQUIRED_WHEEL_MEMBERS = {
     "soufflerie/resources/model/bundle.json",
     "soufflerie/resources/model/model.safetensors.gz",
     "soufflerie/resources/model/resource.json",
+    "soufflerie/schemas/v1/baseline-metadata.json",
     "soufflerie/schemas/v1/bundled-model-resource.json",
     "soufflerie/schemas/v1/bundled-model-smoke-result.json",
     "soufflerie/schemas/v1/provenance.json",
+    "soufflerie/training/__init__.py",
 }
 REQUIRED_SDIST_MEMBERS = {
     ".env.example",
