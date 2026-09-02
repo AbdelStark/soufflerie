@@ -100,7 +100,9 @@ infra -> public package interfaces
    assignments before execution.
 3. The remote sweep claims each `case_id`, runs the solver, validates the result, and atomically publishes a run archive and terminal state.
 4. A manifest builder admits only valid, checksum-matching runs, freezes splits, and publishes `DatasetManifest`.
-5. Training loads only the manifest, fits preprocessing statistics on the training split, trains both baselines and three seeded FNO runs, and publishes immutable model bundles.
+5. Training loads only the manifest, fits preprocessing statistics on the training split,
+   trains both baselines and three seeded FNO runs under a fail-closed CUDA precision and
+   determinism policy, fsyncs authoritative epoch JSONL, and publishes immutable model bundles.
 6. Validation evaluates the selected bundle and all seeds against the frozen test split plus OOD probes, then writes JSON, Markdown, plots, and a gate summary atomically.
 7. The service loads one bundle and its matching report at startup. It refuses mismatched identities and exposes failed validation state without suppressing predictions.
 8. The UI renders the service response, uses one field rendering contract, and launches reference solve jobs only through the service boundary.
@@ -125,7 +127,12 @@ infra -> public package interfaces
 
 Sweep cases are independent. A case transitions `pending -> running -> succeeded|failed`; expired `running` leases may be reclaimed. Publishing uses a temporary key followed by atomic rename/commit. Duplicate successful attempts are accepted only when their content digests match; divergent duplicates fail the sweep integrity check.
 
-Training is single-process/single-GPU in v0.1. API prediction concurrency is bounded by one worker per GPU and a configurable in-process queue. Reference solve jobs use a separate concurrency limit so they cannot starve prediction. No distributed consensus or durable general-purpose queue is in scope.
+Training is single-process/single-GPU in v0.1. Every seed has one model,
+optimizer, scaler, and contiguous epoch log; no state is shared between seeds.
+API prediction concurrency is bounded by one worker per GPU and a configurable
+in-process queue. Reference solve jobs use a separate concurrency limit so they
+cannot starve prediction. No distributed consensus or durable general-purpose
+queue is in scope.
 
 <a id="extension-points"></a>
 ## Extension points

@@ -6,6 +6,7 @@
   "properties": {
     "batch_size": {
       "default": 8,
+      "maximum": 64,
       "minimum": 1,
       "title": "Batch Size",
       "type": "integer"

@@ -1,0 +1,207 @@
+{
+  "$defs": {
+    "EpochLossMetrics": {
+      "additionalProperties": false,
+      "description": "Fp64 epoch means for every raw term and the weighted objective.",
+      "properties": {
+        "cd": {
+          "minimum": 0.0,
+          "title": "Cd",
+          "type": "number"
+        },
+        "obstacle": {
+          "minimum": 0.0,
+          "title": "Obstacle",
+          "type": "number"
+        },
+        "rho": {
+          "minimum": 0.0,
+          "title": "Rho",
+          "type": "number"
+        },
+        "total": {
+          "minimum": 0.0,
+          "title": "Total",
+          "type": "number"
+        },
+        "u": {
+          "minimum": 0.0,
+          "title": "U",
+          "type": "number"
+        },
+        "v": {
+          "minimum": 0.0,
+          "title": "V",
+          "type": "number"
+        }
+      },
+      "required": [
+        "u",
+        "v",
+        "rho",
+        "obstacle",
+        "cd",
+        "total"
+      ],
+      "title": "EpochLossMetrics",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/training-epoch.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "One complete canonical training epoch; JSONL is the source of truth.",
+  "properties": {
+    "batches": {
+      "minimum": 1,
+      "title": "Batches",
+      "type": "integer"
+    },
+    "compute_capability": {
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "title": "Compute Capability",
+      "type": "string"
+    },
+    "compute_seconds": {
+      "minimum": 0.0,
+      "title": "Compute Seconds",
+      "type": "number"
+    },
+    "config_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Digest",
+      "type": "string"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "device": {
+      "pattern": "^cuda:[0-9]+$",
+      "title": "Device",
+      "type": "string"
+    },
+    "device_name": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Device Name",
+      "type": "string"
+    },
+    "epoch": {
+      "minimum": 1,
+      "title": "Epoch",
+      "type": "integer"
+    },
+    "experiment_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "global_step": {
+      "minimum": 1,
+      "title": "Global Step",
+      "type": "integer"
+    },
+    "gpu_seconds": {
+      "minimum": 0.0,
+      "title": "Gpu Seconds",
+      "type": "number"
+    },
+    "io_seconds": {
+      "minimum": 0.0,
+      "title": "Io Seconds",
+      "type": "number"
+    },
+    "learning_rate": {
+      "exclusiveMinimum": 0.0,
+      "title": "Learning Rate",
+      "type": "number"
+    },
+    "loss": {
+      "$ref": "#/$defs/EpochLossMetrics"
+    },
+    "peak_allocated_bytes": {
+      "minimum": 0,
+      "title": "Peak Allocated Bytes",
+      "type": "integer"
+    },
+    "peak_reserved_bytes": {
+      "minimum": 0,
+      "title": "Peak Reserved Bytes",
+      "type": "integer"
+    },
+    "precision": {
+      "enum": [
+        "bf16",
+        "fp16"
+      ],
+      "title": "Precision",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "training-epoch",
+      "default": "training-epoch",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "reduction_dtype": {
+      "const": "float32",
+      "default": "float32",
+      "title": "Reduction Dtype",
+      "type": "string"
+    },
+    "reporting_dtype": {
+      "const": "float64",
+      "default": "float64",
+      "title": "Reporting Dtype",
+      "type": "string"
+    },
+    "samples": {
+      "minimum": 1,
+      "title": "Samples",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seed": {
+      "maximum": 18446744073709551615,
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "wall_seconds": {
+      "minimum": 0.0,
+      "title": "Wall Seconds",
+      "type": "number"
+    }
+  },
+  "required": [
+    "experiment_id",
+    "dataset_id",
+    "config_digest",
+    "seed",
+    "epoch",
+    "batches",
+    "samples",
+    "global_step",
+    "learning_rate",
+    "precision",
+    "device",
+    "device_name",
+    "compute_capability",
+    "loss",
+    "wall_seconds",
+    "compute_seconds",
+    "io_seconds",
+    "gpu_seconds",
+    "peak_allocated_bytes",
+    "peak_reserved_bytes"
+  ],
+  "title": "TrainingEpochRecord",
+  "type": "object"
+}
