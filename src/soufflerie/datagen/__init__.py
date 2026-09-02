@@ -1,5 +1,20 @@
 """Design sampling, immutable dataset artifacts, and sweep state."""
 
+from soufflerie.datagen.design import (
+    CANDIDATE_COUNT,
+    DESIGN_SAMPLE_COUNT,
+    DIMENSION_NAMES,
+    SPLIT_SALT,
+    DesignPoint,
+    DesignSummary,
+    DistributionSummary,
+    UnsplitDesignPoint,
+    assign_splits,
+    case_config_for_point,
+    generate_design_summary,
+    render_design_summary,
+    sample_design,
+)
 from soufflerie.datagen.run_artifact import (
     OUTPUT_SHAPE,
     RUN_MEMBER_ORDER,
@@ -28,14 +43,21 @@ from soufflerie.datagen.sweep_state import (
 )
 
 __all__ = [
+    "CANDIDATE_COUNT",
+    "DESIGN_SAMPLE_COUNT",
+    "DIMENSION_NAMES",
     "LEASE_DURATION",
     "LEASE_EXPIRED_CODE",
     "MAX_SWEEP_ATTEMPTS",
     "OUTPUT_SHAPE",
     "RUN_MEMBER_ORDER",
     "SOLVER_SHAPE",
+    "SPLIT_SALT",
     "CaseState",
     "CuratedRunFields",
+    "DesignPoint",
+    "DesignSummary",
+    "DistributionSummary",
     "LocalRunArtifactStore",
     "LocalSweepStateStore",
     "QuantizationStatistic",
@@ -44,10 +66,16 @@ __all__ = [
     "RunArtifactStore",
     "RunMetadata",
     "SweepStateStore",
+    "UnsplitDesignPoint",
     "VerifiedCaseRun",
+    "assign_splits",
     "build_resume_plan",
+    "case_config_for_point",
     "curate_solver_result",
     "encode_run_fields",
+    "generate_design_summary",
+    "render_design_summary",
     "rendered_datagen_schema_documents",
     "run_member_descriptors",
+    "sample_design",
 ]

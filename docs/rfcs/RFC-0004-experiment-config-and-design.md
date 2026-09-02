@@ -56,7 +56,14 @@ class SweepConfig(BaseModel):
 
 Canonical values are exactly: aspect ratio `[0.5,1.0]`, rotation degrees `[0,30]`, scale `[0.75,1.25]`, Reynolds `[40,300]`, sample count `1000`, split counts `(600,200,200)`, and a checked-in 64-bit seed. YAML uses explicit numbers; environment interpolation, anchors, aliases, unknown keys, implicit strings-to-numbers, and non-finite values are rejected. YAML sequences normalize only to the immutable tuple fields declared by the model. `config_digest` derives from validated canonical JSON.
 
-Sampling uses a local NumPy `Generator(PCG64(seed))`. For dimension `d=4` and `n=1000`, each axis receives one jittered sample per stratum `(k+u)/n`, permutations are independent per dimension, and 32 deterministic candidates are generated from child seeds. The candidate maximizing minimum pairwise Euclidean distance in normalized `[0,1]^4` space is selected; ties use candidate index. Endpoints are not forced. Values map linearly to physical ranges and are serialized at IEEE-754 double precision before `CaseConfig` derivation.
+Sampling uses a local NumPy `Generator(PCG64(seed))`. Its first 32 `random_raw`
+uint64 outputs are the candidate child seeds. For dimension `d=4` and `n=1000`,
+each axis receives one jittered sample per stratum `(k+u)/n`, permutations are
+independent per dimension, and 32 deterministic candidates are generated from
+those child seeds. The candidate maximizing minimum pairwise Euclidean distance
+in normalized `[0,1]^4` space is selected; ties use the lowest candidate index.
+Endpoints are not forced. Values map linearly to physical ranges and are
+serialized at IEEE-754 double precision before `CaseConfig` derivation.
 
 ```python
 @dataclass(frozen=True, slots=True)
@@ -75,7 +82,12 @@ def assign_splits(points: Sequence[UnsplitDesignPoint], seed: int) -> tuple[Desi
 
 Every sample passes RFC-0002 lattice and RFC-0003 geometry preflight. Because the fixed public domain is designed to be feasible, a preflight failure fails configuration generation; it does not resample around an invalid region. This prevents an undocumented change in sampling density.
 
-Split assignment computes `sha256("split-v1" || seed_bytes || canonical_design_json)` for each point, sorts ascending by full digest then `design_id`, assigns the first 600 train, next 200 validation, and final 200 test, and persists the assignment before solver execution. Execution order may differ but membership cannot. Reruns and snapshots inherit the design point's split.
+Split assignment computes
+`sha256("split-v1" || seed.to_bytes(8, "big") || canonical_design_json)` for each
+point, sorts ascending by full digest then `design_id`, assigns the first 600
+train, next 200 validation, and final 200 test, and persists the assignment
+before solver execution. Execution order may differ but membership cannot.
+Reruns and snapshots inherit the design point's split.
 
 `design_id` hashes physical parameters and design schema, excluding grid/run controls. `case_id` also includes numerical controls. A numerical rerun of one design point therefore has a new case ID but may only replace the canonical run through an explicit dataset revision while retaining split.
 

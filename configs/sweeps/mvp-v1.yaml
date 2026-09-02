@@ -1,3 +1,6 @@
+# config_sha256: 04ffaf7dcb027482d82c921fa617a429872a06e5d0a92545e3cfaf724a011333
+# design_sha256: 352a060bdb7ef2ff3e9432d7eff4333d6d3c9bd9aca33c6f29f6f56a307250c1
+# split_sha256: 406a35bdef46cd10e77efc7fc6b301ffbb089783c2454dc86c8308a093e9d027
 schema_version: 1
 name: mvp-v1
 seed: 20260901

@@ -1,0 +1,347 @@
+{
+  "$defs": {
+    "DesignDimensionSummaries": {
+      "additionalProperties": false,
+      "properties": {
+        "aspect_ratio": {
+          "$ref": "#/$defs/DistributionSummary"
+        },
+        "reynolds": {
+          "$ref": "#/$defs/DistributionSummary"
+        },
+        "rotation_deg": {
+          "$ref": "#/$defs/DistributionSummary"
+        },
+        "scale": {
+          "$ref": "#/$defs/DistributionSummary"
+        }
+      },
+      "required": [
+        "aspect_ratio",
+        "rotation_deg",
+        "scale",
+        "reynolds"
+      ],
+      "title": "DesignDimensionSummaries",
+      "type": "object"
+    },
+    "DesignSplitCounts": {
+      "additionalProperties": false,
+      "properties": {
+        "test": {
+          "const": 200,
+          "default": 200,
+          "title": "Test",
+          "type": "integer"
+        },
+        "train": {
+          "const": 600,
+          "default": 600,
+          "title": "Train",
+          "type": "integer"
+        },
+        "validation": {
+          "const": 200,
+          "default": 200,
+          "title": "Validation",
+          "type": "integer"
+        }
+      },
+      "title": "DesignSplitCounts",
+      "type": "object"
+    },
+    "DistributionSummary": {
+      "additionalProperties": false,
+      "description": "Finite deterministic summary of one scalar vector.",
+      "properties": {
+        "maximum": {
+          "title": "Maximum",
+          "type": "number"
+        },
+        "mean": {
+          "title": "Mean",
+          "type": "number"
+        },
+        "minimum": {
+          "title": "Minimum",
+          "type": "number"
+        },
+        "q05": {
+          "title": "Q05",
+          "type": "number"
+        },
+        "q25": {
+          "title": "Q25",
+          "type": "number"
+        },
+        "q50": {
+          "title": "Q50",
+          "type": "number"
+        },
+        "q75": {
+          "title": "Q75",
+          "type": "number"
+        },
+        "q95": {
+          "title": "Q95",
+          "type": "number"
+        }
+      },
+      "required": [
+        "minimum",
+        "maximum",
+        "mean",
+        "q05",
+        "q25",
+        "q50",
+        "q75",
+        "q95"
+      ],
+      "title": "DistributionSummary",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/design-summary.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Checked, compact evidence for one immutable maximin design.",
+  "properties": {
+    "all_preflights_passed": {
+      "const": true,
+      "default": true,
+      "title": "All Preflights Passed",
+      "type": "boolean"
+    },
+    "candidate_child_seeds": {
+      "items": {
+        "type": "integer"
+      },
+      "maxItems": 32,
+      "minItems": 32,
+      "title": "Candidate Child Seeds",
+      "type": "array"
+    },
+    "candidate_count": {
+      "const": 32,
+      "default": 32,
+      "title": "Candidate Count",
+      "type": "integer"
+    },
+    "candidate_minimum_distances": {
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 32,
+      "minItems": 32,
+      "title": "Candidate Minimum Distances",
+      "type": "array"
+    },
+    "candidate_seeds_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Seeds Sha256",
+      "type": "string"
+    },
+    "config_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Sha256",
+      "type": "string"
+    },
+    "design_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Design Sha256",
+      "type": "string"
+    },
+    "dimension_statistics": {
+      "$ref": "#/$defs/DesignDimensionSummaries"
+    },
+    "dimensions": {
+      "default": [
+        "aspect_ratio",
+        "rotation_deg",
+        "scale",
+        "reynolds"
+      ],
+      "maxItems": 4,
+      "minItems": 4,
+      "prefixItems": [
+        {
+          "const": "aspect_ratio",
+          "type": "string"
+        },
+        {
+          "const": "rotation_deg",
+          "type": "string"
+        },
+        {
+          "const": "scale",
+          "type": "string"
+        },
+        {
+          "const": "reynolds",
+          "type": "string"
+        }
+      ],
+      "title": "Dimensions",
+      "type": "array"
+    },
+    "geometry_preflight_passed": {
+      "const": 1000,
+      "default": 1000,
+      "title": "Geometry Preflight Passed",
+      "type": "integer"
+    },
+    "lattice_preflight_passed": {
+      "const": 1000,
+      "default": 1000,
+      "title": "Lattice Preflight Passed",
+      "type": "integer"
+    },
+    "name": {
+      "pattern": "^[a-z][a-z0-9-]{0,63}$",
+      "title": "Name",
+      "type": "string"
+    },
+    "nearest_neighbor_distance": {
+      "$ref": "#/$defs/DistributionSummary"
+    },
+    "pairwise_correlation": {
+      "maxItems": 4,
+      "minItems": 4,
+      "prefixItems": [
+        {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        }
+      ],
+      "title": "Pairwise Correlation",
+      "type": "array"
+    },
+    "samples": {
+      "const": 1000,
+      "default": 1000,
+      "title": "Samples",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seed": {
+      "maximum": 18446744073709551615,
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "selected_candidate_index": {
+      "exclusiveMaximum": 32,
+      "minimum": 0,
+      "title": "Selected Candidate Index",
+      "type": "integer"
+    },
+    "selected_minimum_distance": {
+      "exclusiveMinimum": 0.0,
+      "title": "Selected Minimum Distance",
+      "type": "number"
+    },
+    "split_counts": {
+      "$ref": "#/$defs/DesignSplitCounts"
+    },
+    "split_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Split Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "seed",
+    "candidate_child_seeds",
+    "candidate_seeds_sha256",
+    "candidate_minimum_distances",
+    "selected_candidate_index",
+    "selected_minimum_distance",
+    "config_sha256",
+    "design_sha256",
+    "split_sha256",
+    "split_counts",
+    "dimension_statistics",
+    "pairwise_correlation",
+    "nearest_neighbor_distance"
+  ],
+  "title": "DesignSummary",
+  "type": "object"
+}

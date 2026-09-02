@@ -25,7 +25,10 @@ silently casting or repairing them.
 
 ## Lattice derivation and preflight
 
-`derive_lattice(case)` maps `CaseConfig` to `DerivedLatticeConfig`. The
+`derive_lattice(case)` maps `CaseConfig` to `DerivedLatticeConfig`. Its
+allocation-free implementation lives in the shared `soufflerie.numerics`
+foundation and is re-exported through the solver API, allowing design
+generation to preflight cases without a peer-domain import. The
 unscaled reference diameter is `D_lu = ny / 20`, the diagnostic sample
 interval is 10 steps, and the inlet ramp is capped at 2,000 warm-up steps.
 The exact derived quantities are:
