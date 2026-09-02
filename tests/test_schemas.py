@@ -31,6 +31,7 @@ from soufflerie.schemas import (
 )
 from soufflerie.solver.cylinder_acceptance import rendered_cylinder_schema_documents
 from soufflerie.surrogate import rendered_surrogate_schema_documents
+from soufflerie.training import rendered_training_schema_documents
 
 
 def _case() -> CaseConfig:
@@ -249,6 +250,7 @@ def test_checked_in_schema_v1_documents_are_current() -> None:
         **rendered_artifact_schema_documents(),
         **rendered_cylinder_schema_documents(),
         **rendered_surrogate_schema_documents(),
+        **rendered_training_schema_documents(),
     }
     assert {path.name for path in root.glob("*.json")} == set(expected)
     for name, content in expected.items():

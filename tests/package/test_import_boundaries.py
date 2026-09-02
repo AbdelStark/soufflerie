@@ -24,13 +24,15 @@ OPTIONAL_RUNTIME_ROOTS = {
 }
 FOUNDATION_MODULES = {"config", "geometry", "observability", "schemas"}
 DOMAIN_MODULES = {"datagen", "solver", "surrogate"}
+TRAINING_MODULES = {"training"}
 VALIDATION_MODULES = {"validation"}
 APPLICATION_MODULES = {"cli", "demo", "service"}
 LAYERS = {
     **dict.fromkeys(FOUNDATION_MODULES, 0),
     **dict.fromkeys(DOMAIN_MODULES, 1),
-    **dict.fromkeys(VALIDATION_MODULES, 2),
-    **dict.fromkeys(APPLICATION_MODULES, 3),
+    **dict.fromkeys(TRAINING_MODULES, 2),
+    **dict.fromkeys(VALIDATION_MODULES, 3),
+    **dict.fromkeys(APPLICATION_MODULES, 4),
 }
 
 
@@ -96,6 +98,26 @@ print(json.dumps(loaded))
     assert loaded_roots.isdisjoint(OPTIONAL_RUNTIME_ROOTS)
 
 
+def test_training_contract_import_does_not_load_optional_frameworks() -> None:
+    code = """
+import json
+import sys
+
+before = set(sys.modules)
+import soufflerie.training
+loaded = sorted({name.split('.')[0] for name in set(sys.modules) - before})
+print(json.dumps(loaded))
+"""
+    completed = subprocess.run(
+        [sys.executable, "-I", "-c", code],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    loaded_roots = set(json.loads(completed.stdout))
+    assert loaded_roots.isdisjoint(OPTIONAL_RUNTIME_ROOTS)
+
+
 def test_module_tree_matches_architecture() -> None:
     expected_modules = {
         "cli.py",
@@ -110,6 +132,7 @@ def test_module_tree_matches_architecture() -> None:
         "service",
         "solver",
         "surrogate",
+        "training",
         "validation",
     }
     assert {path.name for path in PACKAGE_ROOT.glob("*.py")} >= expected_modules

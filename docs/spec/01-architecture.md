@@ -28,7 +28,8 @@ src/soufflerie/
   schemas.py         # shared Pydantic/dataclass contracts and schema versions
   solver/            # lattice state, kernels, boundaries, forces, diagnostics
   datagen/           # design sampling, split assignment, manifests, sweep state
-  surrogate/         # preprocessing, baselines, FNO adapter, bundles, inference
+  surrogate/         # preprocessing, FNO adapter, bundles, inference
+  training/          # manifest loaders, baselines, optimization and selection
   validation/        # metrics, gates, report model and renderer
   service/           # HTTP application, solve job lifecycle, response encoding
   demo/              # UI composition and plotting
@@ -76,8 +77,9 @@ Allowed dependencies are one-way:
 ```text
 config, schemas, geometry, numerics
     -> solver, datagen, surrogate
-        -> validation
-            -> service, demo, cli
+        -> training
+            -> validation
+                -> service, demo, cli
 
 infra -> public package interfaces
 ```
@@ -85,7 +87,8 @@ infra -> public package interfaces
 - Domain modules MUST NOT import `infra`.
 - Training MUST NOT import CLI or UI modules.
 - Models MUST return values; they MUST NOT write reports or remote artifacts directly.
-- External framework calls live behind thin adapters in `solver`, `surrogate`, `service`, or `infra`.
+- External framework calls live behind thin adapters in `solver`, `surrogate`, `training`,
+  `service`, or `infra`.
 - Optional imports occur inside the owning adapter and raise typed `DependencyUnavailableError` errors.
 
 <a id="primary-data-flow"></a>
