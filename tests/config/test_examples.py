@@ -23,6 +23,7 @@ from soufflerie.schemas import CaseConfig, rendered_schema_documents
 from soufflerie.solver.cylinder_acceptance import rendered_cylinder_schema_documents
 from soufflerie.surrogate import rendered_surrogate_schema_documents
 from soufflerie.training import rendered_training_schema_documents
+from soufflerie.validation import rendered_validation_schema_documents
 
 PROJECT_ROOT = Path(__file__).parents[2]
 EXAMPLES: Mapping[Path, type[BaseModel]] = {
@@ -65,6 +66,7 @@ def test_all_generated_schema_documents_are_checked_in() -> None:
         **rendered_cylinder_schema_documents(),
         **rendered_surrogate_schema_documents(),
         **rendered_training_schema_documents(),
+        **rendered_validation_schema_documents(),
     }
     root = PROJECT_ROOT / "schemas" / "v1"
     assert {path.name for path in root.glob("*.json")} == set(expected)

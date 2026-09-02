@@ -1,0 +1,156 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/metric-summary.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Deterministic median/tail/bootstrap evidence without invalid-case skipping.",
+  "properties": {
+    "bootstrap_median_95": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "minimum": 0.0,
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Bootstrap Median 95"
+    },
+    "bootstrap_resamples": {
+      "maximum": 100000,
+      "minimum": 100,
+      "title": "Bootstrap Resamples",
+      "type": "integer"
+    },
+    "count": {
+      "minimum": 1,
+      "title": "Count",
+      "type": "integer"
+    },
+    "invalid_case_ids": {
+      "items": {
+        "pattern": "^[0-9a-f]{20}$",
+        "type": "string"
+      },
+      "title": "Invalid Case Ids",
+      "type": "array"
+    },
+    "maximum": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Maximum"
+    },
+    "median": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Median"
+    },
+    "name": {
+      "enum": [
+        "velocity_rel_l2",
+        "cd_head_pct",
+        "cd_field_pct",
+        "head_field_gap_pct",
+        "prediction_div_mean_abs",
+        "solver_div_mean_abs",
+        "obstacle_ratio"
+      ],
+      "title": "Name",
+      "type": "string"
+    },
+    "p90": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "P90"
+    },
+    "p95": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "P95"
+    },
+    "report_seed": {
+      "maximum": 18446744073709551615,
+      "minimum": 0,
+      "title": "Report Seed",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "valid",
+        "invalid"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "valid_count": {
+      "minimum": 0,
+      "title": "Valid Count",
+      "type": "integer"
+    },
+    "worst_case_ids": {
+      "items": {
+        "pattern": "^[0-9a-f]{20}$",
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Worst Case Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "status",
+    "count",
+    "valid_count",
+    "invalid_case_ids",
+    "median",
+    "p90",
+    "p95",
+    "maximum",
+    "bootstrap_median_95",
+    "worst_case_ids",
+    "bootstrap_resamples",
+    "report_seed"
+  ],
+  "title": "MetricSummary",
+  "type": "object"
+}

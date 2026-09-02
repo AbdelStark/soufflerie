@@ -1,0 +1,118 @@
+{
+  "$defs": {
+    "MetricObservation": {
+      "additionalProperties": false,
+      "description": "One valid value or one explicit invalid-metric reason.",
+      "properties": {
+        "failure": {
+          "anyOf": [
+            {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure"
+        },
+        "name": {
+          "enum": [
+            "velocity_rel_l2",
+            "cd_head_pct",
+            "cd_field_pct",
+            "head_field_gap_pct",
+            "prediction_div_mean_abs",
+            "solver_div_mean_abs",
+            "obstacle_ratio"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "valid",
+            "invalid"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "units": {
+          "enum": [
+            "ratio",
+            "percent",
+            "inverse_lattice_unit"
+          ],
+          "title": "Units",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "name",
+        "status",
+        "value",
+        "units"
+      ],
+      "title": "MetricObservation",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/case-metrics.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "All fixed per-case validation observations in canonical order.",
+  "properties": {
+    "case_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "cd_field_pct": {
+      "$ref": "#/$defs/MetricObservation"
+    },
+    "cd_head_pct": {
+      "$ref": "#/$defs/MetricObservation"
+    },
+    "head_field_gap_pct": {
+      "$ref": "#/$defs/MetricObservation"
+    },
+    "obstacle_ratio": {
+      "$ref": "#/$defs/MetricObservation"
+    },
+    "prediction_div_mean_abs": {
+      "$ref": "#/$defs/MetricObservation"
+    },
+    "solver_div_mean_abs": {
+      "$ref": "#/$defs/MetricObservation"
+    },
+    "velocity_rel_l2": {
+      "$ref": "#/$defs/MetricObservation"
+    }
+  },
+  "required": [
+    "case_id",
+    "velocity_rel_l2",
+    "cd_head_pct",
+    "cd_field_pct",
+    "head_field_gap_pct",
+    "prediction_div_mean_abs",
+    "solver_div_mean_abs",
+    "obstacle_ratio"
+  ],
+  "title": "CaseMetrics",
+  "type": "object"
+}
