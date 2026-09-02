@@ -31,8 +31,8 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #11 | [solver: implement channel inlet, outlet, walls, and sponge](https://github.com/AbdelStark/soufflerie/issues/11) | geometry | p0 | l | RFC-0003 | closed |
 | #12 | [solver: implement obstacle bounce-back and force reduction](https://github.com/AbdelStark/soufflerie/issues/12) | geometry | p0 | l | RFC-0003 | closed |
 | #13 | [solver: implement Strouhal and field-drag diagnostics](https://github.com/AbdelStark/soufflerie/issues/13) | geometry | p1 | m | RFC-0003 | closed |
-| #14 | [solver: pass cylinder reference and grid-sensitivity acceptance](https://github.com/AbdelStark/soufflerie/issues/14) | geometry | p0 | l | RFC-0002, RFC-0003, RFC-0011 | open |
-| #15 | [datagen: implement deterministic LHS design and frozen splits](https://github.com/AbdelStark/soufflerie/issues/15) | datagen | p0 | m | RFC-0004 | open |
+| #14 | [solver: pass cylinder reference and grid-sensitivity acceptance](https://github.com/AbdelStark/soufflerie/issues/14) | geometry | p0 | l | RFC-0002, RFC-0003, RFC-0011 | closed |
+| #15 | [datagen: implement deterministic LHS design and frozen splits](https://github.com/AbdelStark/soufflerie/issues/15) | datagen | p0 | m | RFC-0004 | closed |
 | #16 | [datagen: implement safe run codecs and local artifact store](https://github.com/AbdelStark/soufflerie/issues/16) | datagen | p0 | l | RFC-0005 | closed |
 | #17 | [datagen: implement leased resumable sweep state](https://github.com/AbdelStark/soufflerie/issues/17) | datagen | p0 | l | RFC-0005 | closed |
 | #18 | [datagen: build and validate the immutable dataset manifest](https://github.com/AbdelStark/soufflerie/issues/18) | datagen | p0 | l | RFC-0005 | open |
@@ -59,7 +59,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #39 | [ui: integrate solve comparison and local CPU demo](https://github.com/AbdelStark/soufflerie/issues/39) | ui | p1 | l | RFC-0010 | open |
 | #40 | [docs: generate the three evidence-backed README visuals](https://github.com/AbdelStark/soufflerie/issues/40) | ui | p2 | m | RFC-0010, RFC-0013 | open |
 | #41 | [infra: define the locked remote runtime and persistent volume](https://github.com/AbdelStark/soufflerie/issues/41) | infra | p0 | l | RFC-0011 | closed |
-| #42 | [infra: expose idempotent remote solve and sweep entrypoints](https://github.com/AbdelStark/soufflerie/issues/42) | infra | p0 | l | RFC-0002, RFC-0005, RFC-0011 | open |
+| #42 | [infra: expose idempotent remote solve and sweep entrypoints](https://github.com/AbdelStark/soufflerie/issues/42) | infra | p0 | l | RFC-0002, RFC-0005, RFC-0011 | closed |
 | #43 | [infra: expose remote training and validation entrypoints](https://github.com/AbdelStark/soufflerie/issues/43) | infra | p0 | l | RFC-0007, RFC-0008, RFC-0011 | open |
 | #44 | [infra: deploy the mounted GPU service and run end-to-end smoke](https://github.com/AbdelStark/soufflerie/issues/44) | infra | p0 | l | RFC-0009, RFC-0010, RFC-0011 | open |
 | #45 | [infra: prove volume atomicity, fallback, and recovery](https://github.com/AbdelStark/soufflerie/issues/45) | infra | p0 | m | RFC-0011 | open |

@@ -24,6 +24,7 @@ The implementation uses a `src` layout:
 src/soufflerie/
   config.py          # strict configuration parsing and canonicalization
   geometry.py        # ellipse SDF and masks; no solver dependency
+  numerics.py        # allocation-free lattice configuration preflight
   schemas.py         # shared Pydantic/dataclass contracts and schema versions
   solver/            # lattice state, kernels, boundaries, forces, diagnostics
   datagen/           # design sampling, split assignment, manifests, sweep state
@@ -73,7 +74,7 @@ domain import of root-level `infra`.
 Allowed dependencies are one-way:
 
 ```text
-config, schemas, geometry
+config, schemas, geometry, numerics
     -> solver, datagen, surrogate
         -> validation
             -> service, demo, cli
@@ -91,7 +92,9 @@ infra -> public package interfaces
 ## Primary data flow
 
 1. A versioned YAML config is parsed into `SweepConfig`; canonical JSON yields `config_digest`.
-2. Latin hypercube sampling emits 1,000 `CaseConfig` records and deterministic split assignments.
+2. Latin hypercube sampling emits 1,000 physical design points, binds them to
+   `CaseConfig` records, preflights all cases, and freezes deterministic split
+   assignments before execution.
 3. The remote sweep claims each `case_id`, runs the solver, validates the result, and atomically publishes a run archive and terminal state.
 4. A manifest builder admits only valid, checksum-matching runs, freezes splits, and publishes `DatasetManifest`.
 5. Training loads only the manifest, fits preprocessing statistics on the training split, trains both baselines and three seeded FNO runs, and publishes immutable model bundles.

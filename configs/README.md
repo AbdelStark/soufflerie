@@ -15,3 +15,9 @@ validation, or deployment.
 
 Run `uv run python scripts/validate_schemas.py` after changing a model or example.
 Regenerate schema JSON with `uv run python scripts/export_schemas.py`.
+
+The canonical sweep records its validated config, design, and split SHA-256
+digests in comments at the top of [`sweeps/mvp-v1.yaml`](sweeps/mvp-v1.yaml).
+Comments are outside the config identity boundary. The reproducible statistics
+and preflight evidence live in
+[`reports/data/design-mvp-v1.json`](../reports/data/design-mvp-v1.json).
