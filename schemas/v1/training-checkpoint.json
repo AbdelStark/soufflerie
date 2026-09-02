@@ -1,0 +1,224 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/training-checkpoint.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Commit-bound identity and member digests for private trusted state.",
+  "properties": {
+    "architecture_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Architecture Sha256",
+      "type": "string"
+    },
+    "artifact_type": {
+      "const": "training-checkpoint",
+      "default": "training-checkpoint",
+      "title": "Artifact Type",
+      "type": "string"
+    },
+    "checkpoint_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Checkpoint Id",
+      "type": "string"
+    },
+    "checkpoint_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Checkpoint Sha256",
+      "type": "string"
+    },
+    "code_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Code Revision",
+      "type": "string"
+    },
+    "completed_epoch": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Completed Epoch",
+      "type": "integer"
+    },
+    "compute_capability": {
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "title": "Compute Capability",
+      "type": "string"
+    },
+    "config_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Digest",
+      "type": "string"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "dataset_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dataset Sha256",
+      "type": "string"
+    },
+    "device": {
+      "pattern": "^cuda:[0-9]+$",
+      "title": "Device",
+      "type": "string"
+    },
+    "device_name": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Device Name",
+      "type": "string"
+    },
+    "experiment_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "global_step": {
+      "minimum": 1,
+      "title": "Global Step",
+      "type": "integer"
+    },
+    "lock_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Lock Digest",
+      "type": "string"
+    },
+    "model_bytes": {
+      "maximum": 268435456,
+      "minimum": 1,
+      "title": "Model Bytes",
+      "type": "integer"
+    },
+    "model_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Model Digest",
+      "type": "string"
+    },
+    "optimizer_bytes": {
+      "maximum": 1073741824,
+      "minimum": 1,
+      "title": "Optimizer Bytes",
+      "type": "integer"
+    },
+    "optimizer_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Optimizer Digest",
+      "type": "string"
+    },
+    "precision": {
+      "enum": [
+        "bf16",
+        "fp16"
+      ],
+      "title": "Precision",
+      "type": "string"
+    },
+    "rng_json_bytes": {
+      "maximum": 262144,
+      "minimum": 1,
+      "title": "Rng Json Bytes",
+      "type": "integer"
+    },
+    "rng_json_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rng Json Digest",
+      "type": "string"
+    },
+    "rng_state_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rng State Digest",
+      "type": "string"
+    },
+    "rng_torch_bytes": {
+      "maximum": 16777216,
+      "minimum": 1,
+      "title": "Rng Torch Bytes",
+      "type": "integer"
+    },
+    "rng_torch_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rng Torch Digest",
+      "type": "string"
+    },
+    "scaler_bytes": {
+      "anyOf": [
+        {
+          "maximum": 1048576,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scaler Bytes"
+    },
+    "scaler_digest": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Scaler Digest"
+    },
+    "scheduler_bytes": {
+      "maximum": 262144,
+      "minimum": 1,
+      "title": "Scheduler Bytes",
+      "type": "integer"
+    },
+    "scheduler_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Scheduler Digest",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seed": {
+      "maximum": 18446744073709551615,
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "checkpoint_id",
+    "checkpoint_sha256",
+    "experiment_id",
+    "dataset_id",
+    "dataset_sha256",
+    "architecture_sha256",
+    "config_digest",
+    "code_revision",
+    "lock_digest",
+    "seed",
+    "completed_epoch",
+    "global_step",
+    "device",
+    "device_name",
+    "compute_capability",
+    "precision",
+    "model_digest",
+    "model_bytes",
+    "optimizer_digest",
+    "optimizer_bytes",
+    "scheduler_digest",
+    "scheduler_bytes",
+    "scaler_digest",
+    "rng_state_digest",
+    "rng_json_digest",
+    "rng_json_bytes",
+    "rng_torch_digest",
+    "rng_torch_bytes"
+  ],
+  "title": "TrainingCheckpointMetadata",
+  "type": "object"
+}
