@@ -1,0 +1,125 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/bundled-model-smoke-result.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Finite schema-v1 evidence returned by the real packaged CPU prediction path.",
+  "properties": {
+    "cd": {
+      "title": "Cd",
+      "type": "number"
+    },
+    "cd_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Cd Sha256",
+      "type": "string"
+    },
+    "cd_shape": {
+      "maxItems": 1,
+      "minItems": 1,
+      "prefixItems": [
+        {
+          "const": 1,
+          "type": "integer"
+        }
+      ],
+      "title": "Cd Shape",
+      "type": "array"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "dataset_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dataset Sha256",
+      "type": "string"
+    },
+    "device": {
+      "const": "cpu",
+      "default": "cpu",
+      "title": "Device",
+      "type": "string"
+    },
+    "fields_maximum": {
+      "title": "Fields Maximum",
+      "type": "number"
+    },
+    "fields_minimum": {
+      "title": "Fields Minimum",
+      "type": "number"
+    },
+    "fields_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Fields Sha256",
+      "type": "string"
+    },
+    "fields_shape": {
+      "maxItems": 4,
+      "minItems": 4,
+      "prefixItems": [
+        {
+          "const": 1,
+          "type": "integer"
+        },
+        {
+          "const": 3,
+          "type": "integer"
+        },
+        {
+          "const": 320,
+          "type": "integer"
+        },
+        {
+          "const": 256,
+          "type": "integer"
+        }
+      ],
+      "title": "Fields Shape",
+      "type": "array"
+    },
+    "model_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "model_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Model Sha256",
+      "type": "string"
+    },
+    "representative_of_trained_quality": {
+      "const": false,
+      "default": false,
+      "title": "Representative Of Trained Quality",
+      "type": "boolean"
+    },
+    "resource_kind": {
+      "const": "synthetic-cpu-smoke-v1",
+      "default": "synthetic-cpu-smoke-v1",
+      "title": "Resource Kind",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "model_id",
+    "model_sha256",
+    "dataset_id",
+    "dataset_sha256",
+    "fields_shape",
+    "cd_shape",
+    "fields_minimum",
+    "fields_maximum",
+    "cd",
+    "fields_sha256",
+    "cd_sha256"
+  ],
+  "title": "BundledCpuSmokeResult",
+  "type": "object"
+}
