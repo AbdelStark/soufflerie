@@ -128,6 +128,12 @@ The orchestrator maps cases with concurrency configured between 50 and 100, but 
 
 Manifest publication requires all 1,000 intended design points in successful state; exactly `600/200/200` rows; no duplicate case/design/run digest; all expected schema/dtype/shape/gates; total payload `<2 GiB`; and consistent config/solver revisions. Dataset ID is computed before writing rows using canonical logical row content, excluding physical remote URIs and timestamps. Manifest updates create a new dataset ID.
 
+The builder receives exactly 1,000 explicit `ArtifactRef` values from the
+successful sweep plan and opens every parent through the run artifact store.
+It never lists `runs/` to infer membership. Standalone Parquet validation
+recomputes schema, row, split, size, and logical identity gates; continued
+availability of external parent archives is a separate store-level check.
+
 ## Alternatives Considered
 
 ### One large Zarr/HDF5 dataset

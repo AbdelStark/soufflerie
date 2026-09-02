@@ -1,0 +1,123 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/manifest-row.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "One authoritative training-membership row in the Parquet manifest.",
+  "properties": {
+    "aspect_ratio": {
+      "maximum": 1.0,
+      "minimum": 0.5,
+      "title": "Aspect Ratio",
+      "type": "number"
+    },
+    "bytes": {
+      "exclusiveMaximum": 2147483648,
+      "exclusiveMinimum": 0,
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "case_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "cd": {
+      "title": "Cd",
+      "type": "number"
+    },
+    "cl_mean": {
+      "title": "Cl Mean",
+      "type": "number"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "design_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Design Id",
+      "type": "string"
+    },
+    "reynolds": {
+      "maximum": 300.0,
+      "minimum": 40.0,
+      "title": "Reynolds",
+      "type": "number"
+    },
+    "rotation_deg": {
+      "maximum": 30.0,
+      "minimum": 0.0,
+      "title": "Rotation Deg",
+      "type": "number"
+    },
+    "run_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Run Digest",
+      "type": "string"
+    },
+    "run_uri": {
+      "maxLength": 512,
+      "minLength": 1,
+      "title": "Run Uri",
+      "type": "string"
+    },
+    "scale": {
+      "maximum": 1.25,
+      "minimum": 0.75,
+      "title": "Scale",
+      "type": "number"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "solver_valid": {
+      "const": true,
+      "default": true,
+      "title": "Solver Valid",
+      "type": "boolean"
+    },
+    "split": {
+      "enum": [
+        "train",
+        "validation",
+        "test"
+      ],
+      "title": "Split",
+      "type": "string"
+    },
+    "strouhal": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Strouhal"
+    }
+  },
+  "required": [
+    "dataset_id",
+    "case_id",
+    "design_id",
+    "split",
+    "aspect_ratio",
+    "rotation_deg",
+    "scale",
+    "reynolds",
+    "run_uri",
+    "run_digest",
+    "bytes",
+    "cd",
+    "cl_mean"
+  ],
+  "title": "ManifestRow",
+  "type": "object"
+}

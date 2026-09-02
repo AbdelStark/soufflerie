@@ -83,3 +83,5 @@ uv run pytest tests/artifacts/test_run_codec.py tests/artifacts/test_local_store
 
 The lower-level hostile-input guarantees are documented in
 [`docs/security/artifacts.md`](../security/artifacts.md).
+The complete-dataset admission, Parquet identity, statistics, and publication
+contract is documented in [`manifest.md`](manifest.md).

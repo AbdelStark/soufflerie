@@ -161,6 +161,6 @@ All durable artifacts start at integer `schema_version: 1`. Readers reject unkno
 | DM-3 DTYPE | exact `ArrayDescriptor`/`validate_array` dtype comparison; no implicit cast |
 | DM-4 IDENTITY | `canonical_sha256`, `verify_sha256`, and `ArtifactRef` prefix/full-digest coherence |
 | DM-5 NO_PICKLE | `ArrayDescriptor.allow_pickle=false` and object-dtype rejection |
-| DM-6 SPLIT | `validate_split_membership`; manifest-specific cardinality remains RFC-0005 work |
+| DM-6 SPLIT | `validate_split_membership`, `build_manifest`, and `load_manifest` exact cardinality/membership checks |
 | DM-7 PROVENANCE | strict `Provenance.parent_sha256` plus `validate_parent_digests` |
 | DM-8 UNITS | fixed `GridSpec` units, `ArrayDescriptor.unit`, and `validate_field_units` |

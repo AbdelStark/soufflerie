@@ -1,0 +1,158 @@
+{
+  "$defs": {
+    "ManifestSplitCounts": {
+      "additionalProperties": false,
+      "properties": {
+        "test": {
+          "const": 200,
+          "default": 200,
+          "title": "Test",
+          "type": "integer"
+        },
+        "train": {
+          "const": 600,
+          "default": 600,
+          "title": "Train",
+          "type": "integer"
+        },
+        "validation": {
+          "const": 200,
+          "default": 200,
+          "title": "Validation",
+          "type": "integer"
+        }
+      },
+      "title": "ManifestSplitCounts",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/dataset-manifest.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Identity, lineage, and physical codec metadata for a dataset manifest.",
+  "properties": {
+    "artifact_type": {
+      "const": "dataset",
+      "default": "dataset",
+      "title": "Artifact Type",
+      "type": "string"
+    },
+    "case_count": {
+      "const": 1000,
+      "default": 1000,
+      "title": "Case Count",
+      "type": "integer"
+    },
+    "config_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Sha256",
+      "type": "string"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "dataset_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dataset Sha256",
+      "type": "string"
+    },
+    "design_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Design Sha256",
+      "type": "string"
+    },
+    "lock_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Lock Sha256",
+      "type": "string"
+    },
+    "manifest_schema_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Manifest Schema Sha256",
+      "type": "string"
+    },
+    "manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Manifest Sha256",
+      "type": "string"
+    },
+    "parent_run_sha256": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "maxItems": 1000,
+      "minItems": 1000,
+      "title": "Parent Run Sha256",
+      "type": "array"
+    },
+    "row_group_size": {
+      "const": 256,
+      "default": 256,
+      "title": "Row Group Size",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Source Revision",
+      "type": "string"
+    },
+    "split_counts": {
+      "$ref": "#/$defs/ManifestSplitCounts"
+    },
+    "split_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Split Sha256",
+      "type": "string"
+    },
+    "statistics_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Statistics Sha256",
+      "type": "string"
+    },
+    "total_payload_bytes": {
+      "exclusiveMaximum": 2147483648,
+      "minimum": 1,
+      "title": "Total Payload Bytes",
+      "type": "integer"
+    },
+    "writer": {
+      "const": "pyarrow",
+      "default": "pyarrow",
+      "title": "Writer",
+      "type": "string"
+    },
+    "writer_version": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Writer Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "dataset_id",
+    "dataset_sha256",
+    "config_sha256",
+    "design_sha256",
+    "split_sha256",
+    "manifest_schema_sha256",
+    "manifest_sha256",
+    "statistics_sha256",
+    "writer_version",
+    "split_counts",
+    "total_payload_bytes",
+    "source_revision",
+    "lock_sha256",
+    "parent_run_sha256"
+  ],
+  "title": "DatasetManifestMetadata",
+  "type": "object"
+}

@@ -5,13 +5,13 @@
   "description": "Machine-readable successful dataset validation summary.",
   "properties": {
     "case_count": {
-      "minimum": 0,
+      "const": 1000,
+      "default": 1000,
       "title": "Case Count",
       "type": "integer"
     },
     "dataset_id": {
-      "maxLength": 128,
-      "minLength": 1,
+      "pattern": "^[0-9a-f]{20}$",
       "title": "Dataset Id",
       "type": "string"
     },
@@ -36,8 +36,7 @@
   },
   "required": [
     "manifest",
-    "dataset_id",
-    "case_count"
+    "dataset_id"
   ],
   "title": "DatasetValidationResult",
   "type": "object"

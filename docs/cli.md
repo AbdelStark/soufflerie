@@ -38,9 +38,12 @@ The checked-in contracts are [`cli-version.json`](../schemas/v1/cli-version.json
 {"package":"soufflerie","python":"3.11.14","schema_version":1,"version":"0.1.0"}
 ```
 
-Dataset validation succeeds only after the domain reader verifies the manifest
-and its referenced members. Its JSON contains `schema_version`, `valid=true`,
-`manifest`, `dataset_id`, and nonnegative `case_count`. Model inspection succeeds
+Dataset validation succeeds only after the domain reader verifies the bounded
+Parquet schema, rows, referenced identities, size/split gates, and recomputed
+logical dataset digest. Parent run archives are fully opened by the manifest
+builder; standalone validation cannot attest to parents that are not present.
+Its JSON contains `schema_version`, `valid=true`, `manifest`, `dataset_id`, and
+the exact `case_count=1000`. Model inspection succeeds
 only after safe bundle verification and contains `schema_version`, `valid=true`,
 `bundle`, `model_id`, `dataset_id`, and `architecture`. A failed gate or invalid
 artifact is an error, never a JSON success with `valid=false`.

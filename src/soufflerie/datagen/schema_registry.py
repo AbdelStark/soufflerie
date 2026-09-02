@@ -10,13 +10,21 @@ from typing import cast
 from pydantic import BaseModel
 
 from soufflerie.datagen.design import DesignSummary
+from soufflerie.datagen.manifest import (
+    DatasetManifestMetadata,
+    DatasetStatistics,
+    ManifestRow,
+)
 from soufflerie.datagen.run_artifact import QuantizationStatistic, RunMetadata
 from soufflerie.datagen.sweep_state import CaseState
 
 DATAGEN_SCHEMA_MODELS: Mapping[str, type[BaseModel]] = MappingProxyType(
     {
         "case-state": CaseState,
+        "dataset-manifest": DatasetManifestMetadata,
+        "dataset-statistics": DatasetStatistics,
         "design-summary": DesignSummary,
+        "manifest-row": ManifestRow,
         "quantization-statistic": QuantizationStatistic,
         "run-metadata": RunMetadata,
     }
