@@ -1,0 +1,286 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/architecture.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Exact RFC-0006 architecture serialized into every model bundle.",
+  "properties": {
+    "architecture": {
+      "const": "fno2d-v1",
+      "default": "fno2d-v1",
+      "title": "Architecture",
+      "type": "string"
+    },
+    "batch_normalization": {
+      "const": false,
+      "default": false,
+      "title": "Batch Normalization",
+      "type": "boolean"
+    },
+    "cd_activation": {
+      "const": "gelu",
+      "default": "gelu",
+      "title": "Cd Activation",
+      "type": "string"
+    },
+    "cd_head_channels": {
+      "default": [
+        68,
+        64,
+        32,
+        1
+      ],
+      "maxItems": 4,
+      "minItems": 4,
+      "prefixItems": [
+        {
+          "const": 68,
+          "type": "integer"
+        },
+        {
+          "const": 64,
+          "type": "integer"
+        },
+        {
+          "const": 32,
+          "type": "integer"
+        },
+        {
+          "const": 1,
+          "type": "integer"
+        }
+      ],
+      "title": "Cd Head Channels",
+      "type": "array"
+    },
+    "cd_pooling": {
+      "const": "fluid_masked_mean",
+      "default": "fluid_masked_mean",
+      "title": "Cd Pooling",
+      "type": "string"
+    },
+    "coordinate_features": {
+      "const": false,
+      "default": false,
+      "title": "Coordinate Features",
+      "type": "boolean"
+    },
+    "dropout": {
+      "const": 0,
+      "default": 0,
+      "title": "Dropout",
+      "type": "integer"
+    },
+    "framework": {
+      "const": "nvidia-physicsnemo",
+      "default": "nvidia-physicsnemo",
+      "title": "Framework",
+      "type": "string"
+    },
+    "framework_version": {
+      "const": "2.2.1",
+      "default": "2.2.1",
+      "title": "Framework Version",
+      "type": "string"
+    },
+    "input_channels": {
+      "default": [
+        "sdf_over_reference_diameter",
+        "reynolds_affine"
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "const": "sdf_over_reference_diameter",
+          "type": "string"
+        },
+        {
+          "const": "reynolds_affine",
+          "type": "string"
+        }
+      ],
+      "title": "Input Channels",
+      "type": "array"
+    },
+    "latent_channels": {
+      "const": 64,
+      "default": 64,
+      "title": "Latent Channels",
+      "type": "integer"
+    },
+    "lifting_channels": {
+      "default": [
+        2,
+        64
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "const": 2,
+          "type": "integer"
+        },
+        {
+          "const": 64,
+          "type": "integer"
+        }
+      ],
+      "title": "Lifting Channels",
+      "type": "array"
+    },
+    "model_dtype": {
+      "const": "float32",
+      "default": "float32",
+      "title": "Model Dtype",
+      "type": "string"
+    },
+    "output_channels": {
+      "default": [
+        "u_mean_normalized",
+        "v_mean_normalized",
+        "rho_delta_normalized"
+      ],
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "const": "u_mean_normalized",
+          "type": "string"
+        },
+        {
+          "const": "v_mean_normalized",
+          "type": "string"
+        },
+        {
+          "const": "rho_delta_normalized",
+          "type": "string"
+        }
+      ],
+      "title": "Output Channels",
+      "type": "array"
+    },
+    "outputs_masked": {
+      "const": false,
+      "default": false,
+      "title": "Outputs Masked",
+      "type": "boolean"
+    },
+    "padding": {
+      "default": [
+        8,
+        8
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "const": 8,
+          "type": "integer"
+        },
+        {
+          "const": 8,
+          "type": "integer"
+        }
+      ],
+      "title": "Padding",
+      "type": "array"
+    },
+    "padding_type": {
+      "const": "constant",
+      "default": "constant",
+      "title": "Padding Type",
+      "type": "string"
+    },
+    "projection_activation": {
+      "const": "gelu",
+      "default": "gelu",
+      "title": "Projection Activation",
+      "type": "string"
+    },
+    "projection_channels": {
+      "default": [
+        64,
+        128,
+        3
+      ],
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "const": 64,
+          "type": "integer"
+        },
+        {
+          "const": 128,
+          "type": "integer"
+        },
+        {
+          "const": 3,
+          "type": "integer"
+        }
+      ],
+      "title": "Projection Channels",
+      "type": "array"
+    },
+    "retained_modes": {
+      "default": [
+        24,
+        24
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "const": 24,
+          "type": "integer"
+        },
+        {
+          "const": 24,
+          "type": "integer"
+        }
+      ],
+      "title": "Retained Modes",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "spatial_shape": {
+      "default": [
+        320,
+        256
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "const": 320,
+          "type": "integer"
+        },
+        {
+          "const": 256,
+          "type": "integer"
+        }
+      ],
+      "title": "Spatial Shape",
+      "type": "array"
+    },
+    "spectral_activation": {
+      "const": "gelu",
+      "default": "gelu",
+      "title": "Spectral Activation",
+      "type": "string"
+    },
+    "spectral_blocks": {
+      "const": 4,
+      "default": 4,
+      "title": "Spectral Blocks",
+      "type": "integer"
+    }
+  },
+  "title": "FnoArchitecture",
+  "type": "object"
+}

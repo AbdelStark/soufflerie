@@ -1,13 +1,16 @@
 """Surrogate preprocessing, models, bundles, and inference."""
 
+from soufflerie.surrogate.architecture import FnoArchitecture
 from soufflerie.surrogate.preprocessing import (
     MODEL_CELL_COUNT,
     MODEL_REFERENCE_DIAMETER_LU,
     MODEL_SPATIAL_SHAPE,
     STANDARD_DEVIATION_FLOOR,
+    FlowPredictor,
     OutputChannelStatistics,
     OutputNormalizationStatistics,
     PredictionBatch,
+    PredictionBatchResult,
     PreprocessedBatch,
     PreprocessedSample,
     PreprocessingSample,
@@ -27,9 +30,12 @@ __all__ = [
     "MODEL_REFERENCE_DIAMETER_LU",
     "MODEL_SPATIAL_SHAPE",
     "STANDARD_DEVIATION_FLOOR",
+    "FlowPredictor",
+    "FnoArchitecture",
     "OutputChannelStatistics",
     "OutputNormalizationStatistics",
     "PredictionBatch",
+    "PredictionBatchResult",
     "PreprocessedBatch",
     "PreprocessedSample",
     "PreprocessingSample",
