@@ -43,7 +43,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #23 | [surrogate: verify the bundled CPU inference contract](https://github.com/AbdelStark/soufflerie/issues/23) | surrogate | p1 | m | RFC-0006, RFC-0013 | closed |
 | #24 | [training: implement manifest loader and deterministic baselines](https://github.com/AbdelStark/soufflerie/issues/24) | training | p0 | m | RFC-0007 | closed |
 | #25 | [training: implement deterministic mixed-precision optimization](https://github.com/AbdelStark/soufflerie/issues/25) | training | p0 | l | RFC-0007 | closed |
-| #26 | [training: add checkpoint resume and validation selection](https://github.com/AbdelStark/soufflerie/issues/26) | training | p0 | l | RFC-0007 | open |
+| #26 | [training: add checkpoint resume and validation selection](https://github.com/AbdelStark/soufflerie/issues/26) | training | p0 | l | RFC-0007 | closed |
 | #27 | [training: execute three canonical seeds and select the model](https://github.com/AbdelStark/soufflerie/issues/27) | training | p0 | l | RFC-0007, RFC-0011 | open |
 | #28 | [validation: implement metrics and immutable gate evaluation](https://github.com/AbdelStark/soufflerie/issues/28) | validation | p0 | l | RFC-0008 | open |
 | #29 | [validation: implement OOD ensemble and sensitivity probes](https://github.com/AbdelStark/soufflerie/issues/29) | validation | p0 | l | RFC-0008 | open |

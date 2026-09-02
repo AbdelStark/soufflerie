@@ -1,0 +1,116 @@
+{
+  "$defs": {
+    "SelectedCheckpoint": {
+      "additionalProperties": false,
+      "properties": {
+        "checkpoint_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Checkpoint Id",
+          "type": "string"
+        },
+        "epoch": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Epoch",
+          "type": "integer"
+        },
+        "seed": {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "validation_score": {
+          "minimum": 0.0,
+          "title": "Validation Score",
+          "type": "number"
+        }
+      },
+      "required": [
+        "seed",
+        "epoch",
+        "checkpoint_id",
+        "validation_score"
+      ],
+      "title": "SelectedCheckpoint",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/training-selection.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Immutable all-seed validation decision required before test evaluation.",
+  "properties": {
+    "config_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Digest",
+      "type": "string"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "deployable_seed": {
+      "maximum": 18446744073709551615,
+      "minimum": 0,
+      "title": "Deployable Seed",
+      "type": "integer"
+    },
+    "experiment_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "selected": {
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/SelectedCheckpoint"
+        },
+        {
+          "$ref": "#/$defs/SelectedCheckpoint"
+        },
+        {
+          "$ref": "#/$defs/SelectedCheckpoint"
+        }
+      ],
+      "title": "Selected",
+      "type": "array"
+    },
+    "selection_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Selection Id",
+      "type": "string"
+    },
+    "selection_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Selection Sha256",
+      "type": "string"
+    },
+    "test_metrics_read": {
+      "const": false,
+      "default": false,
+      "title": "Test Metrics Read",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "selection_id",
+    "selection_sha256",
+    "experiment_id",
+    "dataset_id",
+    "config_digest",
+    "selected",
+    "deployable_seed"
+  ],
+  "title": "FrozenTrainingSelection",
+  "type": "object"
+}

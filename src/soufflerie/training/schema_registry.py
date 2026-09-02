@@ -10,12 +10,18 @@ from typing import cast
 from pydantic import BaseModel
 
 from soufflerie.training.baselines import BaselineMetadata
+from soufflerie.training.checkpoint import (
+    FrozenTrainingSelection,
+    TrainingCheckpointMetadata,
+)
 from soufflerie.training.metrics import TrainingEpochRecord
 
 TRAINING_SCHEMA_MODELS: Mapping[str, type[BaseModel]] = MappingProxyType(
     {
         "baseline-metadata": BaselineMetadata,
+        "training-checkpoint": TrainingCheckpointMetadata,
         "training-epoch": TrainingEpochRecord,
+        "training-selection": FrozenTrainingSelection,
     }
 )
 
