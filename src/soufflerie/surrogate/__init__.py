@@ -1,6 +1,23 @@
 """Surrogate preprocessing, models, bundles, and inference."""
 
 from soufflerie.surrogate.architecture import FnoArchitecture
+from soufflerie.surrogate.bundle import (
+    EXPECTED_MODEL_TENSORS,
+    MODEL_TENSOR_BYTES,
+    MODEL_WEIGHTS_FILE_CAP_BYTES,
+    CompatibilityRange,
+    LocalModelBundleStore,
+    ModelBundle,
+    ModelBundleMetadata,
+    ModelCardGate,
+    ModelCardMetadata,
+    ModelTensorDescriptor,
+    PublishedModelBundle,
+    build_model_bundle,
+    instantiate_bundle_predictor,
+    render_model_card,
+    snapshot_fno_weights,
+)
 from soufflerie.surrogate.preprocessing import (
     MODEL_CELL_COUNT,
     MODEL_REFERENCE_DIAMETER_LU,
@@ -26,12 +43,22 @@ from soufflerie.surrogate.preprocessing import (
 from soufflerie.surrogate.schema_registry import rendered_surrogate_schema_documents
 
 __all__ = [
+    "EXPECTED_MODEL_TENSORS",
     "MODEL_CELL_COUNT",
     "MODEL_REFERENCE_DIAMETER_LU",
     "MODEL_SPATIAL_SHAPE",
+    "MODEL_TENSOR_BYTES",
+    "MODEL_WEIGHTS_FILE_CAP_BYTES",
     "STANDARD_DEVIATION_FLOOR",
+    "CompatibilityRange",
     "FlowPredictor",
     "FnoArchitecture",
+    "LocalModelBundleStore",
+    "ModelBundle",
+    "ModelBundleMetadata",
+    "ModelCardGate",
+    "ModelCardMetadata",
+    "ModelTensorDescriptor",
     "OutputChannelStatistics",
     "OutputNormalizationStatistics",
     "PredictionBatch",
@@ -40,12 +67,17 @@ __all__ = [
     "PreprocessedSample",
     "PreprocessingSample",
     "PreprocessingStatistics",
+    "PublishedModelBundle",
     "TensorLike",
+    "build_model_bundle",
     "denormalize_fields",
     "fit_preprocessing_statistics",
+    "instantiate_bundle_predictor",
     "prediction_batch_to_torch",
     "preprocess_batch",
     "preprocess_sample",
+    "render_model_card",
     "rendered_surrogate_schema_documents",
+    "snapshot_fno_weights",
     "validate_prediction_batch",
 ]

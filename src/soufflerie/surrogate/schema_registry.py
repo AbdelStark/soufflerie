@@ -10,11 +10,13 @@ from typing import cast
 from pydantic import BaseModel
 
 from soufflerie.surrogate.architecture import FnoArchitecture
+from soufflerie.surrogate.bundle import ModelBundleMetadata
 from soufflerie.surrogate.preprocessing import PreprocessingStatistics
 
 SURROGATE_SCHEMA_MODELS: Mapping[str, type[BaseModel]] = MappingProxyType(
     {
         "architecture": FnoArchitecture,
+        "model-bundle": ModelBundleMetadata,
         "preprocessing": PreprocessingStatistics,
     }
 )
