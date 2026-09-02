@@ -21,6 +21,8 @@ from soufflerie.schemas import (
     canonical_sha256,
 )
 from soufflerie.validation.metrics import MetricObservation, MetricSummary
+from soufflerie.validation.ood import OodEvaluation
+from soufflerie.validation.sensitivity import SensitivityEvaluation
 
 GateName: TypeAlias = Literal[
     "field_error",
@@ -338,6 +340,44 @@ def divergence_gate_evidence(
     )
 
 
+def ood_gate_evidence(evaluation: OodEvaluation) -> GateEvidence:
+    """Translate complete OOD evidence into the fixed variance-increase gate."""
+
+    if not isinstance(evaluation, OodEvaluation):
+        raise TypeError("evaluation must be an OodEvaluation")
+    evidence = (
+        f"model_ids:{','.join(evaluation.model_ids)}",
+        f"probe_count:{len(evaluation.results)}",
+    )
+    if evaluation.status == "invalid" or evaluation.variance_ratio is None:
+        return GateEvidence(
+            name="ood_variance_increase",
+            value=None,
+            evidence=evidence,
+            failure=evaluation.failure or "VAL-6 ENSEMBLE: OOD evidence is invalid",
+        )
+    return GateEvidence(
+        name="ood_variance_increase",
+        value=evaluation.variance_ratio,
+        evidence=evidence,
+    )
+
+
+def sensitivity_gate_evidence(evaluation: SensitivityEvaluation) -> GateEvidence:
+    """Translate ten recorded sign comparisons into the fixed count gate."""
+
+    if not isinstance(evaluation, SensitivityEvaluation):
+        raise TypeError("evaluation must be a SensitivityEvaluation")
+    return GateEvidence(
+        name="sensitivity_sign",
+        value=evaluation.agreement_count,
+        evidence=(
+            f"model_id:{evaluation.model.model_id}",
+            f"probe_count:{len(evaluation.results)}",
+        ),
+    )
+
+
 def overall_gate_status(gates: Sequence[GateResult]) -> GateStatus:
     """Return green iff every required gate is present and green."""
 
@@ -364,6 +404,8 @@ class ValidationReport(VersionedModel):
     gates: tuple[GateResult, ...]
     overall_status: GateStatus
     provenance: Provenance
+    ood: OodEvaluation | None = None
+    sensitivity: SensitivityEvaluation | None = None
 
     @model_validator(mode="before")
     @classmethod
@@ -404,6 +446,21 @@ class ValidationReport(VersionedModel):
             self.ensemble_model_ids
         ):
             raise ValueError("baseline identities must be distinct from every ensemble model")
+        if self.ood is not None and self.ood.model_ids != tuple(sorted(self.ensemble_model_ids)):
+            raise ValueError("OOD and report ensemble model identities differ")
+        if self.ood is not None and any(
+            item.geometry.dataset_id != self.dataset_id for item in self.ood.results
+        ):
+            raise ValueError("OOD and report dataset identities differ")
+        if (
+            self.sensitivity is not None
+            and self.sensitivity.model.model_id != self.selected_model_id
+        ):
+            raise ValueError("sensitivity and selected report model identities differ")
+        if self.sensitivity is not None and any(
+            item.geometry.dataset_id != self.dataset_id for item in self.sensitivity.results
+        ):
+            raise ValueError("sensitivity and report dataset identities differ")
         for name, summary in self.metrics.items():
             if name != summary.name and not name.endswith(f".{summary.name}"):
                 raise ValueError("metric mapping keys must name the summarized metric")
@@ -443,5 +500,7 @@ __all__ = [
     "evaluate_gate",
     "evaluate_required_gates",
     "head_field_consistency_gate_evidence",
+    "ood_gate_evidence",
     "overall_gate_status",
+    "sensitivity_gate_evidence",
 ]

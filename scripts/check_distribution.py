@@ -42,6 +42,8 @@ REQUIRED_WHEEL_MEMBERS = {
     "soufflerie/schemas/v1/case-metrics.json",
     "soufflerie/schemas/v1/gate-result.json",
     "soufflerie/schemas/v1/metric-summary.json",
+    "soufflerie/schemas/v1/ood-evaluation.json",
+    "soufflerie/schemas/v1/sensitivity-evaluation.json",
     "soufflerie/schemas/v1/validation-report.json",
     "soufflerie/training/__init__.py",
     "soufflerie/training/checkpoint.py",
@@ -50,7 +52,9 @@ REQUIRED_WHEEL_MEMBERS = {
     "soufflerie/training/metrics.py",
     "soufflerie/validation/gates.py",
     "soufflerie/validation/metrics.py",
+    "soufflerie/validation/ood.py",
     "soufflerie/validation/schema_registry.py",
+    "soufflerie/validation/sensitivity.py",
     "soufflerie/training/runtime.py",
 }
 REQUIRED_SDIST_MEMBERS = {

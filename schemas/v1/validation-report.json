@@ -258,6 +258,308 @@
       "title": "MetricSummary",
       "type": "object"
     },
+    "OodEvaluation": {
+      "additionalProperties": false,
+      "description": "Complete 10-geometry, four-Re OOD heuristic evidence.",
+      "properties": {
+        "failure": {
+          "anyOf": [
+            {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure"
+        },
+        "median_id_boundary_variance": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Median Id Boundary Variance"
+        },
+        "median_ood_variance": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Median Ood Variance"
+        },
+        "model_ids": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "pattern": "^[0-9a-f]{20}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{20}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{20}$",
+              "type": "string"
+            }
+          ],
+          "title": "Model Ids",
+          "type": "array"
+        },
+        "model_sha256s": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          ],
+          "title": "Model Sha256S",
+          "type": "array"
+        },
+        "results": {
+          "items": {
+            "$ref": "#/$defs/OodProbeResult"
+          },
+          "title": "Results",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "valid",
+            "invalid"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "variance_ratio": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Variance Ratio"
+        }
+      },
+      "required": [
+        "status",
+        "model_ids",
+        "model_sha256s",
+        "results",
+        "median_ood_variance",
+        "median_id_boundary_variance",
+        "variance_ratio"
+      ],
+      "title": "OodEvaluation",
+      "type": "object"
+    },
+    "OodProbeResult": {
+      "additionalProperties": false,
+      "description": "Normalized three-model field variance for one geometry/Re probe.",
+      "properties": {
+        "geometry": {
+          "$ref": "#/$defs/ProbeGeometry"
+        },
+        "model_ids": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "pattern": "^[0-9a-f]{20}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{20}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{20}$",
+              "type": "string"
+            }
+          ],
+          "title": "Model Ids",
+          "type": "array"
+        },
+        "model_sha256s": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          ],
+          "title": "Model Sha256S",
+          "type": "array"
+        },
+        "normalized_ensemble_variance": {
+          "minimum": 0.0,
+          "title": "Normalized Ensemble Variance",
+          "type": "number"
+        },
+        "regime": {
+          "enum": [
+            "ood",
+            "id_boundary"
+          ],
+          "title": "Regime",
+          "type": "string"
+        },
+        "reynolds": {
+          "enum": [
+            20,
+            40,
+            300,
+            400
+          ],
+          "title": "Reynolds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "geometry",
+        "reynolds",
+        "regime",
+        "model_ids",
+        "model_sha256s",
+        "normalized_ensemble_variance"
+      ],
+      "title": "OodProbeResult",
+      "type": "object"
+    },
+    "ProbeGeometry": {
+      "additionalProperties": false,
+      "description": "One source-bound test geometry selected by its complete rank digest.",
+      "properties": {
+        "aspect_ratio": {
+          "maximum": 1.0,
+          "minimum": 0.5,
+          "title": "Aspect Ratio",
+          "type": "number"
+        },
+        "dataset_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "rank_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rank Sha256",
+          "type": "string"
+        },
+        "rotation_deg": {
+          "maximum": 30.0,
+          "minimum": 0.0,
+          "title": "Rotation Deg",
+          "type": "number"
+        },
+        "scale": {
+          "maximum": 1.25,
+          "minimum": 0.75,
+          "title": "Scale",
+          "type": "number"
+        },
+        "selection": {
+          "enum": [
+            "ood",
+            "sensitivity"
+          ],
+          "title": "Selection",
+          "type": "string"
+        },
+        "source_case_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Source Case Id",
+          "type": "string"
+        },
+        "source_design_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Source Design Id",
+          "type": "string"
+        },
+        "source_reynolds": {
+          "maximum": 300.0,
+          "minimum": 40.0,
+          "title": "Source Reynolds",
+          "type": "number"
+        },
+        "source_split": {
+          "const": "test",
+          "default": "test",
+          "title": "Source Split",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selection",
+        "dataset_id",
+        "source_case_id",
+        "source_design_id",
+        "aspect_ratio",
+        "rotation_deg",
+        "scale",
+        "source_reynolds",
+        "rank_sha256"
+      ],
+      "title": "ProbeGeometry",
+      "type": "object"
+    },
+    "ProbeModelIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "model_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "model_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Model Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model_id",
+        "model_sha256"
+      ],
+      "title": "ProbeModelIdentity",
+      "type": "object"
+    },
     "Provenance": {
       "$comment": "Release consumers must bind source_revision, lock_sha256, config_sha256, packages, and every direct parent digest to reviewed expected values.",
       "additionalProperties": false,
@@ -382,6 +684,95 @@
       ],
       "title": "Provenance",
       "type": "object"
+    },
+    "SensitivityEvaluation": {
+      "additionalProperties": false,
+      "description": "Complete ten-case sensitivity evidence for one selected model.",
+      "properties": {
+        "agreement_count": {
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Agreement Count",
+          "type": "integer"
+        },
+        "model": {
+          "$ref": "#/$defs/ProbeModelIdentity"
+        },
+        "results": {
+          "items": {
+            "$ref": "#/$defs/SensitivityProbeResult"
+          },
+          "title": "Results",
+          "type": "array"
+        }
+      },
+      "required": [
+        "model",
+        "results",
+        "agreement_count"
+      ],
+      "title": "SensitivityEvaluation",
+      "type": "object"
+    },
+    "SensitivityProbeResult": {
+      "additionalProperties": false,
+      "description": "One fixed-h central difference and autograd sign comparison.",
+      "properties": {
+        "agrees": {
+          "title": "Agrees",
+          "type": "boolean"
+        },
+        "autograd_cd_per_degree": {
+          "title": "Autograd Cd Per Degree",
+          "type": "number"
+        },
+        "cd_center": {
+          "title": "Cd Center",
+          "type": "number"
+        },
+        "cd_minus": {
+          "title": "Cd Minus",
+          "type": "number"
+        },
+        "cd_plus": {
+          "title": "Cd Plus",
+          "type": "number"
+        },
+        "central_difference_cd_per_degree": {
+          "title": "Central Difference Cd Per Degree",
+          "type": "number"
+        },
+        "geometry": {
+          "$ref": "#/$defs/ProbeGeometry"
+        },
+        "h_degrees": {
+          "const": 0.25,
+          "default": 0.25,
+          "title": "H Degrees",
+          "type": "number"
+        },
+        "magnitude_tolerance_cd_per_degree": {
+          "const": 1e-05,
+          "default": 1e-05,
+          "title": "Magnitude Tolerance Cd Per Degree",
+          "type": "number"
+        },
+        "model": {
+          "$ref": "#/$defs/ProbeModelIdentity"
+        }
+      },
+      "required": [
+        "geometry",
+        "model",
+        "cd_minus",
+        "cd_center",
+        "cd_plus",
+        "autograd_cd_per_degree",
+        "central_difference_cd_per_degree",
+        "agrees"
+      ],
+      "title": "SensitivityProbeResult",
+      "type": "object"
     }
   },
   "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/validation-report.json",
@@ -446,6 +837,17 @@
       "title": "Metrics",
       "type": "object"
     },
+    "ood": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OodEvaluation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
     "overall_status": {
       "enum": [
         "green",
@@ -477,6 +879,17 @@
       "pattern": "^[0-9a-f]{20}$",
       "title": "Selected Model Id",
       "type": "string"
+    },
+    "sensitivity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SensitivityEvaluation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [
