@@ -1,0 +1,285 @@
+{
+  "$defs": {
+    "OodProbeResult": {
+      "additionalProperties": false,
+      "description": "Normalized three-model field variance for one geometry/Re probe.",
+      "properties": {
+        "geometry": {
+          "$ref": "#/$defs/ProbeGeometry"
+        },
+        "model_ids": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "pattern": "^[0-9a-f]{20}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{20}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{20}$",
+              "type": "string"
+            }
+          ],
+          "title": "Model Ids",
+          "type": "array"
+        },
+        "model_sha256s": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          ],
+          "title": "Model Sha256S",
+          "type": "array"
+        },
+        "normalized_ensemble_variance": {
+          "minimum": 0.0,
+          "title": "Normalized Ensemble Variance",
+          "type": "number"
+        },
+        "regime": {
+          "enum": [
+            "ood",
+            "id_boundary"
+          ],
+          "title": "Regime",
+          "type": "string"
+        },
+        "reynolds": {
+          "enum": [
+            20,
+            40,
+            300,
+            400
+          ],
+          "title": "Reynolds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "geometry",
+        "reynolds",
+        "regime",
+        "model_ids",
+        "model_sha256s",
+        "normalized_ensemble_variance"
+      ],
+      "title": "OodProbeResult",
+      "type": "object"
+    },
+    "ProbeGeometry": {
+      "additionalProperties": false,
+      "description": "One source-bound test geometry selected by its complete rank digest.",
+      "properties": {
+        "aspect_ratio": {
+          "maximum": 1.0,
+          "minimum": 0.5,
+          "title": "Aspect Ratio",
+          "type": "number"
+        },
+        "dataset_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "rank_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rank Sha256",
+          "type": "string"
+        },
+        "rotation_deg": {
+          "maximum": 30.0,
+          "minimum": 0.0,
+          "title": "Rotation Deg",
+          "type": "number"
+        },
+        "scale": {
+          "maximum": 1.25,
+          "minimum": 0.75,
+          "title": "Scale",
+          "type": "number"
+        },
+        "selection": {
+          "enum": [
+            "ood",
+            "sensitivity"
+          ],
+          "title": "Selection",
+          "type": "string"
+        },
+        "source_case_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Source Case Id",
+          "type": "string"
+        },
+        "source_design_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Source Design Id",
+          "type": "string"
+        },
+        "source_reynolds": {
+          "maximum": 300.0,
+          "minimum": 40.0,
+          "title": "Source Reynolds",
+          "type": "number"
+        },
+        "source_split": {
+          "const": "test",
+          "default": "test",
+          "title": "Source Split",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selection",
+        "dataset_id",
+        "source_case_id",
+        "source_design_id",
+        "aspect_ratio",
+        "rotation_deg",
+        "scale",
+        "source_reynolds",
+        "rank_sha256"
+      ],
+      "title": "ProbeGeometry",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/ood-evaluation.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Complete 10-geometry, four-Re OOD heuristic evidence.",
+  "properties": {
+    "failure": {
+      "anyOf": [
+        {
+          "maxLength": 512,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Failure"
+    },
+    "median_id_boundary_variance": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Median Id Boundary Variance"
+    },
+    "median_ood_variance": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Median Ood Variance"
+    },
+    "model_ids": {
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        },
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        },
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        }
+      ],
+      "title": "Model Ids",
+      "type": "array"
+    },
+    "model_sha256s": {
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      ],
+      "title": "Model Sha256S",
+      "type": "array"
+    },
+    "results": {
+      "items": {
+        "$ref": "#/$defs/OodProbeResult"
+      },
+      "title": "Results",
+      "type": "array"
+    },
+    "status": {
+      "enum": [
+        "valid",
+        "invalid"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "variance_ratio": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Variance Ratio"
+    }
+  },
+  "required": [
+    "status",
+    "model_ids",
+    "model_sha256s",
+    "results",
+    "median_ood_variance",
+    "median_id_boundary_variance",
+    "variance_ratio"
+  ],
+  "title": "OodEvaluation",
+  "type": "object"
+}

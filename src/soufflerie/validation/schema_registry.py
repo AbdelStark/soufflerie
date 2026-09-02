@@ -11,12 +11,16 @@ from pydantic import BaseModel
 
 from soufflerie.validation.gates import GateResult, ValidationReport
 from soufflerie.validation.metrics import CaseMetrics, MetricSummary
+from soufflerie.validation.ood import OodEvaluation
+from soufflerie.validation.sensitivity import SensitivityEvaluation
 
 VALIDATION_SCHEMA_MODELS: Mapping[str, type[BaseModel]] = MappingProxyType(
     {
         "case-metrics": CaseMetrics,
         "gate-result": GateResult,
         "metric-summary": MetricSummary,
+        "ood-evaluation": OodEvaluation,
+        "sensitivity-evaluation": SensitivityEvaluation,
         "validation-report": ValidationReport,
     }
 )
