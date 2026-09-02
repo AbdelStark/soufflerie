@@ -1,0 +1,106 @@
+{
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/gate-result.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "One self-verifying evaluated gate; invalid numeric evidence uses false/red.",
+  "properties": {
+    "evidence": {
+      "items": {
+        "maxLength": 1024,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "name": {
+      "enum": [
+        "field_error",
+        "cd_head_error",
+        "head_field_consistency",
+        "divergence",
+        "obstacle_compliance",
+        "mean_baseline_field",
+        "nearest_baseline_field",
+        "mean_baseline_cd",
+        "nearest_baseline_cd",
+        "ood_variance_increase",
+        "sensitivity_sign",
+        "evidence_integrity"
+      ],
+      "title": "Name",
+      "type": "string"
+    },
+    "operator": {
+      "enum": [
+        "lt",
+        "le",
+        "gt",
+        "ge",
+        "eq"
+      ],
+      "title": "Operator",
+      "type": "string"
+    },
+    "required": {
+      "title": "Required",
+      "type": "boolean"
+    },
+    "status": {
+      "enum": [
+        "green",
+        "red"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "threshold": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "title": "Threshold"
+    },
+    "units": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "title": "Units",
+      "type": "string"
+    },
+    "value": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "title": "Value"
+    }
+  },
+  "required": [
+    "name",
+    "required",
+    "status",
+    "value",
+    "operator",
+    "threshold",
+    "units",
+    "evidence"
+  ],
+  "title": "GateResult",
+  "type": "object"
+}

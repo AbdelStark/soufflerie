@@ -39,11 +39,18 @@ REQUIRED_WHEEL_MEMBERS = {
     "soufflerie/schemas/v1/training-epoch.json",
     "soufflerie/schemas/v1/training-checkpoint.json",
     "soufflerie/schemas/v1/training-selection.json",
+    "soufflerie/schemas/v1/case-metrics.json",
+    "soufflerie/schemas/v1/gate-result.json",
+    "soufflerie/schemas/v1/metric-summary.json",
+    "soufflerie/schemas/v1/validation-report.json",
     "soufflerie/training/__init__.py",
     "soufflerie/training/checkpoint.py",
     "soufflerie/training/loss.py",
     "soufflerie/training/loop.py",
     "soufflerie/training/metrics.py",
+    "soufflerie/validation/gates.py",
+    "soufflerie/validation/metrics.py",
+    "soufflerie/validation/schema_registry.py",
     "soufflerie/training/runtime.py",
 }
 REQUIRED_SDIST_MEMBERS = {

@@ -1,0 +1,496 @@
+{
+  "$defs": {
+    "GateResult": {
+      "additionalProperties": false,
+      "description": "One self-verifying evaluated gate; invalid numeric evidence uses false/red.",
+      "properties": {
+        "evidence": {
+          "items": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "name": {
+          "enum": [
+            "field_error",
+            "cd_head_error",
+            "head_field_consistency",
+            "divergence",
+            "obstacle_compliance",
+            "mean_baseline_field",
+            "nearest_baseline_field",
+            "mean_baseline_cd",
+            "nearest_baseline_cd",
+            "ood_variance_increase",
+            "sensitivity_sign",
+            "evidence_integrity"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "operator": {
+          "enum": [
+            "lt",
+            "le",
+            "gt",
+            "ge",
+            "eq"
+          ],
+          "title": "Operator",
+          "type": "string"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "green",
+            "red"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "threshold": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "title": "Threshold"
+        },
+        "units": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Units",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "name",
+        "required",
+        "status",
+        "value",
+        "operator",
+        "threshold",
+        "units",
+        "evidence"
+      ],
+      "title": "GateResult",
+      "type": "object"
+    },
+    "MetricSummary": {
+      "additionalProperties": false,
+      "description": "Deterministic median/tail/bootstrap evidence without invalid-case skipping.",
+      "properties": {
+        "bootstrap_median_95": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "minimum": 0.0,
+                  "type": "number"
+                },
+                {
+                  "minimum": 0.0,
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Bootstrap Median 95"
+        },
+        "bootstrap_resamples": {
+          "maximum": 100000,
+          "minimum": 100,
+          "title": "Bootstrap Resamples",
+          "type": "integer"
+        },
+        "count": {
+          "minimum": 1,
+          "title": "Count",
+          "type": "integer"
+        },
+        "invalid_case_ids": {
+          "items": {
+            "pattern": "^[0-9a-f]{20}$",
+            "type": "string"
+          },
+          "title": "Invalid Case Ids",
+          "type": "array"
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Maximum"
+        },
+        "median": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Median"
+        },
+        "name": {
+          "enum": [
+            "velocity_rel_l2",
+            "cd_head_pct",
+            "cd_field_pct",
+            "head_field_gap_pct",
+            "prediction_div_mean_abs",
+            "solver_div_mean_abs",
+            "obstacle_ratio"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "p90": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "P90"
+        },
+        "p95": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "P95"
+        },
+        "report_seed": {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "title": "Report Seed",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "valid",
+            "invalid"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "valid_count": {
+          "minimum": 0,
+          "title": "Valid Count",
+          "type": "integer"
+        },
+        "worst_case_ids": {
+          "items": {
+            "pattern": "^[0-9a-f]{20}$",
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Worst Case Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "status",
+        "count",
+        "valid_count",
+        "invalid_case_ids",
+        "median",
+        "p90",
+        "p95",
+        "maximum",
+        "bootstrap_median_95",
+        "worst_case_ids",
+        "bootstrap_resamples",
+        "report_seed"
+      ],
+      "title": "MetricSummary",
+      "type": "object"
+    },
+    "Provenance": {
+      "$comment": "Release consumers must bind source_revision, lock_sha256, config_sha256, packages, and every direct parent digest to reviewed expected values.",
+      "additionalProperties": false,
+      "description": "Reproducibility and direct-lineage record for a durable artifact.",
+      "properties": {
+        "architecture": {
+          "minLength": 1,
+          "title": "Architecture",
+          "type": "string"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "config_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Config Sha256",
+          "type": "string"
+        },
+        "deterministic": {
+          "title": "Deterministic",
+          "type": "boolean"
+        },
+        "device_class": {
+          "minLength": 1,
+          "title": "Device Class",
+          "type": "string"
+        },
+        "dtype_policy": {
+          "minLength": 1,
+          "title": "Dtype Policy",
+          "type": "string"
+        },
+        "gpu_seconds": {
+          "minimum": 0.0,
+          "title": "Gpu Seconds",
+          "type": "number"
+        },
+        "lock_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Lock Sha256",
+          "type": "string"
+        },
+        "os": {
+          "minLength": 1,
+          "title": "Os",
+          "type": "string"
+        },
+        "packages": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minProperties": 1,
+          "propertyNames": {
+            "minLength": 1
+          },
+          "title": "Packages",
+          "type": "object"
+        },
+        "parent_sha256": {
+          "additionalProperties": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "propertyNames": {
+            "minLength": 1
+          },
+          "title": "Parent Sha256",
+          "type": "object"
+        },
+        "python_version": {
+          "minLength": 1,
+          "title": "Python Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "seeds": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Seeds",
+          "type": "array"
+        },
+        "source_dirty": {
+          "title": "Source Dirty",
+          "type": "boolean"
+        },
+        "source_revision": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Source Revision",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_revision",
+        "source_dirty",
+        "python_version",
+        "lock_sha256",
+        "packages",
+        "os",
+        "architecture",
+        "device_class",
+        "dtype_policy",
+        "config_sha256",
+        "seeds",
+        "deterministic",
+        "started_at",
+        "completed_at",
+        "gpu_seconds"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/validation-report.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Identity-bound machine report whose overall status cannot hide a red gate.",
+  "properties": {
+    "baseline_ids": {
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        },
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        }
+      ],
+      "title": "Baseline Ids",
+      "type": "array"
+    },
+    "dataset_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "ensemble_model_ids": {
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        },
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        },
+        {
+          "pattern": "^[0-9a-f]{20}$",
+          "type": "string"
+        }
+      ],
+      "title": "Ensemble Model Ids",
+      "type": "array"
+    },
+    "gates": {
+      "items": {
+        "$ref": "#/$defs/GateResult"
+      },
+      "title": "Gates",
+      "type": "array"
+    },
+    "metrics": {
+      "additionalProperties": {
+        "$ref": "#/$defs/MetricSummary"
+      },
+      "maxProperties": 128,
+      "minProperties": 1,
+      "title": "Metrics",
+      "type": "object"
+    },
+    "overall_status": {
+      "enum": [
+        "green",
+        "red"
+      ],
+      "title": "Overall Status",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "report_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Report Id",
+      "type": "string"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "selected_model_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Selected Model Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "report_id",
+    "report_sha256",
+    "dataset_id",
+    "selected_model_id",
+    "ensemble_model_ids",
+    "baseline_ids",
+    "metrics",
+    "gates",
+    "overall_status",
+    "provenance"
+  ],
+  "title": "ValidationReport",
+  "type": "object"
+}
