@@ -10,9 +10,13 @@ from typing import cast
 from pydantic import BaseModel
 
 from soufflerie.training.baselines import BaselineMetadata
+from soufflerie.training.metrics import TrainingEpochRecord
 
 TRAINING_SCHEMA_MODELS: Mapping[str, type[BaseModel]] = MappingProxyType(
-    {"baseline-metadata": BaselineMetadata}
+    {
+        "baseline-metadata": BaselineMetadata,
+        "training-epoch": TrainingEpochRecord,
+    }
 )
 
 

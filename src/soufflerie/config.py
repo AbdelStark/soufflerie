@@ -105,7 +105,7 @@ class TrainingConfig(CanonicalConfig):
     dataset_id: ContentId
     seeds: tuple[Seed, Seed, Seed]
     epochs: int = Field(default=100, ge=1)
-    batch_size: int = Field(default=8, ge=1)
+    batch_size: int = Field(default=8, ge=1, le=64)
     learning_rate: FinitePositive = 1e-3
     min_learning_rate: FinitePositive = 1e-5
     weight_decay: FiniteNonnegative = 1e-4

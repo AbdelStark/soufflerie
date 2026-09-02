@@ -1,4 +1,4 @@
-"""Manifest-backed training data and deterministic baseline predictors."""
+"""Manifest-backed deterministic baselines and mixed-precision training."""
 
 from soufflerie.training.baselines import (
     BaselineKind,
@@ -16,20 +16,82 @@ from soufflerie.training.data import (
     ManifestRowBatch,
     open_manifest_dataset,
 )
+from soufflerie.training.loop import (
+    TrainingModel,
+    TrainingSession,
+    TrainingTensorBatch,
+    prepare_training_session,
+    run_training_epoch,
+    training_batch_to_torch,
+)
+from soufflerie.training.loss import (
+    CD_RELATIVE_FLOOR,
+    NORMALIZED_REFERENCE_VELOCITY,
+    RELATIVE_ENERGY_FLOOR,
+    DifferentiableLoss,
+    LossScalars,
+    masked_training_loss,
+    reference_training_loss,
+)
+from soufflerie.training.metrics import (
+    EpochJsonlWriter,
+    EpochLossMetrics,
+    TrainingEpochRecord,
+)
+from soufflerie.training.runtime import (
+    OptimizerGroups,
+    Precision,
+    PrecisionPolicy,
+    adamw_parameter_groups,
+    apply_learning_rate,
+    build_adamw,
+    configure_determinism,
+    deterministic_worker_seed,
+    learning_rate_for_epoch,
+    preflight_precision,
+    worker_seed_initializer,
+)
 from soufflerie.training.schema_registry import rendered_training_schema_documents
 
 __all__ = [
+    "CD_RELATIVE_FLOOR",
     "MAX_TRAINING_BATCH_SIZE",
+    "NORMALIZED_REFERENCE_VELOCITY",
+    "RELATIVE_ENERGY_FLOOR",
     "BaselineKind",
     "BaselineMetadata",
+    "DifferentiableLoss",
+    "EpochJsonlWriter",
+    "EpochLossMetrics",
+    "LossScalars",
     "ManifestBatch",
     "ManifestDataset",
     "ManifestRowBatch",
     "MeanFieldBaseline",
     "NearestDesignBaseline",
+    "OptimizerGroups",
+    "Precision",
+    "PrecisionPolicy",
+    "TrainingEpochRecord",
+    "TrainingModel",
+    "TrainingSession",
+    "TrainingTensorBatch",
+    "adamw_parameter_groups",
+    "apply_learning_rate",
+    "build_adamw",
+    "configure_determinism",
+    "deterministic_worker_seed",
     "fit_baselines",
     "fit_mean_field_baseline",
     "fit_nearest_design_baseline",
+    "learning_rate_for_epoch",
+    "masked_training_loss",
     "open_manifest_dataset",
+    "preflight_precision",
+    "prepare_training_session",
+    "reference_training_loss",
     "rendered_training_schema_documents",
+    "run_training_epoch",
+    "training_batch_to_torch",
+    "worker_seed_initializer",
 ]
