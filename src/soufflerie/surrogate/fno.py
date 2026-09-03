@@ -150,7 +150,13 @@ class FnoPredictor:
         inputs, fluid_mask, design_params = self._checked_tensors(batch)
         torch = cast(Any, self._runtime.torch)
         batch_size = int(inputs.shape[0])
-        latent = self._core.spec_encoder(inputs)
+        # cuFFT does not accept bf16/fp16 inputs. CUDA autocast can cast the
+        # lift convolution before PhysicsNeMo reaches its first rfft2, so keep
+        # the complete spectral encoder in fp32 while allowing the projection
+        # and Cd heads to use the caller's mixed-precision context.
+        device_type = str(inputs.device).split(":", maxsplit=1)[0]
+        with torch.autocast(device_type=device_type, enabled=False):
+            latent = self._core.spec_encoder(inputs.to(dtype=torch.float32))
         expected_latent_shape = (
             batch_size,
             self.architecture.latent_channels,
