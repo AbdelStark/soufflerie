@@ -97,7 +97,13 @@ After reviewing an input report, regenerate its sibling artifacts with:
 uv run python scripts/render_validation.py reports/validation.json
 ```
 
-The canonical dataset/model evaluation in issue #31 will create
-`reports/validation.json` and replace the explicit unevaluated notice in
-[`reports/validation.md`](../../reports/validation.md). Until then, no fixture
-metric or plot may be presented as release evidence.
+Canonical report `4995ef8f8456030f467d` is checked in as
+[`reports/validation.json`](../../reports/validation.json) with its rendered
+[`reports/validation.md`](../../reports/validation.md), plot manifest, eight SVG
+plots, and remote receipt. Its overall status is red: eight required gates pass
+and four fail, so it is valid evaluation evidence but does not authorize a
+release. Verify the complete artifact set with:
+
+```bash
+uv run python scripts/render_validation.py --check reports/validation.json
+```

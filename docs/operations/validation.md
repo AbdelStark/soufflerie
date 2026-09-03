@@ -58,9 +58,8 @@ receipt, tamper, and parent-mismatch contracts without authenticating or
 spending GPU time. Authenticated acceptance is manual and must use a clean
 commit with a real training index.
 
-After a smoke training index exists and its generated model/baseline IDs replace
-the explicit sentinels in `configs/validation/smoke.yaml`, run the smaller
-bootstrap acceptance with:
+Both checked validation configs bind the immutable IDs in the canonical training
+index. To exercise the same evidence path with fewer bootstrap resamples, run:
 
 ```bash
 uv run --extra remote modal run infra/validate.py \
@@ -70,4 +69,11 @@ uv run --extra remote modal run infra/validate.py \
 
 This smoke reduces only bootstrap resampling from 2,000 to 100. It still opens
 real artifacts and evaluates all fixed test, OOD, sensitivity, and gate
-memberships; it cannot manufacture release evidence from sentinel IDs.
+memberships; it is diagnostic and cannot manufacture release evidence.
+
+The authenticated release run from source `b9f730af` produced report
+`4995ef8f8456030f467d` at
+`soufflerie/v1/validation/4995ef8f8456030f467d`. Its successful receipt and
+complete report are checked in under `reports/`, but the overall status is red
+because four of twelve required gates failed. This is canonical evaluation
+evidence and an explicit release blocker, not a green release claim.

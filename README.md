@@ -117,8 +117,8 @@ run completes.
 
 The canonical L40S/bf16 experiment trained 100 epochs for each configured seed
 against dataset `4aefbbe88a18d233249b` from source revision `e1feea4d`. The
-validation-only selection is immutable and chose seed 17; scientific validation
-and release approval remain separate downstream gates.
+validation-only selection is immutable and chose seed 17. Selection does not
+imply scientific validation: the canonical release evaluation below is red.
 
 | Seed | Model ID | Validation score | Wall time |
 | ---: | --- | ---: | ---: |
@@ -136,6 +136,31 @@ uv run python scripts/check_training_run.py reports/training/index.json
 
 To submit a new clean-source experiment, see the
 [remote training operations guide](docs/operations/training.md).
+
+## Canonical validation
+
+Canonical report `4995ef8f8456030f467d` evaluated the selected model on an L40S
+with bf16 inference, 200 frozen test cases, 40 OOD probes, and 10 sensitivity
+probes. Eight of twelve required gates are green. The overall result is **red**,
+so release is blocked by these four gates:
+
+| Gate | Observed | Required |
+| --- | ---: | ---: |
+| Head/field consistency | 0.615 | >= 0.95 |
+| Divergence ratio | 5.724 | < 3.0 |
+| Obstacle compliance | 0.982 | < 0.01 |
+| Sensitivity signs | 4/10 | >= 8/10 |
+
+The immutable source report, rendered narrative, plot manifest, and remote
+receipt are checked in as [`validation.json`](reports/validation.json),
+[`validation.md`](reports/validation.md),
+[`validation.plots.json`](reports/validation.plots.json), and
+[`validation-receipt.json`](reports/validation-receipt.json). Verify the complete
+artifact set without rewriting it:
+
+```bash
+uv run python scripts/render_validation.py --check reports/validation.json
+```
 
 ## Cylinder acceptance
 

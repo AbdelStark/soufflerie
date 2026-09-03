@@ -41,6 +41,7 @@ REQUIRED_COMMANDS = {
     "--cov-fail-under=90",
     "uv run python scripts/validate_schemas.py",
     "uv run python scripts/render_validation.py --check tests/fixtures/report.json",
+    "uv run python scripts/render_validation.py --check reports/validation.json",
     "uv run python scripts/check_docs.py",
     "uv build",
     "uv run python scripts/check_distribution.py dist/*",

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">OOD ensemble variance</title>
+<desc id="desc">Soufflerie validation report 4995ef8f8456030f467d; overall status red.</desc>
+<rect width="960" height="540" fill="#f7f9fc"/>
+<rect width="960" height="8" fill="#c92a2a"/>
+<text x="28.00" y="35.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="700" text-anchor="start">OOD ensemble variance</text>
+<text x="932.00" y="34.00" fill="#c92a2a" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="700" text-anchor="end">RED · 4995ef8f8456030f467d</text>
+<rect x="105.00" y="85.00" width="750.00" height="365.00" fill="#ffffff" stroke="#d7deea" stroke-width="1"/>
+<line x1="105.00" y1="176.25" x2="855.00" y2="176.25" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="105.00" y1="267.50" x2="855.00" y2="267.50" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="105.00" y1="358.75" x2="855.00" y2="358.75" stroke="#d7deea" stroke-width="1.00"/>
+<text x="105.00" y="75.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Normalized ensemble variance by Reynolds value</text>
+<text x="480.00" y="484.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Reynolds value</text>
+<text x="98.00" y="89.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.018</text>
+<text x="98.00" y="450.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0</text>
+<text x="855.00" y="75.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">normalized variance</text>
+<circle cx="139.27" cy="204.95" r="3.50" fill="#f08c46"/>
+<circle cx="143.15" cy="202.30" r="3.50" fill="#f08c46"/>
+<circle cx="147.03" cy="252.64" r="3.50" fill="#f08c46"/>
+<circle cx="150.91" cy="151.21" r="3.50" fill="#f08c46"/>
+<circle cx="154.78" cy="206.32" r="3.50" fill="#f08c46"/>
+<circle cx="158.66" cy="186.70" r="3.50" fill="#f08c46"/>
+<circle cx="162.54" cy="112.04" r="3.50" fill="#f08c46"/>
+<circle cx="166.42" cy="256.39" r="3.50" fill="#f08c46"/>
+<circle cx="170.30" cy="219.49" r="3.50" fill="#f08c46"/>
+<circle cx="174.18" cy="195.09" r="3.50" fill="#f08c46"/>
+<line x1="128.71" y1="203.62" x2="184.74" y2="203.62" stroke="#172033" stroke-width="2.50"/>
+<text x="156.72" y="475.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Re=20</text>
+<circle cx="354.78" cy="388.28" r="3.50" fill="#246bfd"/>
+<circle cx="358.66" cy="401.57" r="3.50" fill="#246bfd"/>
+<circle cx="362.54" cy="420.70" r="3.50" fill="#246bfd"/>
+<circle cx="366.42" cy="378.53" r="3.50" fill="#246bfd"/>
+<circle cx="370.30" cy="362.61" r="3.50" fill="#246bfd"/>
+<circle cx="374.18" cy="371.22" r="3.50" fill="#246bfd"/>
+<circle cx="378.06" cy="351.58" r="3.50" fill="#246bfd"/>
+<circle cx="381.94" cy="419.20" r="3.50" fill="#246bfd"/>
+<circle cx="385.82" cy="402.01" r="3.50" fill="#246bfd"/>
+<circle cx="389.70" cy="391.96" r="3.50" fill="#246bfd"/>
+<line x1="344.22" y1="390.12" x2="400.26" y2="390.12" stroke="#172033" stroke-width="2.50"/>
+<text x="372.24" y="475.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Re=40</text>
+<circle cx="570.30" cy="377.36" r="3.50" fill="#246bfd"/>
+<circle cx="574.18" cy="432.79" r="3.50" fill="#246bfd"/>
+<circle cx="578.06" cy="433.46" r="3.50" fill="#246bfd"/>
+<circle cx="581.94" cy="410.04" r="3.50" fill="#246bfd"/>
+<circle cx="585.82" cy="381.88" r="3.50" fill="#246bfd"/>
+<circle cx="589.70" cy="415.10" r="3.50" fill="#246bfd"/>
+<circle cx="593.58" cy="391.10" r="3.50" fill="#246bfd"/>
+<circle cx="597.46" cy="433.10" r="3.50" fill="#246bfd"/>
+<circle cx="601.34" cy="420.09" r="3.50" fill="#246bfd"/>
+<circle cx="605.22" cy="415.48" r="3.50" fill="#246bfd"/>
+<line x1="559.74" y1="415.29" x2="615.78" y2="415.29" stroke="#172033" stroke-width="2.50"/>
+<text x="587.76" y="475.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Re=300</text>
+<circle cx="785.82" cy="306.62" r="3.50" fill="#f08c46"/>
+<circle cx="789.70" cy="381.59" r="3.50" fill="#f08c46"/>
+<circle cx="793.58" cy="387.67" r="3.50" fill="#f08c46"/>
+<circle cx="797.46" cy="334.13" r="3.50" fill="#f08c46"/>
+<circle cx="801.34" cy="338.99" r="3.50" fill="#f08c46"/>
+<circle cx="805.22" cy="336.39" r="3.50" fill="#f08c46"/>
+<circle cx="809.09" cy="320.62" r="3.50" fill="#f08c46"/>
+<circle cx="812.97" cy="391.74" r="3.50" fill="#f08c46"/>
+<circle cx="816.85" cy="356.10" r="3.50" fill="#f08c46"/>
+<circle cx="820.73" cy="376.53" r="3.50" fill="#f08c46"/>
+<line x1="775.26" y1="347.55" x2="831.29" y2="347.55" stroke="#172033" stroke-width="2.50"/>
+<text x="803.28" y="475.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Re=400</text>
+<text x="105.00" y="505.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="start">Orange: OOD · Blue: in-domain boundary · Black: median</text>
+</svg>
