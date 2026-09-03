@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">Rotation sensitivity agreement</title>
+<desc id="desc">Soufflerie validation report f5d6f4ea4b2aea70590a; overall status red.</desc>
+<rect width="960" height="540" fill="#f7f9fc"/>
+<rect width="960" height="8" fill="#c92a2a"/>
+<text x="28.00" y="35.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="700" text-anchor="start">Rotation sensitivity agreement</text>
+<text x="932.00" y="34.00" fill="#c92a2a" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="700" text-anchor="end">RED · f5d6f4ea4b2aea70590a</text>
+<rect x="105.00" y="85.00" width="750.00" height="365.00" fill="#ffffff" stroke="#d7deea" stroke-width="1"/>
+<line x1="105.00" y1="176.25" x2="855.00" y2="176.25" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="105.00" y1="267.50" x2="855.00" y2="267.50" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="105.00" y1="358.75" x2="855.00" y2="358.75" stroke="#d7deea" stroke-width="1.00"/>
+<text x="105.00" y="75.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Autograd and h=0.25 degree central differences</text>
+<text x="480.00" y="484.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Canonical probe index</text>
+<text x="98.00" y="89.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">1.16</text>
+<text x="98.00" y="450.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">-1.16</text>
+<text x="855.00" y="75.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">Cd per degree</text>
+<line x1="156.72" y1="267.50" x2="803.28" y2="267.50" stroke="#667085" stroke-width="1.00" stroke-dasharray="5 4"/>
+<line x1="156.72" y1="110.17" x2="156.72" y2="110.17" stroke="#d7deea" stroke-width="2.00"/>
+<circle cx="153.72" cy="110.17" r="4.00" fill="#246bfd"/>
+<circle cx="159.72" cy="110.17" r="4.00" fill="#f08c46"/>
+<line x1="228.56" y1="110.17" x2="228.56" y2="110.17" stroke="#d7deea" stroke-width="2.00"/>
+<circle cx="225.56" cy="110.17" r="4.00" fill="#246bfd"/>
+<circle cx="231.56" cy="110.17" r="4.00" fill="#f08c46"/>
+<line x1="300.40" y1="110.17" x2="300.40" y2="110.17" stroke="#d7deea" stroke-width="2.00"/>
+<circle cx="297.40" cy="110.17" r="4.00" fill="#246bfd"/>
+<circle cx="303.40" cy="110.17" r="4.00" fill="#f08c46"/>
+<line x1="372.24" y1="110.17" x2="372.24" y2="110.17" stroke="#d7deea" stroke-width="2.00"/>
+<circle cx="369.24" cy="110.17" r="4.00" fill="#246bfd"/>
+<circle cx="375.24" cy="110.17" r="4.00" fill="#f08c46"/>
+<line x1="444.08" y1="110.17" x2="444.08" y2="110.17" stroke="#d7deea" stroke-width="2.00"/>
+<circle cx="441.08" cy="110.17" r="4.00" fill="#246bfd"/>
+<circle cx="447.08" cy="110.17" r="4.00" fill="#f08c46"/>
+<line x1="515.92" y1="110.17" x2="515.92" y2="110.17" stroke="#d7deea" stroke-width="2.00"/>
+<circle cx="512.92" cy="110.17" r="4.00" fill="#246bfd"/>
+<circle cx="518.92" cy="110.17" r="4.00" fill="#f08c46"/>
+<line x1="587.76" y1="110.17" x2="587.76" y2="110.17" stroke="#d7deea" stroke-width="2.00"/>
+<circle cx="584.76" cy="110.17" r="4.00" fill="#246bfd"/>
+<circle cx="590.76" cy="110.17" r="4.00" fill="#f08c46"/>
+<line x1="659.60" y1="110.17" x2="659.60" y2="110.17" stroke="#d7deea" stroke-width="2.00"/>
+<circle cx="656.60" cy="110.17" r="4.00" fill="#246bfd"/>
+<circle cx="662.60" cy="110.17" r="4.00" fill="#f08c46"/>
+<line x1="731.44" y1="110.17" x2="731.44" y2="110.17" stroke="#d7deea" stroke-width="2.00"/>
+<circle cx="728.44" cy="110.17" r="4.00" fill="#246bfd"/>
+<circle cx="734.44" cy="110.17" r="4.00" fill="#f08c46"/>
+<line x1="803.28" y1="424.83" x2="803.28" y2="110.17" stroke="#d7deea" stroke-width="2.00"/>
+<circle cx="800.28" cy="424.83" r="4.00" fill="#246bfd"/>
+<circle cx="806.28" cy="110.17" r="4.00" fill="#f08c46"/>
+<circle cx="803.28" cy="267.50" r="2.50" fill="#c92a2a"/>
+<text x="105.00" y="495.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="start">Blue: autograd · Orange: central difference · Red: sign disagreement</text>
+</svg>

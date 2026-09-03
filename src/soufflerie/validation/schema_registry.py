@@ -12,6 +12,8 @@ from pydantic import BaseModel
 from soufflerie.validation.gates import GateResult, ValidationReport
 from soufflerie.validation.metrics import CaseMetrics, MetricSummary
 from soufflerie.validation.ood import OodEvaluation
+from soufflerie.validation.plot_data import ValidationPlotData
+from soufflerie.validation.reporting import PlotManifest
 from soufflerie.validation.sensitivity import SensitivityEvaluation
 
 VALIDATION_SCHEMA_MODELS: Mapping[str, type[BaseModel]] = MappingProxyType(
@@ -20,7 +22,9 @@ VALIDATION_SCHEMA_MODELS: Mapping[str, type[BaseModel]] = MappingProxyType(
         "gate-result": GateResult,
         "metric-summary": MetricSummary,
         "ood-evaluation": OodEvaluation,
+        "plot-manifest": PlotManifest,
         "sensitivity-evaluation": SensitivityEvaluation,
+        "validation-plot-data": ValidationPlotData,
         "validation-report": ValidationReport,
     }
 )

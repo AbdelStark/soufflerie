@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">Error by design parameter</title>
+<desc id="desc">Soufflerie validation report f5d6f4ea4b2aea70590a; overall status red.</desc>
+<rect width="960" height="540" fill="#f7f9fc"/>
+<rect width="960" height="8" fill="#c92a2a"/>
+<text x="28.00" y="35.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="700" text-anchor="start">Error by design parameter</text>
+<text x="932.00" y="34.00" fill="#c92a2a" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="700" text-anchor="end">RED · f5d6f4ea4b2aea70590a</text>
+<rect x="58.00" y="82.00" width="390.00" height="155.00" fill="#ffffff" stroke="#d7deea" stroke-width="1"/>
+<line x1="58.00" y1="120.75" x2="448.00" y2="120.75" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="58.00" y1="159.50" x2="448.00" y2="159.50" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="58.00" y1="198.25" x2="448.00" y2="198.25" stroke="#d7deea" stroke-width="1.00"/>
+<text x="58.00" y="72.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Aspect ratio</text>
+<text x="253.00" y="271.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Aspect ratio</text>
+<text x="58.00" y="254.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="start">0.508</text>
+<text x="448.00" y="254.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.972</text>
+<text x="51.00" y="86.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.148</text>
+<text x="51.00" y="237.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.032</text>
+<text x="448.00" y="72.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">velocity L2</text>
+<circle cx="84.90" cy="226.31" r="3.50" fill="#246bfd"/>
+<circle cx="118.52" cy="212.95" r="3.50" fill="#246bfd"/>
+<circle cx="152.14" cy="199.59" r="3.50" fill="#246bfd"/>
+<circle cx="185.76" cy="186.22" r="3.50" fill="#246bfd"/>
+<circle cx="219.38" cy="172.86" r="3.50" fill="#246bfd"/>
+<circle cx="253.00" cy="159.50" r="3.50" fill="#246bfd"/>
+<circle cx="286.62" cy="146.14" r="3.50" fill="#246bfd"/>
+<circle cx="320.24" cy="132.78" r="3.50" fill="#246bfd"/>
+<circle cx="353.86" cy="119.41" r="3.50" fill="#246bfd"/>
+<circle cx="387.48" cy="106.05" r="3.50" fill="#246bfd"/>
+<circle cx="421.10" cy="92.69" r="3.50" fill="#246bfd"/>
+<rect x="523.00" y="82.00" width="390.00" height="155.00" fill="#ffffff" stroke="#d7deea" stroke-width="1"/>
+<line x1="523.00" y1="120.75" x2="913.00" y2="120.75" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="523.00" y1="159.50" x2="913.00" y2="159.50" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="523.00" y1="198.25" x2="913.00" y2="198.25" stroke="#d7deea" stroke-width="1.00"/>
+<text x="523.00" y="72.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Rotation (degrees)</text>
+<text x="718.00" y="271.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Rotation (degrees)</text>
+<text x="523.00" y="254.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="start">2.4</text>
+<text x="913.00" y="254.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">25.6</text>
+<text x="516.00" y="86.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.148</text>
+<text x="516.00" y="237.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.032</text>
+<text x="913.00" y="72.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">velocity L2</text>
+<circle cx="549.90" cy="226.31" r="3.50" fill="#246bfd"/>
+<circle cx="583.52" cy="212.95" r="3.50" fill="#246bfd"/>
+<circle cx="617.14" cy="199.59" r="3.50" fill="#246bfd"/>
+<circle cx="650.76" cy="186.22" r="3.50" fill="#246bfd"/>
+<circle cx="684.38" cy="172.86" r="3.50" fill="#246bfd"/>
+<circle cx="718.00" cy="159.50" r="3.50" fill="#246bfd"/>
+<circle cx="751.62" cy="146.14" r="3.50" fill="#246bfd"/>
+<circle cx="785.24" cy="132.78" r="3.50" fill="#246bfd"/>
+<circle cx="818.86" cy="119.41" r="3.50" fill="#246bfd"/>
+<circle cx="852.48" cy="106.05" r="3.50" fill="#246bfd"/>
+<circle cx="886.10" cy="92.69" r="3.50" fill="#246bfd"/>
+<rect x="58.00" y="307.00" width="390.00" height="155.00" fill="#ffffff" stroke="#d7deea" stroke-width="1"/>
+<line x1="58.00" y1="345.75" x2="448.00" y2="345.75" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="58.00" y1="384.50" x2="448.00" y2="384.50" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="58.00" y1="423.25" x2="448.00" y2="423.25" stroke="#d7deea" stroke-width="1.00"/>
+<text x="58.00" y="297.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Scale</text>
+<text x="253.00" y="496.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Scale</text>
+<text x="58.00" y="479.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="start">0.758</text>
+<text x="448.00" y="479.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">1.222</text>
+<text x="51.00" y="311.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.148</text>
+<text x="51.00" y="462.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.032</text>
+<text x="448.00" y="297.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">velocity L2</text>
+<circle cx="84.90" cy="451.31" r="3.50" fill="#246bfd"/>
+<circle cx="118.52" cy="437.95" r="3.50" fill="#246bfd"/>
+<circle cx="152.14" cy="424.59" r="3.50" fill="#246bfd"/>
+<circle cx="185.76" cy="411.22" r="3.50" fill="#246bfd"/>
+<circle cx="219.38" cy="397.86" r="3.50" fill="#246bfd"/>
+<circle cx="253.00" cy="384.50" r="3.50" fill="#246bfd"/>
+<circle cx="286.62" cy="371.14" r="3.50" fill="#246bfd"/>
+<circle cx="320.24" cy="357.78" r="3.50" fill="#246bfd"/>
+<circle cx="353.86" cy="344.41" r="3.50" fill="#246bfd"/>
+<circle cx="387.48" cy="331.05" r="3.50" fill="#246bfd"/>
+<circle cx="421.10" cy="317.69" r="3.50" fill="#246bfd"/>
+<rect x="523.00" y="307.00" width="390.00" height="155.00" fill="#ffffff" stroke="#d7deea" stroke-width="1"/>
+<line x1="523.00" y1="345.75" x2="913.00" y2="345.75" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="523.00" y1="384.50" x2="913.00" y2="384.50" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="523.00" y1="423.25" x2="913.00" y2="423.25" stroke="#d7deea" stroke-width="1.00"/>
+<text x="523.00" y="297.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Reynolds number</text>
+<text x="718.00" y="496.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Reynolds number</text>
+<text x="523.00" y="479.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="start">44.6</text>
+<text x="913.00" y="479.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">311.4</text>
+<text x="516.00" y="311.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.148</text>
+<text x="516.00" y="462.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.032</text>
+<text x="913.00" y="297.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">velocity L2</text>
+<circle cx="549.90" cy="451.31" r="3.50" fill="#246bfd"/>
+<circle cx="583.52" cy="437.95" r="3.50" fill="#246bfd"/>
+<circle cx="617.14" cy="424.59" r="3.50" fill="#246bfd"/>
+<circle cx="650.76" cy="411.22" r="3.50" fill="#246bfd"/>
+<circle cx="684.38" cy="397.86" r="3.50" fill="#246bfd"/>
+<circle cx="718.00" cy="384.50" r="3.50" fill="#246bfd"/>
+<circle cx="751.62" cy="371.14" r="3.50" fill="#246bfd"/>
+<circle cx="785.24" cy="357.78" r="3.50" fill="#246bfd"/>
+<circle cx="818.86" cy="344.41" r="3.50" fill="#246bfd"/>
+<circle cx="852.48" cy="331.05" r="3.50" fill="#246bfd"/>
+<circle cx="886.10" cy="317.69" r="3.50" fill="#246bfd"/>
+</svg>

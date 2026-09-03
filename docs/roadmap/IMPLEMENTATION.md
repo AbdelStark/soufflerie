@@ -47,7 +47,7 @@ Implementation issues by area: foundation 4, solver 4, geometry 5, datagen 5, su
 | #27 | [training: execute three canonical seeds and select the model](https://github.com/AbdelStark/soufflerie/issues/27) | training | p0 | l | RFC-0007, RFC-0011 | open |
 | #28 | [validation: implement metrics and immutable gate evaluation](https://github.com/AbdelStark/soufflerie/issues/28) | validation | p0 | l | RFC-0008 | closed |
 | #29 | [validation: implement OOD ensemble and sensitivity probes](https://github.com/AbdelStark/soufflerie/issues/29) | validation | p0 | l | RFC-0008 | closed |
-| #30 | [validation: generate immutable JSON, Markdown, and plots](https://github.com/AbdelStark/soufflerie/issues/30) | validation | p0 | l | RFC-0008, RFC-0012 | open |
+| #30 | [validation: generate immutable JSON, Markdown, and plots](https://github.com/AbdelStark/soufflerie/issues/30) | validation | p0 | l | RFC-0008, RFC-0012 | closed |
 | #31 | [validation: run the canonical release evaluation](https://github.com/AbdelStark/soufflerie/issues/31) | validation | p0 | l | RFC-0008, RFC-0011 | open |
 | #32 | [api: implement strict HTTP schemas, errors, and health](https://github.com/AbdelStark/soufflerie/issues/32) | api | p0 | m | RFC-0009 | open |
 | #33 | [api: implement bounded prediction and field encoding](https://github.com/AbdelStark/soufflerie/issues/33) | api | p0 | l | RFC-0009 | open |

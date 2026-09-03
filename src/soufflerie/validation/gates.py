@@ -22,6 +22,7 @@ from soufflerie.schemas import (
 )
 from soufflerie.validation.metrics import MetricObservation, MetricSummary
 from soufflerie.validation.ood import OodEvaluation
+from soufflerie.validation.plot_data import ValidationPlotData
 from soufflerie.validation.sensitivity import SensitivityEvaluation
 
 GateName: TypeAlias = Literal[
@@ -404,8 +405,10 @@ class ValidationReport(VersionedModel):
     gates: tuple[GateResult, ...]
     overall_status: GateStatus
     provenance: Provenance
+    generator_version: Literal["validation-report-v1"] = "validation-report-v1"
     ood: OodEvaluation | None = None
     sensitivity: SensitivityEvaluation | None = None
+    plot_data: ValidationPlotData | None = None
 
     @model_validator(mode="before")
     @classmethod
@@ -446,6 +449,14 @@ class ValidationReport(VersionedModel):
             self.ensemble_model_ids
         ):
             raise ValueError("baseline identities must be distinct from every ensemble model")
+        expected_gate_order = tuple(definition.name for definition in REQUIRED_GATE_DEFINITIONS)
+        observed_gate_order = tuple(gate.name for gate in self.gates)
+        if (
+            len(observed_gate_order) == len(expected_gate_order)
+            and set(observed_gate_order) == set(expected_gate_order)
+            and observed_gate_order != expected_gate_order
+        ):
+            raise ValueError("validation report gates must use the immutable RFC order")
         if self.ood is not None and self.ood.model_ids != tuple(sorted(self.ensemble_model_ids)):
             raise ValueError("OOD and report ensemble model identities differ")
         if self.ood is not None and any(
@@ -461,6 +472,14 @@ class ValidationReport(VersionedModel):
             item.geometry.dataset_id != self.dataset_id for item in self.sensitivity.results
         ):
             raise ValueError("sensitivity and report dataset identities differ")
+        if self.plot_data is not None:
+            plot_ids = tuple(item.artifact_id for item in self.plot_data.baselines)
+            expected_plot_ids = (self.selected_model_id, *self.baseline_ids)
+            if plot_ids != expected_plot_ids:
+                raise ValueError("plot model and baseline identities differ from the report")
+            case_count = len(self.plot_data.cases)
+            if any(summary.count != case_count for summary in self.metrics.values()):
+                raise ValueError("plot cases must cover every summarized metric case")
         for name, summary in self.metrics.items():
             if name != summary.name and not name.endswith(f".{summary.name}"):
                 raise ValueError("metric mapping keys must name the summarized metric")

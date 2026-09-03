@@ -33,6 +33,12 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+      - id: validation-report
+        name: generated validation report contracts
+        entry: uv run python scripts/render_validation.py --check tests/fixtures/report.json
+        language: system
+        pass_filenames: false
+        always_run: true
       - id: docs-contracts
         name: documentation links and claims
         entry: uv run python scripts/check_docs.py

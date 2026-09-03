@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">Cd head and field consistency</title>
+<desc id="desc">Soufflerie validation report f5d6f4ea4b2aea70590a; overall status red.</desc>
+<rect width="960" height="540" fill="#f7f9fc"/>
+<rect width="960" height="8" fill="#c92a2a"/>
+<text x="28.00" y="35.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="700" text-anchor="start">Cd head and field consistency</text>
+<text x="932.00" y="34.00" fill="#c92a2a" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="700" text-anchor="end">RED · f5d6f4ea4b2aea70590a</text>
+<rect x="105.00" y="85.00" width="750.00" height="365.00" fill="#ffffff" stroke="#d7deea" stroke-width="1"/>
+<line x1="105.00" y1="176.25" x2="855.00" y2="176.25" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="105.00" y1="267.50" x2="855.00" y2="267.50" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="105.00" y1="358.75" x2="855.00" y2="358.75" stroke="#d7deea" stroke-width="1.00"/>
+<text x="105.00" y="75.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Per-case Cd estimates</text>
+<text x="480.00" y="484.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Field-derived Cd</text>
+<text x="105.00" y="467.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="start">0.81</text>
+<text x="855.00" y="467.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">1.39</text>
+<text x="98.00" y="89.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">1.39</text>
+<text x="98.00" y="450.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.81</text>
+<text x="855.00" y="75.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">Head Cd</text>
+<line x1="156.72" y1="424.83" x2="803.28" y2="110.17" stroke="#667085" stroke-width="1.00" stroke-dasharray="6 5"/>
+<circle cx="167.07" cy="424.83" r="4.00" fill="#246bfd"/>
+<circle cx="229.14" cy="393.36" r="4.00" fill="#246bfd"/>
+<circle cx="291.21" cy="361.90" r="4.00" fill="#246bfd"/>
+<circle cx="353.28" cy="330.43" r="4.00" fill="#246bfd"/>
+<circle cx="415.34" cy="298.97" r="4.00" fill="#246bfd"/>
+<circle cx="477.41" cy="267.50" r="4.00" fill="#246bfd"/>
+<circle cx="539.48" cy="236.03" r="4.00" fill="#246bfd"/>
+<circle cx="601.55" cy="204.57" r="4.00" fill="#246bfd"/>
+<circle cx="663.62" cy="173.10" r="4.00" fill="#246bfd"/>
+<circle cx="725.69" cy="141.64" r="4.00" fill="#246bfd"/>
+<circle cx="787.76" cy="110.17" r="4.00" fill="#246bfd"/>
+<text x="105.00" y="495.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="start">Dashed line: exact head/field agreement</text>
+</svg>
