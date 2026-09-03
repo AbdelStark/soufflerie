@@ -42,6 +42,7 @@ MAX_PROGRESS_EVENTS = 2_048
 IDEMPOTENCY_KEY_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
 
 ProgressCallback = Callable[[float], Awaitable[None]]
+AdmissionCheck = Callable[[], None]
 Clock = Callable[[], datetime]
 IdFactory = Callable[[], str]
 SolveEventStream = AsyncGenerator[SolveEvent | None, None]
@@ -70,6 +71,7 @@ class SolveJobBackend(Protocol):
         *,
         correlation_id: str,
         idempotency_key: str | None,
+        admission_check: AdmissionCheck | None = None,
     ) -> SolveAccepted: ...
 
     async def status(self, job_id: str) -> SolveStatus: ...
@@ -198,6 +200,7 @@ class SolveJobManager:
         *,
         correlation_id: str,
         idempotency_key: str | None,
+        admission_check: AdmissionCheck | None = None,
     ) -> SolveAccepted:
         if (
             idempotency_key is not None
@@ -240,6 +243,8 @@ class SolveJobManager:
                 events_url=f"/solve/{job_id}/events",
                 expires_at=expires_at,
             )
+            if admission_check is not None:
+                admission_check()
             record = _JobRecord(
                 request=request,
                 request_sha256=request_sha256,
@@ -467,6 +472,7 @@ __all__ = [
     "MAX_PROGRESS_EVENTS",
     "MAX_RETAINED_JOBS",
     "TERMINAL_RETENTION_SECONDS",
+    "AdmissionCheck",
     "Clock",
     "IdFactory",
     "ProgressCallback",

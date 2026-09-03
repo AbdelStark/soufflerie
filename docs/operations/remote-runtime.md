@@ -21,10 +21,12 @@ commit changes the image identity and recorded revision.
 ## Authentication and secrets
 
 Authenticate with a local Modal profile. `MODAL_ENVIRONMENT` and
-`SOUFFLERIE_REMOTE_GPU` are the only local runtime selectors in `.env.example`;
-neither is a credential. Secret values stay in the provider secret store. The
-reviewed future secret reference is `soufflerie-runtime`, but the kernel smoke
-does not attach it because no secret is needed.
+`SOUFFLERIE_REMOTE_GPU` are the only remote-runtime selectors in
+`.env.example`; neither is a credential. The separate
+[public-service controls](service.md) govern admission and proxy trust. Secret
+values stay in the provider secret store. The reviewed future secret reference
+is `soufflerie-runtime`, but the kernel smoke does not attach it because no
+secret is needed.
 
 The default and performance-reference device is L40S. A10G can be selected
 explicitly as a functional fallback:

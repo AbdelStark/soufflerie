@@ -328,6 +328,9 @@
               "DEPENDENCY_UNAVAILABLE",
               "DEVICE_UNAVAILABLE",
               "CAPACITY_EXHAUSTED",
+              "RATE_LIMITED",
+              "BUDGET_EXHAUSTED",
+              "SOLVE_DISABLED",
               "REMOTE_EXECUTION",
               "VALIDATION_RED",
               "INTERNAL_INVARIANT",
@@ -909,6 +912,16 @@
             },
             "description": "Request violates the closed schema."
           },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Request or daily budget is exhausted."
+          },
           "500": {
             "content": {
               "application/json": {
@@ -1017,6 +1030,16 @@
               }
             },
             "description": "Request violates the closed schema."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Request or daily budget is exhausted."
           },
           "500": {
             "content": {

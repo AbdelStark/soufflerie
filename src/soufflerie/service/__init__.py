@@ -2,6 +2,16 @@
 
 from typing import TYPE_CHECKING, Any
 
+from soufflerie.service.admission import (
+    CLIENT_HMAC_KEY_BYTES,
+    MAX_CLIENT_STATES,
+    AdmissionController,
+    AdmissionSettings,
+    AdmissionSnapshot,
+    ServiceReadiness,
+    evaluate_service_readiness,
+    load_admission_settings,
+)
 from soufflerie.service.contracts import (
     MAX_REQUEST_BODY_BYTES,
     MAX_RESPONSE_BODY_BYTES,
@@ -51,10 +61,15 @@ def __getattr__(name: str) -> Any:
 
 
 __all__ = [
+    "CLIENT_HMAC_KEY_BYTES",
     "DEFAULT_HEARTBEAT_SECONDS",
+    "MAX_CLIENT_STATES",
     "MAX_REQUEST_BODY_BYTES",
     "MAX_RESPONSE_BODY_BYTES",
     "TERMINAL_RETENTION_SECONDS",
+    "AdmissionController",
+    "AdmissionSettings",
+    "AdmissionSnapshot",
     "ConsistencyFlags",
     "EncodedArtifact",
     "EventStreamResponse",
@@ -70,6 +85,7 @@ __all__ = [
     "ReadinessProbe",
     "ReadinessStatus",
     "RequestBoundaryMiddleware",
+    "ServiceReadiness",
     "ShapeRequest",
     "SolveAccepted",
     "SolveComparison",
@@ -84,5 +100,7 @@ __all__ = [
     "ValidationStatus",
     "assess_health",
     "create_app",
+    "evaluate_service_readiness",
+    "load_admission_settings",
     "validate_job_transition",
 ]
