@@ -251,7 +251,7 @@ def _validation_metrics(
                     dtype=np.float32,
                 )
                 target_fields = np.ascontiguousarray(
-                    tensors.target.fields_normalized.detach().cpu().numpy(),
+                    cast(Any, tensors.target.fields_normalized).detach().cpu().numpy(),
                     dtype=np.float32,
                 )
                 predicted_physical = denormalize_fields(predicted_fields, statistics)
@@ -427,6 +427,9 @@ def execute_training_seed(
     dataset = open_manifest_dataset(root, request.dataset)
     if dataset.dataset_sha256 != request.dataset.sha256:
         raise ArtifactIntegrityError("REMOTE_TRAIN_DATASET_MISMATCH: dataset digest differs")
+    cached_samples = dataset.preload_splits(("train", "validation"))
+    if cached_samples != 800:
+        raise ArtifactIntegrityError("REMOTE_TRAIN_CACHE_INCOMPLETE: expected 800 cached samples")
     statistics = fit_preprocessing_statistics(dataset.iter_samples("train"))
     session = prepare_training_session(
         request.config,
@@ -439,6 +442,7 @@ def execute_training_seed(
     checkpoint_store = LocalTrainingCheckpointStore(root)
     existing_records = writer.read()
     next_epoch = 1
+    checkpoint_completed_epoch: int | None = None
     latest_pointer = seed_root / "latest.json"
     if latest_pointer.exists() or latest_pointer.is_symlink():
         checkpoint = checkpoint_store.open_pointer(request.experiment_id, seed, "latest")
@@ -457,10 +461,7 @@ def execute_training_seed(
             precision=session.policy.precision,
         )
         next_epoch = restore_training_checkpoint(checkpoint, session, expected)
-        if len(existing_records) != checkpoint.metadata.completed_epoch:
-            raise ArtifactIntegrityError(
-                "REMOTE_TRAIN_RESUME_MISMATCH: epoch log and checkpoint differ"
-            )
+        checkpoint_completed_epoch = checkpoint.metadata.completed_epoch
     elif existing_records:
         raise ArtifactIntegrityError(
             "REMOTE_TRAIN_RESUME_MISMATCH: epoch log exists without a checkpoint"
@@ -484,11 +485,37 @@ def execute_training_seed(
         metrics = []
         validation_wall_seconds = []
         validation_gpu_seconds = []
+    if (
+        checkpoint_completed_epoch is not None
+        and len(existing_records) == checkpoint_completed_epoch + 1
+        and len(metrics) == checkpoint_completed_epoch
+        and len(validation_wall_seconds) == checkpoint_completed_epoch
+        and len(validation_gpu_seconds) == checkpoint_completed_epoch
+    ):
+        orphan = existing_records[-1]
+        recovery_path = (
+            seed_root
+            / "recovery"
+            / f"orphaned-epoch-{orphan.epoch}-{canonical_sha256(orphan)}.json"
+        )
+        _publish_immutable(
+            recovery_path,
+            canonical_json_bytes(orphan),
+            label="RECOVERY",
+        )
+        recovered = writer.rollback_uncheckpointed_tail(checkpoint_completed_epoch)
+        if recovered != orphan:
+            raise ArtifactIntegrityError(
+                "REMOTE_TRAIN_RECOVERY_MISMATCH: preserved and removed records differ"
+            )
+        commit_volume()
+        existing_records = writer.read()
     if not (
         len(metrics)
         == len(validation_wall_seconds)
         == len(validation_gpu_seconds)
         == len(existing_records)
+        == (checkpoint_completed_epoch or 0)
     ):
         raise ArtifactIntegrityError(
             "REMOTE_TRAIN_RESUME_MISMATCH: validation metrics and epoch log differ"

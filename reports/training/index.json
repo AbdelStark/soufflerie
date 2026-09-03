@@ -1,0 +1,189 @@
+{
+  "evidence_sha256": "40bcc86283049a1c3dae4ae7e4b124f58532aa599872559045922713c529df04",
+  "receipts": [
+    {
+      "accounting": {
+        "completed_at": "2026-09-03T10:41:41.471995Z",
+        "device_class": "L40S",
+        "device_name": "NVIDIA L40S",
+        "gpu_seconds": 1011.3060059079986,
+        "lock_sha256": "52798c0af1cd5e55ecde6e054af54415f5fb8aae0e63dbd2d4e7972d203386ab",
+        "peak_allocated_bytes": 2857082880,
+        "peak_reserved_bytes": 3418357760,
+        "precision": "bf16",
+        "schema_version": 1,
+        "source_revision": "e1feea4d07bcb90022bc222bbe319907f956e43c",
+        "started_at": "2026-09-03T10:20:20.818159Z",
+        "wall_seconds": 1280.6538358710004
+      },
+      "baseline_sha256s": [
+        "66990bf5626da7eb4c10370c947ffa9b19105c7b82e571bee68f51ffc5feb528",
+        "3f8924d130bb0b22a7ad2a490134a733617fb0622cac801ff5c926ecc12a876d"
+      ],
+      "best_checkpoint_id": "c35233c9684a082ba002",
+      "completed_epochs": 100,
+      "deployable_seed": 17,
+      "evidence_sha256": "da6e15761c3d81b4079076d2580b4467490448a98d7379147db5a402511432a3",
+      "experiment_id": "02c6ce0f9e705809bb21",
+      "final_state": "succeeded",
+      "model": {
+        "artifact_id": "7b6fd39c0ec78f452163",
+        "artifact_type": "model",
+        "schema_version": 1,
+        "sha256": "7b6fd39c0ec78f4521631b63f45948e02b37acf714b2daf38c911a19e9ec0456",
+        "size_bytes": 151133593,
+        "uri": "models/7b6fd39c0ec78f452163"
+      },
+      "parent_sha256": {
+        "architecture": "0497c23bb84447a724cc51f01d8d4ec4480a5ef403469d1727dabf53c02cc160",
+        "best_checkpoint": "c35233c9684a082ba00201cdd4d555d68b82d00b1d3be5239dfddaf5e30dde90",
+        "config": "e1526dec2dd6aa9217e6f273a739853bc364b8e614ed371d4e78445a6598757c",
+        "dataset": "4aefbbe88a18d233249bae3dbebc529142a0e9d5dbaaf33dae474c82f121fa28",
+        "model": "7b6fd39c0ec78f4521631b63f45948e02b37acf714b2daf38c911a19e9ec0456"
+      },
+      "schema_version": 1,
+      "seed": 17,
+      "selection_id": "6676fe5bcc0d4c671017",
+      "selection_sha256": "6676fe5bcc0d4c6710179ec653ecbcbc299c8e14c2c89d40281804a32ee71735",
+      "solver_sha256": "c6f69e95ff31da206201520fdac692cad594827e1f136aa500ddb9f1123f445e",
+      "validation_score": 0.022979130492993667
+    },
+    {
+      "accounting": {
+        "completed_at": "2026-09-03T10:41:50.454023Z",
+        "device_class": "L40S",
+        "device_name": "NVIDIA L40S",
+        "gpu_seconds": 1009.5030670629972,
+        "lock_sha256": "52798c0af1cd5e55ecde6e054af54415f5fb8aae0e63dbd2d4e7972d203386ab",
+        "peak_allocated_bytes": 2857082880,
+        "peak_reserved_bytes": 3418357760,
+        "precision": "bf16",
+        "schema_version": 1,
+        "source_revision": "e1feea4d07bcb90022bc222bbe319907f956e43c",
+        "started_at": "2026-09-03T10:20:55.165688Z",
+        "wall_seconds": 1255.2883354089981
+      },
+      "baseline_sha256s": [
+        "66990bf5626da7eb4c10370c947ffa9b19105c7b82e571bee68f51ffc5feb528",
+        "3f8924d130bb0b22a7ad2a490134a733617fb0622cac801ff5c926ecc12a876d"
+      ],
+      "best_checkpoint_id": "70046652740241952c8c",
+      "completed_epochs": 100,
+      "deployable_seed": 17,
+      "evidence_sha256": "17bed57b6dd33286c799a5dfde6b91ad156cf95228fce0cad9fa8c7a94f000b4",
+      "experiment_id": "02c6ce0f9e705809bb21",
+      "final_state": "succeeded",
+      "model": {
+        "artifact_id": "8847109ea4eaf87aa5ae",
+        "artifact_type": "model",
+        "schema_version": 1,
+        "sha256": "8847109ea4eaf87aa5aed26767d44f31baf474c23bfda2e93d71ec5a170e9ceb",
+        "size_bytes": 151133593,
+        "uri": "models/8847109ea4eaf87aa5ae"
+      },
+      "parent_sha256": {
+        "architecture": "0497c23bb84447a724cc51f01d8d4ec4480a5ef403469d1727dabf53c02cc160",
+        "best_checkpoint": "70046652740241952c8ccc7d4c0f4507a084e539bcf6874af141955a37b1bd99",
+        "config": "e1526dec2dd6aa9217e6f273a739853bc364b8e614ed371d4e78445a6598757c",
+        "dataset": "4aefbbe88a18d233249bae3dbebc529142a0e9d5dbaaf33dae474c82f121fa28",
+        "model": "8847109ea4eaf87aa5aed26767d44f31baf474c23bfda2e93d71ec5a170e9ceb"
+      },
+      "schema_version": 1,
+      "seed": 23,
+      "selection_id": "6676fe5bcc0d4c671017",
+      "selection_sha256": "6676fe5bcc0d4c6710179ec653ecbcbc299c8e14c2c89d40281804a32ee71735",
+      "solver_sha256": "c6f69e95ff31da206201520fdac692cad594827e1f136aa500ddb9f1123f445e",
+      "validation_score": 0.023848901559763797
+    },
+    {
+      "accounting": {
+        "completed_at": "2026-09-03T10:41:39.731061Z",
+        "device_class": "L40S",
+        "device_name": "NVIDIA L40S",
+        "gpu_seconds": 1025.091633480998,
+        "lock_sha256": "52798c0af1cd5e55ecde6e054af54415f5fb8aae0e63dbd2d4e7972d203386ab",
+        "peak_allocated_bytes": 2857082880,
+        "peak_reserved_bytes": 3829399552,
+        "precision": "bf16",
+        "schema_version": 1,
+        "source_revision": "e1feea4d07bcb90022bc222bbe319907f956e43c",
+        "started_at": "2026-09-03T10:19:03.021905Z",
+        "wall_seconds": 1356.7091562999992
+      },
+      "baseline_sha256s": [
+        "66990bf5626da7eb4c10370c947ffa9b19105c7b82e571bee68f51ffc5feb528",
+        "3f8924d130bb0b22a7ad2a490134a733617fb0622cac801ff5c926ecc12a876d"
+      ],
+      "best_checkpoint_id": "a343ab7860c497b1b40b",
+      "completed_epochs": 100,
+      "deployable_seed": 17,
+      "evidence_sha256": "9e5735192fc12e4b0910e7a36992c9ee2da08811eb2ba5472e84233004e6c796",
+      "experiment_id": "02c6ce0f9e705809bb21",
+      "final_state": "succeeded",
+      "model": {
+        "artifact_id": "bec20fbbb9dfd64f0639",
+        "artifact_type": "model",
+        "schema_version": 1,
+        "sha256": "bec20fbbb9dfd64f06394a7e366ad00cdf3dd1903a65a2bb88ca1af1a4e3f043",
+        "size_bytes": 151133593,
+        "uri": "models/bec20fbbb9dfd64f0639"
+      },
+      "parent_sha256": {
+        "architecture": "0497c23bb84447a724cc51f01d8d4ec4480a5ef403469d1727dabf53c02cc160",
+        "best_checkpoint": "a343ab7860c497b1b40b74bc3c80b8386479c15bad1a89cb1d9d4d9952e99717",
+        "config": "e1526dec2dd6aa9217e6f273a739853bc364b8e614ed371d4e78445a6598757c",
+        "dataset": "4aefbbe88a18d233249bae3dbebc529142a0e9d5dbaaf33dae474c82f121fa28",
+        "model": "bec20fbbb9dfd64f06394a7e366ad00cdf3dd1903a65a2bb88ca1af1a4e3f043"
+      },
+      "schema_version": 1,
+      "seed": 31,
+      "selection_id": "6676fe5bcc0d4c671017",
+      "selection_sha256": "6676fe5bcc0d4c6710179ec653ecbcbc299c8e14c2c89d40281804a32ee71735",
+      "solver_sha256": "c6f69e95ff31da206201520fdac692cad594827e1f136aa500ddb9f1123f445e",
+      "validation_score": 0.023075460053129184
+    }
+  ],
+  "request": {
+    "architecture_sha256": "0497c23bb84447a724cc51f01d8d4ec4480a5ef403469d1727dabf53c02cc160",
+    "config": {
+      "batch_size": 8,
+      "cd_weight": 0.5,
+      "dataset_id": "4aefbbe88a18d233249b",
+      "epochs": 100,
+      "field_weights": [
+        1.0,
+        1.0,
+        0.25
+      ],
+      "gradient_clip_norm": 1.0,
+      "learning_rate": 0.001,
+      "min_learning_rate": 1e-05,
+      "num_workers": 4,
+      "obstacle_weight": 0.25,
+      "precision": "bf16",
+      "schema_version": 1,
+      "seeds": [
+        17,
+        23,
+        31
+      ],
+      "weight_decay": 0.0001
+    },
+    "dataset": {
+      "artifact_id": "4aefbbe88a18d233249b",
+      "artifact_type": "dataset",
+      "schema_version": 1,
+      "sha256": "4aefbbe88a18d233249bae3dbebc529142a0e9d5dbaaf33dae474c82f121fa28",
+      "size_bytes": 242947,
+      "uri": "datasets/4aefbbe88a18d233249b"
+    },
+    "experiment_id": "02c6ce0f9e705809bb21",
+    "lock_sha256": "52798c0af1cd5e55ecde6e054af54415f5fb8aae0e63dbd2d4e7972d203386ab",
+    "request_digest": "9ca4cfd75173b75a6944fbd26e1e886f94417c3ed4e96b2182f8e775e69f5b61",
+    "requested_device_class": "L40S",
+    "schema_version": 1,
+    "source_revision": "e1feea4d07bcb90022bc222bbe319907f956e43c"
+  },
+  "schema_version": 1,
+  "selected_model_id": "7b6fd39c0ec78f452163"
+}

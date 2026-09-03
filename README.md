@@ -113,6 +113,30 @@ verify. Checked release statistics and execution evidence live in
 [`reports/dataset/README.md`](reports/dataset/README.md) once that authenticated
 run completes.
 
+## Canonical three-seed training
+
+The canonical L40S/bf16 experiment trained 100 epochs for each configured seed
+against dataset `4aefbbe88a18d233249b` from source revision `e1feea4d`. The
+validation-only selection is immutable and chose seed 17; scientific validation
+and release approval remain separate downstream gates.
+
+| Seed | Model ID | Validation score | Wall time |
+| ---: | --- | ---: | ---: |
+| 17 | `7b6fd39c0ec78f452163` | 0.0229791 | 21.3 min |
+| 23 | `8847109ea4eaf87aa5ae` | 0.0238489 | 20.9 min |
+| 31 | `bec20fbbb9dfd64f0639` | 0.0230755 | 22.6 min |
+
+The full request, model references, parent digests, accounting, and frozen
+selection are in [`reports/training/index.json`](reports/training/index.json).
+Verify the checked evidence with:
+
+```bash
+uv run python scripts/check_training_run.py reports/training/index.json
+```
+
+To submit a new clean-source experiment, see the
+[remote training operations guide](docs/operations/training.md).
+
 ## Cylinder acceptance
 
 The checked-in Re=100 report binds the canonical and sensitivity runs to exact

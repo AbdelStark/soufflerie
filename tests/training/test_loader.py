@@ -116,6 +116,34 @@ def test_iter_batches_opens_only_the_bounded_slice_and_binds_membership(
     assert harness.opened == [row.run_digest for row in expected]
 
 
+def test_preloaded_splits_are_verified_once_and_reused_without_store_io(
+    dataset: ManifestDataset,
+    harness: TrainingHarness,
+) -> None:
+    expected = tuple(
+        row.run_digest for split in ("train", "validation") for row in dataset.split_rows(split)
+    )
+
+    assert dataset.preload_splits(("train", "validation")) == 800
+    assert harness.opened == list(expected)
+    harness.opened.clear()
+
+    for split in ("train", "validation"):
+        rows = dataset.split_rows(split)
+        assert dataset.load_sample(rows[0]).case_id == rows[0].case_id
+    assert dataset.preload_splits(("validation",)) == 800
+    assert harness.opened == []
+
+
+@pytest.mark.parametrize("splits", [(), ("train", "train"), ("invalid",)])
+def test_preload_rejects_empty_duplicate_and_unknown_splits(
+    dataset: ManifestDataset,
+    splits: tuple[str, ...],
+) -> None:
+    with pytest.raises(ArtifactIntegrityError, match="splits must be"):
+        dataset.preload_splits(splits)  # type: ignore[arg-type]
+
+
 def test_loader_rejects_nonmembership_rebinding_and_wrong_statistics(
     dataset: ManifestDataset,
     harness: TrainingHarness,

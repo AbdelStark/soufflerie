@@ -277,6 +277,8 @@ class FakeTorchModule(ModuleType):
     nn: SimpleNamespace
     cat: Any
     any: Any
+    autocast: Any
+    autocast_calls: list[dict[str, object]]
     inference_mode: type[FakeInferenceMode]
 
 
@@ -304,6 +306,13 @@ def _fake_runtime() -> fno_module._MlRuntime:
 
     torch.cat = concatenate
     torch.any = lambda value: value
+    torch.autocast_calls = []
+
+    def autocast(**kwargs: object) -> FakeInferenceMode:
+        torch.autocast_calls.append(kwargs)
+        return FakeInferenceMode()
+
+    torch.autocast = autocast
     torch.inference_mode = FakeInferenceMode
     return fno_module._MlRuntime(
         torch=torch,
@@ -374,12 +383,19 @@ def test_framework_free_adapter_builds_exact_modules_and_raw_results(
 
     result = predictor(_fake_batch())
 
+    assert cast(FakeTorchModule, predictor._runtime.torch).autocast_calls == [
+        {"device_type": "cpu", "enabled": False}
+    ]
     assert result.fields_normalized.shape == (2, 3, *MODEL_SPATIAL_SHAPE)
     assert result.cd_head.shape == (2,)
     assert cast(FakeTensor, result.fields_normalized).lineage == "decoded-grid"
     assert predictor.training
     contract: FlowPredictor = predictor
     predicted = contract.predict(_fake_batch())
+    assert cast(FakeTorchModule, predictor._runtime.torch).autocast_calls == [
+        {"device_type": "cpu", "enabled": False},
+        {"device_type": "cpu", "enabled": False},
+    ]
     assert predicted.fields_normalized.shape == result.fields_normalized.shape
     assert predictor.training
     assert predictor.eval().training is False
