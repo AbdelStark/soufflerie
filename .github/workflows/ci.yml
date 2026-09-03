@@ -79,7 +79,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
       - name: Sync the locked development environment
-        run: uv sync --frozen --extra solver --extra viz
+        run: uv sync --frozen --extra solver --extra serve --extra viz
       - name: Run CPU-safe coverage gate without network
         env:
           UV_OFFLINE: "1"

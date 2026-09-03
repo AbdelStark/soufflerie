@@ -49,7 +49,7 @@ dev = [
 ]
 ```
 
-Shared schema/data dependencies may be base requirements when required by public schemas and smoke workflows. Exact compatible transitive versions live in `uv.lock`; the remote image installs `solver,ml,remote,serve,viz` from the lock. CPU CI installs base, solver, viz, and dev only. ML contract tests use adapters/fakes unless a small CPU-compatible framework install is explicitly assigned to a separate job.
+Shared schema/data dependencies may be base requirements when required by public schemas and smoke workflows. Exact compatible transitive versions live in `uv.lock`; the remote image installs `solver,ml,remote,serve,viz` from the lock. CPU CI installs base and dev throughout, solver and viz where exercised, and serve only in the UI contract job. ML contract tests use adapters/fakes unless a small CPU-compatible framework install is explicitly assigned to a separate job.
 
 Optional adapters use this pattern:
 

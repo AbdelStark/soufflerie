@@ -36,7 +36,7 @@ def test_policy_rejects_floating_actions_and_pull_request_secrets(tmp_path: Path
 def test_policy_requires_solver_profile_for_cpu_solver_jobs(tmp_path: Path) -> None:
     source = (PROJECT_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     incomplete = source.replace(
-        "uv sync --frozen --extra solver --extra viz",
+        "uv sync --frozen --extra solver --extra serve --extra viz",
         "uv sync --frozen --extra viz",
         1,
     )
@@ -55,6 +55,16 @@ def test_policy_requires_visualization_profile_for_every_cpu_job(tmp_path: Path)
 
     errors = check_workflow_policy(workflow)
     assert any("must sync the locked visualization extra" in error for error in errors)
+
+
+def test_policy_requires_serving_profile_for_ui_contracts(tmp_path: Path) -> None:
+    source = (PROJECT_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    incomplete = source.replace(" --extra serve", "", 1)
+    workflow = tmp_path / "ci.yml"
+    workflow.write_text(incomplete, encoding="utf-8")
+
+    errors = check_workflow_policy(workflow)
+    assert any("must sync the locked serving extra" in error for error in errors)
 
 
 def test_policy_rejects_unmarked_remote_sdk_and_subprocess_tests(tmp_path: Path) -> None:
