@@ -4,7 +4,7 @@ A deterministic untrained fixture for installed-wheel bundle and CPU inference s
 
 ## Identity
 
-- Model ID: `12b9e40defb4269785f7`
+- Model ID: `ce9b9a70fa9ba548f8b0`
 - Dataset ID: `40f9dc98d92b65c80575`
 - Dataset SHA-256: `40f9dc98d92b65c8057508efd08db7c3f49d59e3cec8cd526328f749ecce3d72`
 - Experiment ID: `2a3bf06a29fd567b7fa2`

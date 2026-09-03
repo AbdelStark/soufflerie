@@ -59,6 +59,10 @@ class CapacityError(SoufflerieError):
     default_retryable = True
 
 
+class JobNotFoundError(SoufflerieError):
+    code = "JOB_NOT_FOUND"
+
+
 class RemoteExecutionError(SoufflerieError):
     code = "REMOTE_EXECUTION"
     default_retryable = True
@@ -80,6 +84,7 @@ __all__ = [
     "DeviceUnavailableError",
     "DomainError",
     "InternalInvariantError",
+    "JobNotFoundError",
     "NonConvergenceError",
     "NumericalStabilityError",
     "RemoteExecutionError",

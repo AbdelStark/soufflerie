@@ -63,7 +63,10 @@ viz = [
 
 [dependency-groups]
 dev = [
+  "fastapi==0.141.1",
   "hypothesis==6.167.1",
+  "httpx==0.28.1",
+  "jsonschema==4.26.0",
   "mypy==2.3.1",
   "pre-commit==4.6.2",
   "pytest==9.1.1",

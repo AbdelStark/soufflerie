@@ -46,7 +46,10 @@ def test_runtime_profiles_match_rfc_0001() -> None:
 def test_dev_profile_is_exactly_pinned() -> None:
     groups = _project()["dependency-groups"]
     assert groups["dev"] == [
+        "fastapi==0.141.1",
         "hypothesis==6.167.1",
+        "httpx==0.28.1",
+        "jsonschema==4.26.0",
         "mypy==2.3.1",
         "pre-commit==4.6.2",
         "pytest==9.1.1",
