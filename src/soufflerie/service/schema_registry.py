@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, cast
 
 from soufflerie.config import ServiceConfig
 from soufflerie.service.app import create_app
-from soufflerie.service.contracts import ReadinessProbe
+from soufflerie.service.contracts import ReadinessProbe, SolveEvent
 
 _SCHEMA_TIME = datetime(2026, 9, 1, tzinfo=UTC)
 
@@ -42,13 +42,30 @@ def service_openapi_document() -> dict[str, Any]:
     return create_app(config=config, readiness=readiness, package_version="0.1.0").openapi()
 
 
+def solve_event_schema_document() -> dict[str, object]:
+    """Generate the standalone JSON Schema carried by solve SSE data fields."""
+
+    document = cast(dict[str, object], SolveEvent.model_json_schema(mode="validation"))
+    document["$schema"] = "https://json-schema.org/draft/2020-12/schema"
+    document["$id"] = "https://github.com/AbdelStark/soufflerie/schemas/v1/solve-event.json"
+    return document
+
+
 def rendered_service_schema_documents() -> dict[str, str]:
     return {
         "openapi.json": json.dumps(
             service_openapi_document(), indent=2, sort_keys=True, ensure_ascii=False
         )
-        + "\n"
+        + "\n",
+        "solve-event.json": json.dumps(
+            solve_event_schema_document(), indent=2, sort_keys=True, ensure_ascii=False
+        )
+        + "\n",
     }
 
 
-__all__ = ["rendered_service_schema_documents", "service_openapi_document"]
+__all__ = [
+    "rendered_service_schema_documents",
+    "service_openapi_document",
+    "solve_event_schema_document",
+]

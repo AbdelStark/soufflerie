@@ -335,6 +335,8 @@
               "REQUEST_TOO_LARGE",
               "UNSUPPORTED_MEDIA_TYPE",
               "JOB_NOT_FOUND",
+              "EVENT_CURSOR_INVALID",
+              "IDEMPOTENCY_CONFLICT",
               "METHOD_NOT_ALLOWED",
               "NOT_FOUND",
               "INTERNAL_ERROR"
@@ -934,6 +936,27 @@
     "/solve": {
       "post": {
         "operationId": "solve_submit_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -954,6 +977,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Idempotency binding or event replay cursor conflicts with retained state."
           },
           "413": {
             "content": {
@@ -1096,6 +1129,22 @@
               "title": "Job Id",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "Last-Event-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last-Event-Id"
+            }
           }
         ],
         "responses": {
@@ -1121,6 +1170,16 @@
               }
             },
             "description": "Solve job is unknown or expired."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Idempotency binding or event replay cursor conflicts with retained state."
           },
           "422": {
             "content": {

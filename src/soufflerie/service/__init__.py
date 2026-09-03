@@ -28,6 +28,15 @@ from soufflerie.service.contracts import (
     ValidationStatus,
     assess_health,
 )
+from soufflerie.service.jobs import (
+    DEFAULT_HEARTBEAT_SECONDS,
+    TERMINAL_RETENTION_SECONDS,
+    ProgressCallback,
+    SolveExecutor,
+    SolveJobBackend,
+    SolveJobManager,
+    validate_job_transition,
+)
 
 if TYPE_CHECKING:
     from soufflerie.service.app import EventStreamResponse, RequestBoundaryMiddleware, create_app
@@ -42,8 +51,10 @@ def __getattr__(name: str) -> Any:
 
 
 __all__ = [
+    "DEFAULT_HEARTBEAT_SECONDS",
     "MAX_REQUEST_BODY_BYTES",
     "MAX_RESPONSE_BODY_BYTES",
+    "TERMINAL_RETENTION_SECONDS",
     "ConsistencyFlags",
     "EncodedArtifact",
     "EventStreamResponse",
@@ -52,6 +63,7 @@ __all__ = [
     "JobState",
     "PredictionRequest",
     "PredictionResponse",
+    "ProgressCallback",
     "PublicError",
     "PublicErrorCode",
     "PublicErrorResponse",
@@ -64,9 +76,13 @@ __all__ = [
     "SolveEvent",
     "SolveEventData",
     "SolveEventName",
+    "SolveExecutor",
+    "SolveJobBackend",
+    "SolveJobManager",
     "SolveResultResponse",
     "SolveStatus",
     "ValidationStatus",
     "assess_health",
     "create_app",
+    "validate_job_transition",
 ]

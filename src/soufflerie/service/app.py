@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from typing import cast
+import re
+from collections.abc import AsyncIterator
+from typing import Annotated, cast
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Header, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -18,6 +20,8 @@ from soufflerie.errors import (
     DependencyUnavailableError,
     DeviceUnavailableError,
     DomainError,
+    EventCursorError,
+    IdempotencyConflictError,
     InternalInvariantError,
     JobNotFoundError,
     NonConvergenceError,
@@ -28,6 +32,7 @@ from soufflerie.errors import (
     ValidationGateError,
 )
 from soufflerie.observability import new_correlation_id
+from soufflerie.schemas import canonical_json
 from soufflerie.service.contracts import (
     MAX_REQUEST_BODY_BYTES,
     HealthResponse,
@@ -43,6 +48,7 @@ from soufflerie.service.contracts import (
     Uuid7,
     assess_health,
 )
+from soufflerie.service.jobs import IDEMPOTENCY_KEY_PATTERN, SolveJobBackend
 
 _BODY_LIMIT_PATHS = frozenset({"/predict", "/solve"})
 _ERROR_RESPONSES: dict[int | str, dict[str, object]] = {
@@ -52,11 +58,23 @@ _ERROR_RESPONSES: dict[int | str, dict[str, object]] = {
     500: {"model": PublicErrorResponse, "description": "Unexpected internal failure."},
     503: {"model": PublicErrorResponse, "description": "Required capacity is unavailable."},
 }
+_CONFLICT_RESPONSE: dict[str, object] = {
+    "model": PublicErrorResponse,
+    "description": "Idempotency binding or event replay cursor conflicts with retained state.",
+}
+_SUBMIT_ERROR_RESPONSES: dict[int | str, dict[str, object]] = {
+    **_ERROR_RESPONSES,
+    409: _CONFLICT_RESPONSE,
+}
 _LOOKUP_ERROR_RESPONSES: dict[int | str, dict[str, object]] = {
     404: {"model": PublicErrorResponse, "description": "Solve job is unknown or expired."},
     422: _ERROR_RESPONSES[422],
     500: _ERROR_RESPONSES[500],
     503: _ERROR_RESPONSES[503],
+}
+_EVENT_ERROR_RESPONSES: dict[int | str, dict[str, object]] = {
+    **_LOOKUP_ERROR_RESPONSES,
+    409: _CONFLICT_RESPONSE,
 }
 _SSE_RESPONSES: dict[int | str, dict[str, object]] = {
     200: {
@@ -77,12 +95,15 @@ _SSE_RESPONSES: dict[int | str, dict[str, object]] = {
                 "application/json": {"schema": {"$ref": "#/components/schemas/PublicErrorResponse"}}
             },
         }
-        for status, details in _LOOKUP_ERROR_RESPONSES.items()
+        for status, details in _EVENT_ERROR_RESPONSES.items()
     },
 }
+_EVENT_CURSOR_PATTERN = re.compile(r"^(0|[1-9][0-9]{0,18})$")
 
 _ERROR_STATUS: tuple[tuple[type[SoufflerieError], int, str], ...] = (
     (JobNotFoundError, 404, "solve job is unknown or expired"),
+    (EventCursorError, 409, "event cursor conflicts with retained solve state"),
+    (IdempotencyConflictError, 409, "idempotency key is bound to another request"),
     (DomainError, 422, "request is outside the supported domain"),
     (ConfigurationError, 422, "request configuration is invalid"),
     (SchemaVersionError, 422, "request schema version is unsupported"),
@@ -288,8 +309,9 @@ def create_app(
     config: ServiceConfig,
     readiness: ReadinessProbe,
     package_version: str,
+    solve_jobs: SolveJobBackend | None = None,
 ) -> FastAPI:
-    """Create the contract service without loading model or remote runtimes."""
+    """Create the service boundary around optional injected runtime adapters."""
 
     health = assess_health(config, readiness, package_version=package_version)
     app = FastAPI(
@@ -391,13 +413,30 @@ def create_app(
         status_code=202,
         operation_id="solve_submit_v1",
         summary="Admit one bounded asynchronous reference solve",
-        responses=_ERROR_RESPONSES,
+        responses=_SUBMIT_ERROR_RESPONSES,
     )
-    async def submit_solve(request: PredictionRequest) -> SolveAccepted:
-        del request
-        if not config.solve_enabled:
+    async def submit_solve(
+        request: PredictionRequest,
+        http_request: Request,
+        idempotency_key: Annotated[
+            str | None,
+            Header(
+                alias="Idempotency-Key",
+                min_length=1,
+                max_length=64,
+                pattern=IDEMPOTENCY_KEY_PATTERN.pattern,
+            ),
+        ] = None,
+    ) -> SolveAccepted:
+        if health.readiness != "ready":
+            raise DependencyUnavailableError("service is not ready")
+        if not config.solve_enabled or solve_jobs is None:
             raise DependencyUnavailableError("reference solves are disabled")
-        raise DependencyUnavailableError("reference solve adapter is not configured")
+        return await solve_jobs.submit(
+            request,
+            correlation_id=_correlation_id(http_request),
+            idempotency_key=idempotency_key,
+        )
 
     @app.get(
         "/solve/{job_id}",
@@ -407,7 +446,9 @@ def create_app(
         responses=_LOOKUP_ERROR_RESPONSES,
     )
     async def solve_status(job_id: Uuid7) -> SolveStatus:
-        raise JobNotFoundError(f"unknown solve job {job_id}")
+        if solve_jobs is None:
+            raise JobNotFoundError("solve job is unknown or expired")
+        return await solve_jobs.status(job_id)
 
     @app.get(
         "/solve/{job_id}/events",
@@ -417,8 +458,31 @@ def create_app(
         summary="Open the replayable server-sent solve event stream",
         responses=_SSE_RESPONSES,
     )
-    async def solve_events(job_id: Uuid7) -> SolveEvent:
-        raise JobNotFoundError(f"unknown solve job {job_id}")
+    async def solve_events(
+        job_id: Uuid7,
+        last_event_id: Annotated[str | None, Header(alias="Last-Event-ID")] = None,
+    ) -> Response:
+        if solve_jobs is None:
+            raise JobNotFoundError("solve job is unknown or expired")
+        if last_event_id is not None and _EVENT_CURSOR_PATTERN.fullmatch(last_event_id) is None:
+            raise EventCursorError("event cursor must be a canonical nonnegative integer")
+        after = 0 if last_event_id is None else int(last_event_id)
+        events = await solve_jobs.open_events(job_id, after=after)
+
+        async def encode() -> AsyncIterator[bytes]:
+            async for event in events:
+                if event is None:
+                    yield b": heartbeat\n\n"
+                else:
+                    payload = canonical_json(event)
+                    yield (
+                        f"id: {event.sequence}\nevent: {event.event}\ndata: {payload}\n\n"
+                    ).encode()
+
+        return EventStreamResponse(
+            encode(),
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
 
     return app
 

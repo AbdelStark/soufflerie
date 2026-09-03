@@ -12,7 +12,10 @@ from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
 
 from soufflerie.config import ServiceConfig
 from soufflerie.service import MAX_REQUEST_BODY_BYTES, ReadinessProbe, create_app
-from soufflerie.service.schema_registry import service_openapi_document
+from soufflerie.service.schema_registry import (
+    service_openapi_document,
+    solve_event_schema_document,
+)
 
 PROJECT_ROOT = Path(__file__).parents[2]
 NOW = datetime(2026, 9, 3, 12, 0, tzinfo=UTC)
@@ -89,8 +92,17 @@ def test_openapi_is_checked_in_stable_and_closed() -> None:
     assert event_responses["200"]["content"]["text/event-stream"]["schema"][
         "x-event-data-schema"
     ] == {"$ref": "#/components/schemas/SolveEvent"}
-    for status in ("404", "422", "500", "503"):
+    for status in ("404", "409", "422", "500", "503"):
         assert set(event_responses[status]["content"]) == {"application/json"}
+
+
+def test_solve_event_schema_is_checked_in_and_valid() -> None:
+    expected = json.loads(
+        (PROJECT_ROOT / "schemas/v1/solve-event.json").read_text(encoding="utf-8")
+    )
+    actual = solve_event_schema_document()
+    assert actual == expected
+    Draft202012Validator.check_schema(actual)
 
 
 @pytest.mark.parametrize(

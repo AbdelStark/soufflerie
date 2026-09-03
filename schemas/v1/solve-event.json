@@ -1,0 +1,370 @@
+{
+  "$defs": {
+    "EncodedArtifact": {
+      "additionalProperties": false,
+      "description": "Self-verifying bounded artifact embedded in a JSON response.",
+      "properties": {
+        "bytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 4194304,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "data": {
+          "maxLength": 5592408,
+          "minLength": 4,
+          "title": "Data",
+          "type": "string"
+        },
+        "encoding": {
+          "const": "base64",
+          "title": "Encoding",
+          "type": "string"
+        },
+        "media_type": {
+          "enum": [
+            "image/png",
+            "application/x-npz"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "media_type",
+        "encoding",
+        "data",
+        "sha256",
+        "bytes"
+      ],
+      "title": "EncodedArtifact",
+      "type": "object"
+    },
+    "PublicError": {
+      "additionalProperties": false,
+      "description": "Stable sanitized error detail returned at the HTTP boundary.",
+      "properties": {
+        "code": {
+          "enum": [
+            "SOUFFLERIE_ERROR",
+            "CONFIG_INVALID",
+            "CASE_OUT_OF_DOMAIN",
+            "SOLVER_UNSTABLE",
+            "SOLVER_NOT_CONVERGED",
+            "ARTIFACT_INTEGRITY",
+            "SCHEMA_UNSUPPORTED",
+            "DEPENDENCY_UNAVAILABLE",
+            "DEVICE_UNAVAILABLE",
+            "CAPACITY_EXHAUSTED",
+            "REMOTE_EXECUTION",
+            "VALIDATION_RED",
+            "INTERNAL_INVARIANT",
+            "REQUEST_INVALID",
+            "REQUEST_TOO_LARGE",
+            "UNSUPPORTED_MEDIA_TYPE",
+            "JOB_NOT_FOUND",
+            "EVENT_CURSOR_INVALID",
+            "IDEMPOTENCY_CONFLICT",
+            "METHOD_NOT_ALLOWED",
+            "NOT_FOUND",
+            "INTERNAL_ERROR"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "correlation_id": {
+          "maxLength": 36,
+          "minLength": 36,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "title": "Correlation Id",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable",
+        "correlation_id"
+      ],
+      "title": "PublicError",
+      "type": "object"
+    },
+    "SolveComparison": {
+      "additionalProperties": false,
+      "description": "Prediction-to-reference errors without duplicating prediction fields.",
+      "properties": {
+        "cd_field": {
+          "title": "Cd Field",
+          "type": "number"
+        },
+        "cd_field_error_pct": {
+          "minimum": 0.0,
+          "title": "Cd Field Error Pct",
+          "type": "number"
+        },
+        "cd_head": {
+          "title": "Cd Head",
+          "type": "number"
+        },
+        "cd_head_error_pct": {
+          "minimum": 0.0,
+          "title": "Cd Head Error Pct",
+          "type": "number"
+        },
+        "dataset_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "model_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "report_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Report Id",
+          "type": "string"
+        },
+        "velocity_rel_l2": {
+          "minimum": 0.0,
+          "title": "Velocity Rel L2",
+          "type": "number"
+        }
+      },
+      "required": [
+        "model_id",
+        "dataset_id",
+        "report_id",
+        "cd_head",
+        "cd_field",
+        "cd_head_error_pct",
+        "cd_field_error_pct",
+        "velocity_rel_l2"
+      ],
+      "title": "SolveComparison",
+      "type": "object"
+    },
+    "SolveEventData": {
+      "additionalProperties": false,
+      "description": "Typed state payload transported inside one SSE event.",
+      "properties": {
+        "case_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PublicError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "progress": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Progress",
+          "type": "number"
+        },
+        "result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SolveResultResponse"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "succeeded",
+            "failed",
+            "expired"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "state",
+        "progress",
+        "result",
+        "error"
+      ],
+      "title": "SolveEventData",
+      "type": "object"
+    },
+    "SolveResultResponse": {
+      "additionalProperties": false,
+      "description": "Terminal reference result plus its immutable prediction comparison.",
+      "properties": {
+        "case_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "cd": {
+          "title": "Cd",
+          "type": "number"
+        },
+        "cl_mean": {
+          "title": "Cl Mean",
+          "type": "number"
+        },
+        "comparison": {
+          "$ref": "#/$defs/SolveComparison"
+        },
+        "correlation_id": {
+          "maxLength": 36,
+          "minLength": 36,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "title": "Correlation Id",
+          "type": "string"
+        },
+        "job_id": {
+          "maxLength": 36,
+          "minLength": 36,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "title": "Job Id",
+          "type": "string"
+        },
+        "provenance_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Provenance Sha256",
+          "type": "string"
+        },
+        "reference_fields_npz": {
+          "$ref": "#/$defs/EncodedArtifact"
+        },
+        "reference_fields_png": {
+          "$ref": "#/$defs/EncodedArtifact"
+        },
+        "request_ms": {
+          "minimum": 0.0,
+          "title": "Request Ms",
+          "type": "number"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "solver_artifact_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Solver Artifact Id",
+          "type": "string"
+        },
+        "solver_ms": {
+          "minimum": 0.0,
+          "title": "Solver Ms",
+          "type": "number"
+        },
+        "strouhal": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Strouhal"
+        }
+      },
+      "required": [
+        "correlation_id",
+        "job_id",
+        "case_id",
+        "reference_fields_png",
+        "reference_fields_npz",
+        "cd",
+        "cl_mean",
+        "strouhal",
+        "comparison",
+        "solver_artifact_id",
+        "provenance_sha256",
+        "solver_ms",
+        "request_ms"
+      ],
+      "title": "SolveResultResponse",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/solve-event.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Monotonic replayable solve state event.",
+  "properties": {
+    "data": {
+      "$ref": "#/$defs/SolveEventData"
+    },
+    "event": {
+      "enum": [
+        "queued",
+        "running",
+        "progress",
+        "completed",
+        "failed"
+      ],
+      "title": "Event",
+      "type": "string"
+    },
+    "job_id": {
+      "maxLength": 36,
+      "minLength": 36,
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "title": "Job Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "sequence": {
+      "minimum": 1,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "sequence",
+    "job_id",
+    "timestamp",
+    "event",
+    "data"
+  ],
+  "title": "SolveEvent",
+  "type": "object"
+}
