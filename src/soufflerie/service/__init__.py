@@ -47,6 +47,14 @@ from soufflerie.service.jobs import (
     SolveJobManager,
     validate_job_transition,
 )
+from soufflerie.service.remote import (
+    ComparisonPredictor,
+    PredictionForComparison,
+    ReferenceProjection,
+    ReferenceSolve,
+    ReferenceSolveBackend,
+    RemoteSolveExecutor,
+)
 
 if TYPE_CHECKING:
     from soufflerie.service.app import EventStreamResponse, RequestBoundaryMiddleware, create_app
@@ -70,12 +78,14 @@ __all__ = [
     "AdmissionController",
     "AdmissionSettings",
     "AdmissionSnapshot",
+    "ComparisonPredictor",
     "ConsistencyFlags",
     "EncodedArtifact",
     "EventStreamResponse",
     "GateStatus",
     "HealthResponse",
     "JobState",
+    "PredictionForComparison",
     "PredictionRequest",
     "PredictionResponse",
     "ProgressCallback",
@@ -84,6 +94,10 @@ __all__ = [
     "PublicErrorResponse",
     "ReadinessProbe",
     "ReadinessStatus",
+    "ReferenceProjection",
+    "ReferenceSolve",
+    "ReferenceSolveBackend",
+    "RemoteSolveExecutor",
     "RequestBoundaryMiddleware",
     "ServiceReadiness",
     "ShapeRequest",

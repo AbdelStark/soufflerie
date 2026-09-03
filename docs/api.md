@@ -74,9 +74,24 @@ does not advance the cursor. Closing a subscriber never cancels its job.
 Successful and failed terminal records remain immutable and replayable for
 exactly 60 minutes after termination. Status then becomes `expired`, clears the
 inline result/error, and event lookup returns `404 JOB_NOT_FOUND`; referenced
-content-addressed artifacts have their own retention policy. This first backend
-is deliberately process-local: restart recovery, multi-instance queues, and
-remote solver submission are outside its contract.
+content-addressed artifacts have their own retention policy. Job status remains
+deliberately process-local; restart recovery and multi-instance queues are
+outside its contract.
+
+For deployed reference work, the job ID is also the remote attempt token. The
+service derives one canonical `RemoteSolveRequest`, propagates the admitted
+correlation ID, and disables recursive provider retry. A cancelled service
+deadline terminates the outstanding remote container. The worker returns only a
+small `ArtifactRef`; the mounted-volume adapter reloads the volume and verifies
+the committed run, its case/design identity, source revision, lock digest,
+device class, and provenance before constructing a public result.
+
+The terminal comparison joins that verified run with a prediction made for the
+same request and correlation ID. It reuses the validation metric implementation
+for head-Cd error, field-Cd error, and velocity relative L2, and rejects identity,
+shape, non-finite, or metric-invalid inputs instead of publishing a partial
+comparison. `solver_artifact_id` is the prefix of the verified run digest and
+`provenance_sha256` covers the verified solver provenance.
 
 ## Errors and correlation
 
