@@ -124,7 +124,11 @@ def _predict(
 
 def _flow_fields(sample: Any, physical: np.ndarray[Any, Any], index: int) -> FlowFields:
     sdf = np.ascontiguousarray(sample.sdf, dtype=np.float32)
-    obstacle = np.ascontiguousarray(sample.obstacle_mask, dtype=np.bool_)
+    # Preprocessing and every learned prediction use the sign of the persisted,
+    # quantized model-grid SDF as their fluid membership. The separately stored
+    # mask is nearest-sampled from the solver grid and can differ at boundary
+    # cells, so deriving it here keeps validation on the exact trained geometry.
+    obstacle = np.ascontiguousarray(sdf <= np.float32(0.0), dtype=np.bool_)
     return FlowFields(
         u=np.ascontiguousarray(physical[index, 0], dtype=np.float32),
         v=np.ascontiguousarray(physical[index, 1], dtype=np.float32),
@@ -196,12 +200,10 @@ def _evaluate_test_set(
         )
         for index, row in enumerate(manifest_batch.membership.rows):
             sample = dataset.load_sample(row)
-            solver = FlowFields(
-                u=np.ascontiguousarray(sample.u_mean, dtype=np.float32),
-                v=np.ascontiguousarray(sample.v_mean, dtype=np.float32),
-                rho=np.ascontiguousarray(sample.rho_mean, dtype=np.float32),
-                sdf=np.ascontiguousarray(sample.sdf, dtype=np.float32),
-                obstacle_mask=np.ascontiguousarray(sample.obstacle_mask, dtype=np.bool_),
+            solver = _flow_fields(
+                sample,
+                np.stack((sample.u_mean, sample.v_mean, sample.rho_mean), axis=0)[None, ...],
+                0,
             )
             for name, physical, cd_values in zip(names, physical_outputs, cd_outputs, strict=True):
                 prediction = _flow_fields(sample, physical, index)
@@ -282,8 +284,12 @@ def _summaries(
             report_seed=request.config.report_seed,
             bootstrap_resamples=request.config.bootstrap_resamples,
         )
+    baseline_metric_names: tuple[MetricName, MetricName] = (
+        "velocity_rel_l2",
+        "cd_head_pct",
+    )
     for predictor_name in ("mean", "nearest"):
-        for metric_name in cast(tuple[MetricName, MetricName], ("velocity_rel_l2", "cd_head_pct")):
+        for metric_name in baseline_metric_names:
             result[f"{predictor_name}.{metric_name}"] = summarize_metric(
                 metric_name,
                 {
@@ -457,7 +463,8 @@ def _ood_evaluation(
                         model=identity,
                         fields=np.ascontiguousarray(physical, dtype=np.float32),
                         fluid_mask=np.ascontiguousarray(
-                            batch.fluid_mask[0, 0].detach().cpu().numpy(), dtype=np.bool_
+                            cast(Any, batch.fluid_mask)[0, 0].detach().cpu().numpy(),
+                            dtype=np.bool_,
                         ),
                     )
                 )
@@ -499,7 +506,7 @@ class _RotationAdapter:
                 self.torch.inference_mode(),
                 self.torch.autocast(device_type="cuda", dtype=dtype, enabled=True),
             ):
-                return self.predictor.forward(batch).cd_head[0]
+                return cast(Any, self.predictor.forward(batch).cd_head)[0]
 
         return self.meter.measure(run)
 
@@ -524,7 +531,7 @@ class _RotationAdapter:
                 self.torch.enable_grad(),
                 self.torch.autocast(device_type="cuda", dtype=dtype, enabled=True),
             ):
-                cd = self.predictor.forward(batch).cd_head[0]
+                cd = cast(Any, self.predictor.forward(batch).cd_head)[0]
                 gradient = self.torch.autograd.grad(
                     cd,
                     rotation,
