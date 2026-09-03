@@ -118,6 +118,26 @@ print(json.dumps(loaded))
     assert loaded_roots.isdisjoint(OPTIONAL_RUNTIME_ROOTS)
 
 
+def test_service_contract_import_does_not_load_optional_frameworks() -> None:
+    code = """
+import json
+import sys
+
+before = set(sys.modules)
+import soufflerie.service
+loaded = sorted({name.split('.')[0] for name in set(sys.modules) - before})
+print(json.dumps(loaded))
+"""
+    completed = subprocess.run(
+        [sys.executable, "-I", "-c", code],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    loaded_roots = set(json.loads(completed.stdout))
+    assert loaded_roots.isdisjoint(OPTIONAL_RUNTIME_ROOTS)
+
+
 def test_module_tree_matches_architecture() -> None:
     expected_modules = {
         "cli.py",

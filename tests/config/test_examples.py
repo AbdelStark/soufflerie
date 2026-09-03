@@ -20,6 +20,7 @@ from soufflerie.config import (
 from soufflerie.datagen import rendered_datagen_schema_documents
 from soufflerie.observability import rendered_observability_schema_documents
 from soufflerie.schemas import CaseConfig, rendered_schema_documents
+from soufflerie.service.schema_registry import rendered_service_schema_documents
 from soufflerie.solver.cylinder_acceptance import rendered_cylinder_schema_documents
 from soufflerie.surrogate import rendered_surrogate_schema_documents
 from soufflerie.training import rendered_training_schema_documents
@@ -68,6 +69,7 @@ def test_all_generated_schema_documents_are_checked_in() -> None:
         **rendered_surrogate_schema_documents(),
         **rendered_training_schema_documents(),
         **rendered_validation_schema_documents(),
+        **rendered_service_schema_documents(),
     }
     root = PROJECT_ROOT / "schemas" / "v1"
     assert {path.name for path in root.glob("*.json")} == set(expected)

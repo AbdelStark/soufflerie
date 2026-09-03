@@ -3001,7 +3001,10 @@ viz = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "fastapi" },
+    { name = "httpx" },
     { name = "hypothesis" },
+    { name = "jsonschema" },
     { name = "mypy" },
     { name = "pre-commit" },
     { name = "pytest" },
@@ -3043,7 +3046,10 @@ provides-extras = ["solver", "ml", "remote", "serve", "viz"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "fastapi", specifier = "==0.141.1" },
+    { name = "httpx", specifier = "==0.28.1" },
     { name = "hypothesis", specifier = "==6.167.1" },
+    { name = "jsonschema", specifier = "==4.26.0" },
     { name = "mypy", specifier = "==2.3.1" },
     { name = "pre-commit", specifier = "==4.6.2" },
     { name = "pytest", specifier = "==9.1.1" },

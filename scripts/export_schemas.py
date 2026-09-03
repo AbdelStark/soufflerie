@@ -11,6 +11,7 @@ from soufflerie.config import rendered_config_schema_documents
 from soufflerie.datagen import rendered_datagen_schema_documents
 from soufflerie.observability import rendered_observability_schema_documents
 from soufflerie.schemas import rendered_schema_documents
+from soufflerie.service.schema_registry import rendered_service_schema_documents
 from soufflerie.solver.cylinder_acceptance import rendered_cylinder_schema_documents
 from soufflerie.surrogate import rendered_surrogate_schema_documents
 from soufflerie.training import rendered_training_schema_documents
@@ -32,6 +33,7 @@ def export(*, check: bool) -> tuple[str, ...]:
         **rendered_surrogate_schema_documents(),
         **rendered_training_schema_documents(),
         **rendered_validation_schema_documents(),
+        **rendered_service_schema_documents(),
     }
     stale: list[str] = []
     if check:

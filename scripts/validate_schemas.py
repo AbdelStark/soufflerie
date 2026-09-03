@@ -41,6 +41,10 @@ def main() -> int:
 
     for path in (PROJECT_ROOT / "schemas" / "v1").glob("*.json"):
         document = json.loads(path.read_text(encoding="utf-8"))
+        if path.name == "openapi.json":
+            if document.get("openapi") != "3.1.0":
+                raise AssertionError(f"unexpected OpenAPI version in {path.name}")
+            continue
         if document.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
             raise AssertionError(f"unexpected JSON Schema dialect in {path.name}")
 

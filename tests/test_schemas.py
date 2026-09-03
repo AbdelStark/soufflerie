@@ -29,6 +29,7 @@ from soufflerie.schemas import (
     validate_schema_version,
     validate_split_membership,
 )
+from soufflerie.service.schema_registry import rendered_service_schema_documents
 from soufflerie.solver.cylinder_acceptance import rendered_cylinder_schema_documents
 from soufflerie.surrogate import rendered_surrogate_schema_documents
 from soufflerie.training import rendered_training_schema_documents
@@ -253,6 +254,7 @@ def test_checked_in_schema_v1_documents_are_current() -> None:
         **rendered_surrogate_schema_documents(),
         **rendered_training_schema_documents(),
         **rendered_validation_schema_documents(),
+        **rendered_service_schema_documents(),
     }
     assert {path.name for path in root.glob("*.json")} == set(expected)
     for name, content in expected.items():

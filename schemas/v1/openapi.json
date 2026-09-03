@@ -1,0 +1,1160 @@
+{
+  "components": {
+    "schemas": {
+      "ConsistencyFlags": {
+        "additionalProperties": false,
+        "description": "Per-case physics checks whose labels are derived from frozen gates.",
+        "properties": {
+          "divergence": {
+            "enum": [
+              "green",
+              "red"
+            ],
+            "title": "Divergence",
+            "type": "string"
+          },
+          "divergence_ratio_to_solver_baseline": {
+            "minimum": 0.0,
+            "title": "Divergence Ratio To Solver Baseline",
+            "type": "number"
+          },
+          "head_field_gap": {
+            "enum": [
+              "green",
+              "red"
+            ],
+            "title": "Head Field Gap",
+            "type": "string"
+          },
+          "head_field_gap_pct": {
+            "minimum": 0.0,
+            "title": "Head Field Gap Pct",
+            "type": "number"
+          },
+          "obstacle_compliance": {
+            "enum": [
+              "green",
+              "red"
+            ],
+            "title": "Obstacle Compliance",
+            "type": "string"
+          },
+          "obstacle_velocity_ratio": {
+            "minimum": 0.0,
+            "title": "Obstacle Velocity Ratio",
+            "type": "number"
+          },
+          "ood": {
+            "const": false,
+            "title": "Ood",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "head_field_gap_pct",
+          "head_field_gap",
+          "divergence_ratio_to_solver_baseline",
+          "divergence",
+          "obstacle_velocity_ratio",
+          "obstacle_compliance",
+          "ood"
+        ],
+        "title": "ConsistencyFlags",
+        "type": "object"
+      },
+      "EncodedArtifact": {
+        "additionalProperties": false,
+        "description": "Self-verifying bounded artifact embedded in a JSON response.",
+        "properties": {
+          "bytes": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 4194304.0,
+            "title": "Bytes",
+            "type": "integer"
+          },
+          "data": {
+            "maxLength": 5592408,
+            "minLength": 4,
+            "title": "Data",
+            "type": "string"
+          },
+          "encoding": {
+            "const": "base64",
+            "title": "Encoding",
+            "type": "string"
+          },
+          "media_type": {
+            "enum": [
+              "image/png",
+              "application/x-npz"
+            ],
+            "title": "Media Type",
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "media_type",
+          "encoding",
+          "data",
+          "sha256",
+          "bytes"
+        ],
+        "title": "EncodedArtifact",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "description": "Exact public liveness/readiness allowlist.",
+        "properties": {
+          "dataset_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "device_class": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._+-]*$",
+            "title": "Device Class",
+            "type": "string"
+          },
+          "last_successful_readiness_check": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Successful Readiness Check"
+          },
+          "liveness": {
+            "const": "ok",
+            "title": "Liveness",
+            "type": "string"
+          },
+          "model_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "package_version": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._+-]*$",
+            "title": "Package Version",
+            "type": "string"
+          },
+          "readiness": {
+            "enum": [
+              "ready",
+              "not_ready"
+            ],
+            "title": "Readiness",
+            "type": "string"
+          },
+          "report_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Report Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "validation_status": {
+            "enum": [
+              "green",
+              "red"
+            ],
+            "title": "Validation Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "liveness",
+          "readiness",
+          "package_version",
+          "model_id",
+          "dataset_id",
+          "report_id",
+          "validation_status",
+          "device_class",
+          "last_successful_readiness_check"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "PredictionRequest": {
+        "additionalProperties": false,
+        "description": "Closed request shared by synchronous prediction and reference solve.",
+        "properties": {
+          "reynolds": {
+            "maximum": 300.0,
+            "minimum": 40.0,
+            "title": "Reynolds",
+            "type": "number"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "shape": {
+            "$ref": "#/components/schemas/ShapeRequest"
+          }
+        },
+        "required": [
+          "shape",
+          "reynolds"
+        ],
+        "title": "PredictionRequest",
+        "type": "object"
+      },
+      "PredictionResponse": {
+        "additionalProperties": false,
+        "description": "Identity-rich, bounded synchronous prediction response.",
+        "properties": {
+          "case_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "cd_field": {
+            "title": "Cd Field",
+            "type": "number"
+          },
+          "cd_head": {
+            "title": "Cd Head",
+            "type": "number"
+          },
+          "consistency": {
+            "$ref": "#/components/schemas/ConsistencyFlags"
+          },
+          "correlation_id": {
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "dataset_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "fields_npz": {
+            "$ref": "#/components/schemas/EncodedArtifact"
+          },
+          "fields_png": {
+            "$ref": "#/components/schemas/EncodedArtifact"
+          },
+          "inference_ms": {
+            "minimum": 0.0,
+            "title": "Inference Ms",
+            "type": "number"
+          },
+          "model_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "report_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Report Id",
+            "type": "string"
+          },
+          "request_ms": {
+            "minimum": 0.0,
+            "title": "Request Ms",
+            "type": "number"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "validation_status": {
+            "enum": [
+              "green",
+              "red"
+            ],
+            "title": "Validation Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "correlation_id",
+          "case_id",
+          "fields_png",
+          "fields_npz",
+          "cd_head",
+          "cd_field",
+          "consistency",
+          "validation_status",
+          "model_id",
+          "dataset_id",
+          "report_id",
+          "inference_ms",
+          "request_ms"
+        ],
+        "title": "PredictionResponse",
+        "type": "object"
+      },
+      "PublicError": {
+        "additionalProperties": false,
+        "description": "Stable sanitized error detail returned at the HTTP boundary.",
+        "properties": {
+          "code": {
+            "enum": [
+              "SOUFFLERIE_ERROR",
+              "CONFIG_INVALID",
+              "CASE_OUT_OF_DOMAIN",
+              "SOLVER_UNSTABLE",
+              "SOLVER_NOT_CONVERGED",
+              "ARTIFACT_INTEGRITY",
+              "SCHEMA_UNSUPPORTED",
+              "DEPENDENCY_UNAVAILABLE",
+              "DEVICE_UNAVAILABLE",
+              "CAPACITY_EXHAUSTED",
+              "REMOTE_EXECUTION",
+              "VALIDATION_RED",
+              "INTERNAL_INVARIANT",
+              "REQUEST_INVALID",
+              "REQUEST_TOO_LARGE",
+              "UNSUPPORTED_MEDIA_TYPE",
+              "JOB_NOT_FOUND",
+              "METHOD_NOT_ALLOWED",
+              "NOT_FOUND",
+              "INTERNAL_ERROR"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "correlation_id": {
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "message": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable",
+          "correlation_id"
+        ],
+        "title": "PublicError",
+        "type": "object"
+      },
+      "PublicErrorResponse": {
+        "additionalProperties": false,
+        "description": "Envelope shared by every non-success HTTP response.",
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/PublicError"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "PublicErrorResponse",
+        "type": "object"
+      },
+      "ShapeRequest": {
+        "additionalProperties": false,
+        "description": "One public ellipse design in the frozen supported domain.",
+        "properties": {
+          "aspect_ratio": {
+            "maximum": 1.0,
+            "minimum": 0.5,
+            "title": "Aspect Ratio",
+            "type": "number"
+          },
+          "rotation_deg": {
+            "maximum": 30.0,
+            "minimum": 0.0,
+            "title": "Rotation Deg",
+            "type": "number"
+          },
+          "scale": {
+            "maximum": 1.25,
+            "minimum": 0.75,
+            "title": "Scale",
+            "type": "number"
+          }
+        },
+        "required": [
+          "aspect_ratio",
+          "rotation_deg",
+          "scale"
+        ],
+        "title": "ShapeRequest",
+        "type": "object"
+      },
+      "SolveAccepted": {
+        "additionalProperties": false,
+        "description": "Accepted reference-solve job and its two retrieval paths.",
+        "properties": {
+          "case_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "events_url": {
+            "maxLength": 50,
+            "minLength": 50,
+            "title": "Events Url",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "job_id": {
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "state": {
+            "const": "queued",
+            "title": "State",
+            "type": "string"
+          },
+          "status_url": {
+            "maxLength": 43,
+            "minLength": 43,
+            "title": "Status Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "case_id",
+          "state",
+          "status_url",
+          "events_url",
+          "expires_at"
+        ],
+        "title": "SolveAccepted",
+        "type": "object"
+      },
+      "SolveComparison": {
+        "additionalProperties": false,
+        "description": "Prediction-to-reference errors without duplicating prediction fields.",
+        "properties": {
+          "cd_field": {
+            "title": "Cd Field",
+            "type": "number"
+          },
+          "cd_field_error_pct": {
+            "minimum": 0.0,
+            "title": "Cd Field Error Pct",
+            "type": "number"
+          },
+          "cd_head": {
+            "title": "Cd Head",
+            "type": "number"
+          },
+          "cd_head_error_pct": {
+            "minimum": 0.0,
+            "title": "Cd Head Error Pct",
+            "type": "number"
+          },
+          "dataset_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "model_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "report_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Report Id",
+            "type": "string"
+          },
+          "velocity_rel_l2": {
+            "minimum": 0.0,
+            "title": "Velocity Rel L2",
+            "type": "number"
+          }
+        },
+        "required": [
+          "model_id",
+          "dataset_id",
+          "report_id",
+          "cd_head",
+          "cd_field",
+          "cd_head_error_pct",
+          "cd_field_error_pct",
+          "velocity_rel_l2"
+        ],
+        "title": "SolveComparison",
+        "type": "object"
+      },
+      "SolveEvent": {
+        "additionalProperties": false,
+        "description": "Monotonic replayable solve state event.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/SolveEventData"
+          },
+          "event": {
+            "enum": [
+              "queued",
+              "running",
+              "progress",
+              "completed",
+              "failed"
+            ],
+            "title": "Event",
+            "type": "string"
+          },
+          "job_id": {
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "sequence": {
+            "minimum": 1.0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sequence",
+          "job_id",
+          "timestamp",
+          "event",
+          "data"
+        ],
+        "title": "SolveEvent",
+        "type": "object"
+      },
+      "SolveEventData": {
+        "additionalProperties": false,
+        "description": "Typed state payload transported inside one SSE event.",
+        "properties": {
+          "case_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PublicError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "progress": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "type": "number"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SolveResultResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "expired"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "case_id",
+          "state",
+          "progress",
+          "result",
+          "error"
+        ],
+        "title": "SolveEventData",
+        "type": "object"
+      },
+      "SolveResultResponse": {
+        "additionalProperties": false,
+        "description": "Terminal reference result plus its immutable prediction comparison.",
+        "properties": {
+          "case_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "cd": {
+            "title": "Cd",
+            "type": "number"
+          },
+          "cl_mean": {
+            "title": "Cl Mean",
+            "type": "number"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/SolveComparison"
+          },
+          "correlation_id": {
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "job_id": {
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "provenance_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Provenance Sha256",
+            "type": "string"
+          },
+          "reference_fields_npz": {
+            "$ref": "#/components/schemas/EncodedArtifact"
+          },
+          "reference_fields_png": {
+            "$ref": "#/components/schemas/EncodedArtifact"
+          },
+          "request_ms": {
+            "minimum": 0.0,
+            "title": "Request Ms",
+            "type": "number"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "solver_artifact_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Solver Artifact Id",
+            "type": "string"
+          },
+          "solver_ms": {
+            "minimum": 0.0,
+            "title": "Solver Ms",
+            "type": "number"
+          },
+          "strouhal": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strouhal"
+          }
+        },
+        "required": [
+          "correlation_id",
+          "job_id",
+          "case_id",
+          "reference_fields_png",
+          "reference_fields_npz",
+          "cd",
+          "cl_mean",
+          "strouhal",
+          "comparison",
+          "solver_artifact_id",
+          "provenance_sha256",
+          "solver_ms",
+          "request_ms"
+        ],
+        "title": "SolveResultResponse",
+        "type": "object"
+      },
+      "SolveStatus": {
+        "additionalProperties": false,
+        "description": "Polling snapshot for one ephemeral solve job.",
+        "properties": {
+          "case_id": {
+            "pattern": "^[0-9a-f]{20}$",
+            "title": "Case Id",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PublicError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "job_id": {
+            "maxLength": 36,
+            "minLength": 36,
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "progress": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "type": "number"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SolveResultResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "sequence": {
+            "minimum": 1.0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "expired"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "case_id",
+          "state",
+          "progress",
+          "result",
+          "error",
+          "sequence"
+        ],
+        "title": "SolveStatus",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Version-one educational wind-tunnel API. A red validation report remains visible and serviceable; integrity or identity failures make prediction unavailable.",
+    "summary": "Strict prediction and asynchronous reference-solve contracts.",
+    "title": "Soufflerie HTTP API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health_v1",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Unexpected internal failure."
+          }
+        },
+        "summary": "Return allowlisted liveness and readiness identities"
+      }
+    },
+    "/predict": {
+      "post": {
+        "operationId": "predict_v1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PredictionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Request body exceeds 16 KiB."
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Content type is not JSON."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Request violates the closed schema."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Unexpected internal failure."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Required capacity is unavailable."
+          }
+        },
+        "summary": "Predict fields and consistency for one supported design"
+      }
+    },
+    "/solve": {
+      "post": {
+        "operationId": "solve_submit_v1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PredictionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolveAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Request body exceeds 16 KiB."
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Content type is not JSON."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Request violates the closed schema."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Unexpected internal failure."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Required capacity is unavailable."
+          }
+        },
+        "summary": "Admit one bounded asynchronous reference solve"
+      }
+    },
+    "/solve/{job_id}": {
+      "get": {
+        "operationId": "solve_status_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "maxLength": 36,
+              "minLength": 36,
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolveStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Solve job is unknown or expired."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Request violates the closed schema."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Unexpected internal failure."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Required capacity is unavailable."
+          }
+        },
+        "summary": "Poll one retained reference-solve state"
+      }
+    },
+    "/solve/{job_id}/events": {
+      "get": {
+        "operationId": "solve_events_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "maxLength": 36,
+              "minLength": 36,
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "x-event-data-schema": {
+                    "$ref": "#/components/schemas/SolveEvent"
+                  }
+                }
+              }
+            },
+            "description": "Replayable SSE frames whose data is one SolveEvent JSON object."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Solve job is unknown or expired."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Request violates the closed schema."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Unexpected internal failure."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicErrorResponse"
+                }
+              }
+            },
+            "description": "Required capacity is unavailable."
+          }
+        },
+        "summary": "Open the replayable server-sent solve event stream"
+      }
+    }
+  }
+}
