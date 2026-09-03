@@ -1,0 +1,66 @@
+{
+  "generator_version": "validation-report-v1",
+  "manifest_sha256": "19d5324adb61daf616a2869fefcb6bded4b0fad53713a40f2f17877eb7b02b43",
+  "overall_status": "red",
+  "plots": [
+    {
+      "filename": "representative-fields.svg",
+      "kind": "representative_fields",
+      "sha256": "c0bec4988dd351c5e63b2d73bdaea3c260364b8eff3a3f112fdbd8437c129108",
+      "size_bytes": 2210084,
+      "title": "Representative flow fields"
+    },
+    {
+      "filename": "worst-fields.svg",
+      "kind": "worst_fields",
+      "sha256": "cbdfa12249fbb7f0d7fe3eb6bb63d739524a712fa58a6af90e58c8b392e0375f",
+      "size_bytes": 2210083,
+      "title": "Worst-case flow fields"
+    },
+    {
+      "filename": "baseline-comparison.svg",
+      "kind": "baseline_comparison",
+      "sha256": "5e8eb02a36a30b8becfef0e79223018cd5bdc81b9a49d121eacebc2158d6340a",
+      "size_bytes": 3845,
+      "title": "Model and baseline comparison"
+    },
+    {
+      "filename": "error-by-design.svg",
+      "kind": "error_by_design",
+      "sha256": "9e50656ff6425fb35707149474e9820a77f7ef3e287de0e0d8b8949f3d55dfea",
+      "size_bytes": 52834,
+      "title": "Error by design parameter"
+    },
+    {
+      "filename": "head-vs-field.svg",
+      "kind": "head_vs_field",
+      "sha256": "ab597bce483bf41f8d33747178cbd74b8a32bbaa66b57d3be72020efa41814ec",
+      "size_bytes": 14079,
+      "title": "Cd head and field consistency"
+    },
+    {
+      "filename": "divergence-compliance.svg",
+      "kind": "divergence_compliance",
+      "sha256": "bd71a8a04f9e81782b6fc4ea5fcf806d8815a1e57db34d5799a87ad3b8543707",
+      "size_bytes": 63258,
+      "title": "Divergence and obstacle compliance"
+    },
+    {
+      "filename": "ood-variance.svg",
+      "kind": "ood_variance",
+      "sha256": "3d04d86b8cc17c88d4cf6edeb9ba49efbf19aa98a3aaceb00dee46fb860e80c5",
+      "size_bytes": 5391,
+      "title": "OOD ensemble variance"
+    },
+    {
+      "filename": "sensitivity.svg",
+      "kind": "sensitivity",
+      "sha256": "d1f7771dbf858d555e44ec4731e48f84698f06e9ba7cc1946946faa4c9ee0a9a",
+      "size_bytes": 4692,
+      "title": "Rotation sensitivity agreement"
+    }
+  ],
+  "report_id": "4995ef8f8456030f467d",
+  "report_sha256": "4995ef8f8456030f467d63b06cb4db63c43d22988d3767367b6a10b14c4fb189",
+  "schema_version": 1
+}

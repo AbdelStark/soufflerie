@@ -449,6 +449,35 @@ def test_atomic_writer_and_checker_fail_closed_on_stale_or_extra_files(tmp_path:
         write_validation_artifacts(target, artifacts)
 
 
+def test_atomic_writer_trusts_only_provider_mount_ancestors(tmp_path: Path) -> None:
+    report = build_report()
+    artifacts = render_validation_artifacts(report, plot_directory="report.plots")
+    provider_storage = tmp_path / "provider-storage"
+    provider_storage.mkdir()
+    mount = tmp_path / "mounted-volume"
+    mount.symlink_to(provider_storage, target_is_directory=True)
+    trusted_root = mount / "soufflerie" / "v1"
+    target = trusted_root / "validation" / "report.json"
+
+    write_validation_artifacts(target, artifacts, trusted_root=trusted_root)
+    assert check_validation_artifacts(target, artifacts, trusted_root=trusted_root) == ()
+
+    outside = tmp_path / "outside"
+    with pytest.raises(ArtifactIntegrityError, match="escapes trusted root"):
+        write_validation_artifacts(outside / "report.json", artifacts, trusted_root=trusted_root)
+
+    unsafe_root = mount / "unsafe"
+    unsafe_root.mkdir()
+    unsafe_target = unsafe_root / "validation"
+    unsafe_target.symlink_to(trusted_root / "validation", target_is_directory=True)
+    with pytest.raises(ArtifactIntegrityError, match="symbolic-link publication"):
+        write_validation_artifacts(
+            unsafe_target / "report.json",
+            artifacts,
+            trusted_root=unsafe_root,
+        )
+
+
 def test_plot_data_and_report_gate_order_reject_ambiguous_evidence() -> None:
     report = build_report()
     assert report.plot_data is not None

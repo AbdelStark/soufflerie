@@ -948,9 +948,30 @@ def _artifact_paths(report_path: Path) -> tuple[Path, Path, Path]:
     )
 
 
-def _read_bounded(path: Path, *, maximum: int = MAX_RENDERED_FILE_BYTES) -> bytes:
+def _owned_publication_chain(path: Path, trusted_root: Path | None) -> tuple[Path, ...]:
     absolute = path.absolute()
-    if any(item.is_symlink() for item in (absolute, *absolute.parents)):
+    if trusted_root is None:
+        return (absolute, *absolute.parents)
+    boundary = trusted_root.absolute()
+    try:
+        absolute.relative_to(boundary)
+    except ValueError as error:
+        raise ArtifactIntegrityError(
+            f"publication target {path} escapes trusted root {trusted_root}"
+        ) from error
+    chain = [absolute]
+    while chain[-1] != boundary:
+        chain.append(chain[-1].parent)
+    return tuple(chain)
+
+
+def _read_bounded(
+    path: Path,
+    *,
+    maximum: int = MAX_RENDERED_FILE_BYTES,
+    trusted_root: Path | None = None,
+) -> bytes:
+    if any(item.is_symlink() for item in _owned_publication_chain(path, trusted_root)):
         raise ArtifactIntegrityError(f"validation artifact {path} must not be a symbolic link")
     try:
         stat = path.stat()
@@ -964,10 +985,14 @@ def _read_bounded(path: Path, *, maximum: int = MAX_RENDERED_FILE_BYTES) -> byte
     return content
 
 
-def load_validation_report(path: Path) -> ValidationReport:
+def load_validation_report(
+    path: Path,
+    *,
+    trusted_root: Path | None = None,
+) -> ValidationReport:
     """Load one bounded strict report and require its canonical checked-in encoding."""
 
-    content = _read_bounded(path, maximum=MAX_REPORT_BYTES)
+    content = _read_bounded(path, maximum=MAX_REPORT_BYTES, trusted_root=trusted_root)
     report = safe_read_json(
         path.parent,
         path.name,
@@ -985,6 +1010,8 @@ def load_validation_report(path: Path) -> ValidationReport:
 def check_validation_artifacts(
     report_path: Path,
     artifacts: RenderedValidationArtifacts,
+    *,
+    trusted_root: Path | None = None,
 ) -> tuple[str, ...]:
     """Compare the complete checked-in artifact set without mutating it."""
 
@@ -997,7 +1024,7 @@ def check_validation_artifacts(
     errors: list[str] = []
     for path, expected in expected_files.items():
         try:
-            actual = _read_bounded(path)
+            actual = _read_bounded(path, trusted_root=trusted_root)
         except ArtifactIntegrityError as error:
             errors.append(str(error))
             continue
@@ -1013,7 +1040,7 @@ def check_validation_artifacts(
     for name, expected in artifacts.plots.items():
         path = plots_path / name
         try:
-            actual = _read_bounded(path)
+            actual = _read_bounded(path, trusted_root=trusted_root)
         except ArtifactIntegrityError as error:
             errors.append(str(error))
             continue
@@ -1022,10 +1049,9 @@ def check_validation_artifacts(
     return tuple(errors)
 
 
-def _atomic_write(path: Path, content: bytes) -> None:
+def _atomic_write(path: Path, content: bytes, *, trusted_root: Path | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    absolute = path.absolute()
-    if any(item.is_symlink() for item in (absolute, *absolute.parents)):
+    if any(item.is_symlink() for item in _owned_publication_chain(path, trusted_root)):
         raise ArtifactIntegrityError(f"refusing symbolic-link publication target {path}")
     descriptor, temporary_name = tempfile.mkstemp(
         prefix=f".{path.name}.",
@@ -1048,8 +1074,14 @@ def _atomic_write(path: Path, content: bytes) -> None:
 def write_validation_artifacts(
     report_path: Path,
     artifacts: RenderedValidationArtifacts,
+    *,
+    trusted_root: Path | None = None,
 ) -> None:
-    """Write members atomically and commit the plot manifest last."""
+    """Write members atomically and commit the plot manifest last.
+
+    A trusted root limits symlink checks to the caller-owned storage namespace;
+    provider-managed mount ancestors remain outside that trust boundary.
+    """
 
     markdown_path, manifest_path, plots_path = _artifact_paths(report_path)
     if plots_path.exists() and (plots_path.is_symlink() or not plots_path.is_dir()):
@@ -1058,11 +1090,11 @@ def write_validation_artifacts(
     extra = {path.name for path in plots_path.iterdir()} - set(artifacts.plots)
     if extra:
         raise ArtifactIntegrityError("validation plot target contains unrecognized files")
-    _atomic_write(report_path, artifacts.report_json)
-    _atomic_write(markdown_path, artifacts.markdown)
+    _atomic_write(report_path, artifacts.report_json, trusted_root=trusted_root)
+    _atomic_write(markdown_path, artifacts.markdown, trusted_root=trusted_root)
     for name, content in artifacts.plots.items():
-        _atomic_write(plots_path / name, content)
-    _atomic_write(manifest_path, artifacts.plot_manifest_json)
+        _atomic_write(plots_path / name, content, trusted_root=trusted_root)
+    _atomic_write(manifest_path, artifacts.plot_manifest_json, trusted_root=trusted_root)
 
 
 __all__ = [

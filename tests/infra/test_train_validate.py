@@ -22,10 +22,12 @@ from infra.train_validate_execution import (
     load_workflow_request,
     publish_workflow_request,
 )
-from soufflerie.config import TrainingConfig, ValidationConfig
+from soufflerie.config import TrainingConfig, ValidationConfig, load_config
 from soufflerie.errors import ArtifactIntegrityError
 from soufflerie.schemas import ArtifactRef, Provenance
 from soufflerie.validation.gates import ValidationReport
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _reference(kind: str, digest: str) -> ArtifactRef:
@@ -107,6 +109,20 @@ def _accounting() -> ExecutionAccounting:
         source_revision="1" * 40,
         lock_sha256="2" * 64,
     )
+
+
+def test_canonical_validation_configs_bind_checked_training_index() -> None:
+    index = TrainingRunIndex.model_validate_json(
+        (PROJECT_ROOT / "reports" / "training" / "index.json").read_bytes()
+    )
+    expected_models = tuple(receipt.model.artifact_id for receipt in index.receipts)
+    expected_baselines = tuple(value[:20] for value in index.receipts[0].baseline_sha256s)
+
+    for name in ("release-v1.yaml", "smoke.yaml"):
+        config = load_config(PROJECT_ROOT / "configs" / "validation" / name, ValidationConfig)
+        assert config.dataset_id == index.request.dataset.artifact_id
+        assert config.ensemble_model_ids == expected_models
+        assert config.baseline_ids == expected_baselines
 
 
 def test_training_request_round_trip_stage_and_load_is_content_addressed(

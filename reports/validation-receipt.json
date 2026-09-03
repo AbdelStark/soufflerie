@@ -1,0 +1,37 @@
+{
+  "accounting": {
+    "completed_at": "2026-09-03T11:13:46.046282Z",
+    "device_class": "L40S",
+    "device_name": "NVIDIA L40S",
+    "gpu_seconds": 2.574742769000082,
+    "lock_sha256": "52798c0af1cd5e55ecde6e054af54415f5fb8aae0e63dbd2d4e7972d203386ab",
+    "peak_allocated_bytes": 1741557248,
+    "peak_reserved_bytes": 2040528896,
+    "precision": "bf16",
+    "schema_version": 1,
+    "source_revision": "b9f730af0bfd00a933e23709c5c2abab33b0bb05",
+    "started_at": "2026-09-03T11:12:24.158822Z",
+    "wall_seconds": 81.88746
+  },
+  "evidence_sha256": "b546fe04214482a09b3c0855a99384b9ac1d5895fc195e6d03b0d3e8510c5869",
+  "final_state": "succeeded",
+  "overall_status": "red",
+  "parent_sha256": {
+    "baseline_0": "66990bf5626da7eb4c10370c947ffa9b19105c7b82e571bee68f51ffc5feb528",
+    "baseline_1": "3f8924d130bb0b22a7ad2a490134a733617fb0622cac801ff5c926ecc12a876d",
+    "dataset": "4aefbbe88a18d233249bae3dbebc529142a0e9d5dbaaf33dae474c82f121fa28",
+    "ensemble_model_0": "7b6fd39c0ec78f4521631b63f45948e02b37acf714b2daf38c911a19e9ec0456",
+    "ensemble_model_1": "8847109ea4eaf87aa5aed26767d44f31baf474c23bfda2e93d71ec5a170e9ceb",
+    "ensemble_model_2": "bec20fbbb9dfd64f06394a7e366ad00cdf3dd1903a65a2bb88ca1af1a4e3f043",
+    "solver": "c6f69e95ff31da206201520fdac692cad594827e1f136aa500ddb9f1123f445e"
+  },
+  "report": {
+    "artifact_id": "4995ef8f8456030f467d",
+    "artifact_type": "validation_report",
+    "schema_version": 1,
+    "sha256": "4995ef8f8456030f467d63b06cb4db63c43d22988d3767367b6a10b14c4fb189",
+    "size_bytes": 6051816,
+    "uri": "validation/4995ef8f8456030f467d"
+  },
+  "schema_version": 1
+}
