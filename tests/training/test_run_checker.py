@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import cast
@@ -17,6 +19,8 @@ from scripts.check_training_run import check_training_run, load_training_index
 from soufflerie.config import TrainingConfig
 from soufflerie.errors import ArtifactIntegrityError
 from soufflerie.schemas import ArtifactRef
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _dataset() -> ArtifactRef:
@@ -108,6 +112,19 @@ def test_checker_accepts_exact_canonical_run_and_encoding(tmp_path: Path) -> Non
         encoding="utf-8",
     )
     assert load_training_index(path) == index
+
+
+def test_checker_direct_script_entrypoint_imports_repository_contracts() -> None:
+    completed = subprocess.run(
+        [sys.executable, "scripts/check_training_run.py", "--help"],
+        cwd=PROJECT_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert "canonical TrainingRunIndex JSON" in completed.stdout
 
 
 def test_checker_rejects_budget_config_and_noncanonical_encoding(tmp_path: Path) -> None:

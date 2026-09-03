@@ -4,12 +4,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
-from infra.train_validate_execution import TrainingRunIndex
-from soufflerie.config import TrainingConfig, load_config
-from soufflerie.errors import ArtifactIntegrityError
-from soufflerie.schemas import ArtifactRef
+# Direct script execution exposes ``scripts/`` rather than the repository root.
+# The remote execution contracts intentionally live in the uninstalled ``infra``
+# package, so make that operator entrypoint boundary explicit before importing it.
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from infra.train_validate_execution import TrainingRunIndex  # noqa: E402
+from soufflerie.config import TrainingConfig, load_config  # noqa: E402
+from soufflerie.errors import ArtifactIntegrityError  # noqa: E402
+from soufflerie.schemas import ArtifactRef  # noqa: E402
 
 REFERENCE_GPU = "L40S"
 REFERENCE_PRECISION = "bf16"
@@ -96,13 +104,13 @@ def main() -> int:
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path("configs/training/fno-v1.yaml"),
+        default=PROJECT_ROOT / "configs" / "training" / "fno-v1.yaml",
         help="frozen TrainingConfig",
     )
     parser.add_argument(
         "--dataset-summary",
         type=Path,
-        default=Path("reports/dataset/sweep-summary.json"),
+        default=PROJECT_ROOT / "reports" / "dataset" / "sweep-summary.json",
         help="canonical sweep summary",
     )
     args = parser.parse_args()
