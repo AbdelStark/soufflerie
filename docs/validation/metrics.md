@@ -76,6 +76,8 @@ three distinct ensemble models, two distinct baselines, metric summaries,
 gates, provenance, and overall status into both a full SHA-256 and its
 20-character report ID. The durable contract is
 [`validation-report.json`](../../schemas/v1/validation-report.json).
+Deterministic publication from this model is documented in
+[`reporting.md`](reporting.md).
 
 ## Validation
 

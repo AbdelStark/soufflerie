@@ -40,6 +40,7 @@ REQUIRED_COMMANDS = {
     'uv run pytest -m "not remote" --cov=src/soufflerie --cov-report=term-missing '
     "--cov-fail-under=90",
     "uv run python scripts/validate_schemas.py",
+    "uv run python scripts/render_validation.py --check tests/fixtures/report.json",
     "uv run python scripts/check_docs.py",
     "uv build",
     "uv run python scripts/check_distribution.py dist/*",
@@ -53,6 +54,7 @@ REQUIRED_HOOKS = {
     "ruff-format-check",
     "schema-contracts",
     "strict-mypy",
+    "validation-report",
 }
 
 

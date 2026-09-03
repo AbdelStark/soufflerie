@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">Divergence and obstacle compliance</title>
+<desc id="desc">Soufflerie validation report f5d6f4ea4b2aea70590a; overall status red.</desc>
+<rect width="960" height="540" fill="#f7f9fc"/>
+<rect width="960" height="8" fill="#c92a2a"/>
+<text x="28.00" y="35.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="700" text-anchor="start">Divergence and obstacle compliance</text>
+<text x="932.00" y="34.00" fill="#c92a2a" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="700" text-anchor="end">RED · f5d6f4ea4b2aea70590a</text>
+<rect x="68.00" y="90.00" width="390.00" height="340.00" fill="#ffffff" stroke="#d7deea" stroke-width="1"/>
+<line x1="68.00" y1="175.00" x2="458.00" y2="175.00" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="68.00" y1="260.00" x2="458.00" y2="260.00" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="68.00" y1="345.00" x2="458.00" y2="345.00" stroke="#d7deea" stroke-width="1.00"/>
+<text x="68.00" y="80.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Prediction divergence</text>
+<text x="263.00" y="464.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Cases sorted by value</text>
+<text x="61.00" y="94.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">1.188</text>
+<text x="61.00" y="430.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0</text>
+<text x="458.00" y="80.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">inverse lattice unit</text>
+<circle cx="94.90" cy="401.38" r="3.00" fill="#246bfd"/>
+<line x1="94.90" y1="401.38" x2="128.52" y2="372.76" stroke="#246bfd" stroke-width="1.50"/>
+<circle cx="128.52" cy="372.76" r="3.00" fill="#246bfd"/>
+<line x1="128.52" y1="372.76" x2="162.14" y2="344.14" stroke="#246bfd" stroke-width="1.50"/>
+<circle cx="162.14" cy="344.14" r="3.00" fill="#246bfd"/>
+<line x1="162.14" y1="344.14" x2="195.76" y2="315.52" stroke="#246bfd" stroke-width="1.50"/>
+<circle cx="195.76" cy="315.52" r="3.00" fill="#246bfd"/>
+<line x1="195.76" y1="315.52" x2="229.38" y2="286.90" stroke="#246bfd" stroke-width="1.50"/>
+<circle cx="229.38" cy="286.90" r="3.00" fill="#246bfd"/>
+<line x1="229.38" y1="286.90" x2="263.00" y2="258.28" stroke="#246bfd" stroke-width="1.50"/>
+<circle cx="263.00" cy="258.28" r="3.00" fill="#246bfd"/>
+<line x1="263.00" y1="258.28" x2="296.62" y2="229.66" stroke="#246bfd" stroke-width="1.50"/>
+<circle cx="296.62" cy="229.66" r="3.00" fill="#246bfd"/>
+<line x1="296.62" y1="229.66" x2="330.24" y2="201.04" stroke="#246bfd" stroke-width="1.50"/>
+<circle cx="330.24" cy="201.04" r="3.00" fill="#246bfd"/>
+<line x1="330.24" y1="201.04" x2="363.86" y2="172.42" stroke="#246bfd" stroke-width="1.50"/>
+<circle cx="363.86" cy="172.42" r="3.00" fill="#246bfd"/>
+<line x1="363.86" y1="172.42" x2="397.48" y2="143.80" stroke="#246bfd" stroke-width="1.50"/>
+<circle cx="397.48" cy="143.80" r="3.00" fill="#246bfd"/>
+<line x1="397.48" y1="143.80" x2="431.10" y2="115.19" stroke="#246bfd" stroke-width="1.50"/>
+<circle cx="431.10" cy="115.19" r="3.00" fill="#246bfd"/>
+<rect x="533.00" y="90.00" width="390.00" height="340.00" fill="#ffffff" stroke="#d7deea" stroke-width="1"/>
+<line x1="533.00" y1="175.00" x2="923.00" y2="175.00" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="533.00" y1="260.00" x2="923.00" y2="260.00" stroke="#d7deea" stroke-width="1.00"/>
+<line x1="533.00" y1="345.00" x2="923.00" y2="345.00" stroke="#d7deea" stroke-width="1.00"/>
+<text x="533.00" y="80.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Obstacle velocity ratio</text>
+<text x="728.00" y="464.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="middle">Cases sorted by value</text>
+<text x="526.00" y="94.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.01</text>
+<text x="526.00" y="430.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0</text>
+<text x="923.00" y="80.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">ratio</text>
+<circle cx="559.90" cy="401.38" r="3.00" fill="#f08c46"/>
+<line x1="559.90" y1="401.38" x2="593.52" y2="372.76" stroke="#f08c46" stroke-width="1.50"/>
+<circle cx="593.52" cy="372.76" r="3.00" fill="#f08c46"/>
+<line x1="593.52" y1="372.76" x2="627.14" y2="344.14" stroke="#f08c46" stroke-width="1.50"/>
+<circle cx="627.14" cy="344.14" r="3.00" fill="#f08c46"/>
+<line x1="627.14" y1="344.14" x2="660.76" y2="315.52" stroke="#f08c46" stroke-width="1.50"/>
+<circle cx="660.76" cy="315.52" r="3.00" fill="#f08c46"/>
+<line x1="660.76" y1="315.52" x2="694.38" y2="286.90" stroke="#f08c46" stroke-width="1.50"/>
+<circle cx="694.38" cy="286.90" r="3.00" fill="#f08c46"/>
+<line x1="694.38" y1="286.90" x2="728.00" y2="258.28" stroke="#f08c46" stroke-width="1.50"/>
+<circle cx="728.00" cy="258.28" r="3.00" fill="#f08c46"/>
+<line x1="728.00" y1="258.28" x2="761.62" y2="229.66" stroke="#f08c46" stroke-width="1.50"/>
+<circle cx="761.62" cy="229.66" r="3.00" fill="#f08c46"/>
+<line x1="761.62" y1="229.66" x2="795.24" y2="201.04" stroke="#f08c46" stroke-width="1.50"/>
+<circle cx="795.24" cy="201.04" r="3.00" fill="#f08c46"/>
+<line x1="795.24" y1="201.04" x2="828.86" y2="172.42" stroke="#f08c46" stroke-width="1.50"/>
+<circle cx="828.86" cy="172.42" r="3.00" fill="#f08c46"/>
+<line x1="828.86" y1="172.42" x2="862.48" y2="143.80" stroke="#f08c46" stroke-width="1.50"/>
+<circle cx="862.48" cy="143.80" r="3.00" fill="#f08c46"/>
+<line x1="862.48" y1="143.80" x2="896.10" y2="115.19" stroke="#f08c46" stroke-width="1.50"/>
+<circle cx="896.10" cy="115.19" r="3.00" fill="#f08c46"/>
+</svg>

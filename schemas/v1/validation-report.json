@@ -1,5 +1,193 @@
 {
   "$defs": {
+    "BaselinePlotSeries": {
+      "additionalProperties": false,
+      "description": "One selected-model or baseline aggregate in the comparison plot.",
+      "properties": {
+        "artifact_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "selected_fno",
+            "mean_field",
+            "nearest_design"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "median_cd_pct": {
+          "minimum": 0.0,
+          "title": "Median Cd Pct",
+          "type": "number"
+        },
+        "median_velocity_rel_l2": {
+          "minimum": 0.0,
+          "title": "Median Velocity Rel L2",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "artifact_id",
+        "median_velocity_rel_l2",
+        "median_cd_pct"
+      ],
+      "title": "BaselinePlotSeries",
+      "type": "object"
+    },
+    "CasePlotPoint": {
+      "additionalProperties": false,
+      "description": "One test case's design, drag, and metric coordinates for report plots.",
+      "properties": {
+        "aspect_ratio": {
+          "maximum": 1.0,
+          "minimum": 0.5,
+          "title": "Aspect Ratio",
+          "type": "number"
+        },
+        "case_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "cd_field": {
+          "title": "Cd Field",
+          "type": "number"
+        },
+        "cd_field_pct": {
+          "minimum": 0.0,
+          "title": "Cd Field Pct",
+          "type": "number"
+        },
+        "cd_head": {
+          "title": "Cd Head",
+          "type": "number"
+        },
+        "cd_head_pct": {
+          "minimum": 0.0,
+          "title": "Cd Head Pct",
+          "type": "number"
+        },
+        "cd_solver": {
+          "title": "Cd Solver",
+          "type": "number"
+        },
+        "obstacle_ratio": {
+          "minimum": 0.0,
+          "title": "Obstacle Ratio",
+          "type": "number"
+        },
+        "prediction_div_mean_abs": {
+          "minimum": 0.0,
+          "title": "Prediction Div Mean Abs",
+          "type": "number"
+        },
+        "reynolds": {
+          "maximum": 300.0,
+          "minimum": 40.0,
+          "title": "Reynolds",
+          "type": "number"
+        },
+        "rotation_deg": {
+          "maximum": 30.0,
+          "minimum": 0.0,
+          "title": "Rotation Deg",
+          "type": "number"
+        },
+        "scale": {
+          "maximum": 1.25,
+          "minimum": 0.75,
+          "title": "Scale",
+          "type": "number"
+        },
+        "velocity_rel_l2": {
+          "minimum": 0.0,
+          "title": "Velocity Rel L2",
+          "type": "number"
+        }
+      },
+      "required": [
+        "case_id",
+        "aspect_ratio",
+        "rotation_deg",
+        "scale",
+        "reynolds",
+        "velocity_rel_l2",
+        "cd_head_pct",
+        "cd_field_pct",
+        "prediction_div_mean_abs",
+        "obstacle_ratio",
+        "cd_head",
+        "cd_field",
+        "cd_solver"
+      ],
+      "title": "CasePlotPoint",
+      "type": "object"
+    },
+    "FieldComparisonData": {
+      "additionalProperties": false,
+      "description": "A bounded scalar field pair for one representative or worst test case.",
+      "properties": {
+        "case_id": {
+          "pattern": "^[0-9a-f]{20}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "quantity": {
+          "const": "velocity_magnitude",
+          "default": "velocity_magnitude",
+          "title": "Quantity",
+          "type": "string"
+        },
+        "selection": {
+          "enum": [
+            "representative",
+            "worst"
+          ],
+          "title": "Selection",
+          "type": "string"
+        },
+        "solver": {
+          "items": {
+            "items": {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "title": "Solver",
+          "type": "array"
+        },
+        "surrogate": {
+          "items": {
+            "items": {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "title": "Surrogate",
+          "type": "array"
+        },
+        "units": {
+          "const": "lattice_velocity",
+          "default": "lattice_velocity",
+          "title": "Units",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selection",
+        "case_id",
+        "solver",
+        "surrogate"
+      ],
+      "title": "FieldComparisonData",
+      "type": "object"
+    },
     "GateResult": {
       "additionalProperties": false,
       "description": "One self-verifying evaluated gate; invalid numeric evidence uses false/red.",
@@ -773,6 +961,58 @@
       ],
       "title": "SensitivityProbeResult",
       "type": "object"
+    },
+    "ValidationPlotData": {
+      "additionalProperties": false,
+      "description": "Complete bounded inputs for the RFC-0008 deterministic plot set.",
+      "properties": {
+        "baselines": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/BaselinePlotSeries"
+            },
+            {
+              "$ref": "#/$defs/BaselinePlotSeries"
+            },
+            {
+              "$ref": "#/$defs/BaselinePlotSeries"
+            }
+          ],
+          "title": "Baselines",
+          "type": "array"
+        },
+        "cases": {
+          "items": {
+            "$ref": "#/$defs/CasePlotPoint"
+          },
+          "maxItems": 10000,
+          "minItems": 3,
+          "title": "Cases",
+          "type": "array"
+        },
+        "representative_fields": {
+          "$ref": "#/$defs/FieldComparisonData"
+        },
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "worst_fields": {
+          "$ref": "#/$defs/FieldComparisonData"
+        }
+      },
+      "required": [
+        "representative_fields",
+        "worst_fields",
+        "cases",
+        "baselines"
+      ],
+      "title": "ValidationPlotData",
+      "type": "object"
     }
   },
   "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/validation-report.json",
@@ -828,6 +1068,12 @@
       "title": "Gates",
       "type": "array"
     },
+    "generator_version": {
+      "const": "validation-report-v1",
+      "default": "validation-report-v1",
+      "title": "Generator Version",
+      "type": "string"
+    },
     "metrics": {
       "additionalProperties": {
         "$ref": "#/$defs/MetricSummary"
@@ -855,6 +1101,17 @@
       ],
       "title": "Overall Status",
       "type": "string"
+    },
+    "plot_data": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ValidationPlotData"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "provenance": {
       "$ref": "#/$defs/Provenance"

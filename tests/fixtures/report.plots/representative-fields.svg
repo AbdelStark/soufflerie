@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">Representative flow fields</title>
+<desc id="desc">Soufflerie validation report f5d6f4ea4b2aea70590a; overall status red.</desc>
+<rect width="960" height="540" fill="#f7f9fc"/>
+<rect width="960" height="8" fill="#c92a2a"/>
+<text x="28.00" y="35.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="22" font-weight="700" text-anchor="start">Representative flow fields</text>
+<text x="932.00" y="34.00" fill="#c92a2a" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="700" text-anchor="end">RED · f5d6f4ea4b2aea70590a</text>
+<text x="25.00" y="73.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Solver</text>
+<rect x="25.00" y="85.00" width="56.02" height="87.52" fill="#eff6ff"/>
+<rect x="81.00" y="85.00" width="56.02" height="87.52" fill="#e1ecff"/>
+<rect x="137.00" y="85.00" width="56.02" height="87.52" fill="#d3e3ff"/>
+<rect x="193.00" y="85.00" width="56.02" height="87.52" fill="#c5d9ff"/>
+<rect x="249.00" y="85.00" width="56.02" height="87.52" fill="#b6cffe"/>
+<rect x="25.00" y="172.50" width="56.02" height="87.52" fill="#c0d6ff"/>
+<rect x="81.00" y="172.50" width="56.02" height="87.52" fill="#b2ccfe"/>
+<rect x="137.00" y="172.50" width="56.02" height="87.52" fill="#a3c2fe"/>
+<rect x="193.00" y="172.50" width="56.02" height="87.52" fill="#95b9fe"/>
+<rect x="249.00" y="172.50" width="56.02" height="87.52" fill="#87affe"/>
+<rect x="25.00" y="260.00" width="56.02" height="87.52" fill="#91b5fe"/>
+<rect x="81.00" y="260.00" width="56.02" height="87.52" fill="#82acfe"/>
+<rect x="137.00" y="260.00" width="56.02" height="87.52" fill="#74a2fe"/>
+<rect x="193.00" y="260.00" width="56.02" height="87.52" fill="#6698fe"/>
+<rect x="249.00" y="260.00" width="56.02" height="87.52" fill="#588ffe"/>
+<rect x="25.00" y="347.50" width="56.02" height="87.52" fill="#6195fe"/>
+<rect x="81.00" y="347.50" width="56.02" height="87.52" fill="#538bfd"/>
+<rect x="137.00" y="347.50" width="56.02" height="87.52" fill="#4582fd"/>
+<rect x="193.00" y="347.50" width="56.02" height="87.52" fill="#3778fd"/>
+<rect x="249.00" y="347.50" width="56.02" height="87.52" fill="#296efd"/>
+<rect x="25.00" y="85.00" width="280.00" height="350.00" fill="none" stroke="#d7deea" stroke-width="1"/>
+<text x="25.00" y="457.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="start">0</text>
+<text x="305.00" y="457.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.43</text>
+<text x="337.00" y="73.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Surrogate</text>
+<rect x="337.00" y="85.00" width="56.02" height="87.52" fill="#eaf3ff"/>
+<rect x="393.00" y="85.00" width="56.02" height="87.52" fill="#dce9ff"/>
+<rect x="449.00" y="85.00" width="56.02" height="87.52" fill="#cedfff"/>
+<rect x="505.00" y="85.00" width="56.02" height="87.52" fill="#c0d6ff"/>
+<rect x="561.00" y="85.00" width="56.02" height="87.52" fill="#b2ccfe"/>
+<rect x="337.00" y="172.50" width="56.02" height="87.52" fill="#bbd2fe"/>
+<rect x="393.00" y="172.50" width="56.02" height="87.52" fill="#adc9fe"/>
+<rect x="449.00" y="172.50" width="56.02" height="87.52" fill="#9fbffe"/>
+<rect x="505.00" y="172.50" width="56.02" height="87.52" fill="#91b5fe"/>
+<rect x="561.00" y="172.50" width="56.02" height="87.52" fill="#82acfe"/>
+<rect x="337.00" y="260.00" width="56.02" height="87.52" fill="#8cb2fe"/>
+<rect x="393.00" y="260.00" width="56.02" height="87.52" fill="#7ea8fe"/>
+<rect x="449.00" y="260.00" width="56.02" height="87.52" fill="#709ffe"/>
+<rect x="505.00" y="260.00" width="56.02" height="87.52" fill="#6195fe"/>
+<rect x="561.00" y="260.00" width="56.02" height="87.52" fill="#538bfd"/>
+<rect x="337.00" y="347.50" width="56.02" height="87.52" fill="#5d92fe"/>
+<rect x="393.00" y="347.50" width="56.02" height="87.52" fill="#4e88fd"/>
+<rect x="449.00" y="347.50" width="56.02" height="87.52" fill="#407efd"/>
+<rect x="505.00" y="347.50" width="56.02" height="87.52" fill="#3275fd"/>
+<rect x="561.00" y="347.50" width="56.02" height="87.52" fill="#246bfd"/>
+<rect x="337.00" y="85.00" width="280.00" height="350.00" fill="none" stroke="#d7deea" stroke-width="1"/>
+<text x="337.00" y="457.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="start">0</text>
+<text x="617.00" y="457.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.43</text>
+<text x="649.00" y="73.00" fill="#172033" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="700" text-anchor="start">Absolute error</text>
+<rect x="649.00" y="85.00" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="705.00" y="85.00" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="761.00" y="85.00" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="817.00" y="85.00" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="873.00" y="85.00" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="649.00" y="172.50" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="705.00" y="172.50" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="761.00" y="172.50" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="817.00" y="172.50" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="873.00" y="172.50" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="649.00" y="260.00" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="705.00" y="260.00" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="761.00" y="260.00" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="817.00" y="260.00" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="873.00" y="260.00" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="649.00" y="347.50" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="705.00" y="347.50" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="761.00" y="347.50" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="817.00" y="347.50" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="873.00" y="347.50" width="56.02" height="87.52" fill="#e4908c"/>
+<rect x="649.00" y="85.00" width="280.00" height="350.00" fill="none" stroke="#d7deea" stroke-width="1"/>
+<text x="649.00" y="457.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="start">0.01</text>
+<text x="929.00" y="457.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="9" font-weight="400" text-anchor="end">0.01</text>
+<text x="25.00" y="495.00" fill="#667085" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="400" text-anchor="start">Case 00000000000000000006 · velocity_magnitude · lattice_velocity</text>
+</svg>

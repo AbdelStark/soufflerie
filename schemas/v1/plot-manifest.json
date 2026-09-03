@@ -1,0 +1,114 @@
+{
+  "$defs": {
+    "PlotArtifact": {
+      "additionalProperties": false,
+      "description": "Digest-bound metadata for one deterministic report plot.",
+      "properties": {
+        "filename": {
+          "maxLength": 96,
+          "minLength": 5,
+          "pattern": "^[a-z][a-z0-9-]*\\.svg$",
+          "title": "Filename",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "representative_fields",
+            "worst_fields",
+            "baseline_comparison",
+            "error_by_design",
+            "head_vs_field",
+            "divergence_compliance",
+            "ood_variance",
+            "sensitivity"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 16777216,
+          "minimum": 1,
+          "title": "Size Bytes",
+          "type": "integer"
+        },
+        "title": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "filename",
+        "title",
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "PlotArtifact",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/AbdelStark/soufflerie/schemas/v1/plot-manifest.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Self-verifying manifest for the exact RFC-0008 plot set.",
+  "properties": {
+    "generator_version": {
+      "const": "validation-report-v1",
+      "default": "validation-report-v1",
+      "title": "Generator Version",
+      "type": "string"
+    },
+    "manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Manifest Sha256",
+      "type": "string"
+    },
+    "overall_status": {
+      "enum": [
+        "green",
+        "red"
+      ],
+      "title": "Overall Status",
+      "type": "string"
+    },
+    "plots": {
+      "items": {
+        "$ref": "#/$defs/PlotArtifact"
+      },
+      "title": "Plots",
+      "type": "array"
+    },
+    "report_id": {
+      "pattern": "^[0-9a-f]{20}$",
+      "title": "Report Id",
+      "type": "string"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "report_id",
+    "report_sha256",
+    "overall_status",
+    "plots",
+    "manifest_sha256"
+  ],
+  "title": "PlotManifest",
+  "type": "object"
+}
