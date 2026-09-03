@@ -1,14 +1,12 @@
 schema_version: 1
 dataset_id: "4aefbbe88a18d233249b"
-# Replaced with the three immutable smoke-training model IDs before an
-# authenticated run; placeholder IDs cannot pass the training-index boundary.
 ensemble_model_ids:
-  - "00000000000000000001"
-  - "00000000000000000002"
-  - "00000000000000000003"
+  - "7b6fd39c0ec78f452163"
+  - "8847109ea4eaf87aa5ae"
+  - "bec20fbbb9dfd64f0639"
 baseline_ids:
-  - "00000000000000000004"
-  - "00000000000000000005"
+  - "66990bf5626da7eb4c10"
+  - "3f8924d130bb0b22a7ad"
 report_seed: 20260903
 bootstrap_resamples: 100
 worst_case_count: 20
