@@ -63,3 +63,27 @@ Public `/health` remains an allowlist and reports prediction readiness. It does
 not reveal client state, proxy topology, budget counters, or the reason a solve
 guard is closed. In-memory limits apply per process and are not a claim of
 distributed enforcement.
+
+## Remote solve execution
+
+`SolveJobManager` calls one `RemoteSolveExecutor` only after idempotency,
+capacity, and admission have accepted new work. The executor obtains the
+request-bound prediction first, then delegates to the provider-neutral mounted
+volume backend. The fixed public numerical policy is the v0.1 dataset policy:
+`512x640`, 20,000 steps, 10,000 warmup steps, inlet velocity `0.05`, and seed
+`20260901`. Physical shape and Reynolds number come only from the validated
+public request.
+
+The backend encodes one canonical remote request with `service-<job_id>` as its
+attempt token, invokes the remote worker once, and passes the HTTP correlation
+ID unchanged. Provider retries stay disabled. If the 180-second manager deadline
+cancels the invocation, the Modal adapter requests cancellation with container
+termination. Disconnecting an SSE client still does not cancel the job.
+
+Successful remote calls return only an `ArtifactRef`. The mounted reader reloads
+the volume, opens the reference through `LocalRunArtifactStore`, and checks the
+case, design, split, clean source revision, lock digest, selected device, config
+digest, and seed before the shared field projector runs. The response binds the
+run/provenance digests and computes comparison metrics through the same fp64
+validation reductions used offline. Any mismatch becomes a typed terminal
+failure; no path, provider detail, or unverified payload reaches the client.
