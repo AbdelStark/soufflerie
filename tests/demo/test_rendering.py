@@ -250,4 +250,4 @@ print(json.dumps(loaded))
         text=True,
     )
 
-    assert set(json.loads(completed.stdout)).isdisjoint({"imageio", "matplotlib", "PIL"})
+    assert set(json.loads(completed.stdout)).isdisjoint({"gradio", "imageio", "matplotlib", "PIL"})
