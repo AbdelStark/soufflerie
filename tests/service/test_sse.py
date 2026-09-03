@@ -9,6 +9,7 @@ import pytest
 
 from soufflerie.observability import new_correlation_id
 from soufflerie.service import SolveEvent, create_app
+from soufflerie.service.admission import AdmissionController, AdmissionSettings
 from soufflerie.service.jobs import SolveJobManager
 from tests.service.helpers import (
     JOB_IDS,
@@ -57,11 +58,16 @@ async def test_http_submit_poll_idempotency_and_terminal_sse_replay() -> None:
     manager = SolveJobManager(
         config=config, executor=executor, now=FakeClock(), id_factory=IdFactory()
     )
+    admission = AdmissionController(
+        config=config,
+        settings=AdmissionSettings(client_hmac_key=b"a" * 32),
+    )
     app = create_app(
         config=config,
         readiness=readiness_probe(),
         package_version="0.1.0",
         solve_jobs=manager,
+        admission=admission,
     )
     try:
         async with httpx.AsyncClient(
@@ -88,6 +94,7 @@ async def test_http_submit_poll_idempotency_and_terminal_sse_replay() -> None:
             )
             assert conflict.status_code == 409
             assert conflict.json()["error"]["code"] == "IDEMPOTENCY_CONFLICT"
+            assert admission.snapshot().solves_admitted_today == 1
 
             running = await client.get(f"/solve/{job_id}")
             assert running.status_code == 200

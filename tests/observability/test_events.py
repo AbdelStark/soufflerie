@@ -78,8 +78,9 @@ def test_event_registry_and_schema_are_strict_stable_and_bounded() -> None:
         _event(event="free_form_event")
     with pytest.raises(ValidationError):
         _event(fields={"nested": {"arbitrary": "object"}})
-    with pytest.raises(ValidationError, match="forbidden event fields"):
-        _event(fields={"request_headers": "not allowed"})
+    for forbidden_key in ("request_headers", "client_key", "client_hash", "rate_limit_key"):
+        with pytest.raises(ValidationError, match="forbidden event fields"):
+            _event(fields={forbidden_key: "not allowed"})
     with pytest.raises(ValidationError):
         _event(fields={"samples": list(range(65))})
     with pytest.raises(ValidationError):

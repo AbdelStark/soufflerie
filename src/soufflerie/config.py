@@ -162,6 +162,7 @@ class ServiceConfig(CanonicalConfig):
     predictions_per_minute_client: int = Field(default=60, ge=1, le=60)
     solves_per_hour_client: int = Field(default=2, ge=0, le=2)
     solves_per_day_global: int = Field(default=20, ge=0, le=20)
+    solve_gpu_seconds_per_day: float = Field(default=3_600.0, ge=0.0, le=3_600.0)
 
     @model_validator(mode="after")
     def _disabled_solve_has_no_live_capacity(self) -> Self:

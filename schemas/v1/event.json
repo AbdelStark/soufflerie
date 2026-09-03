@@ -123,7 +123,7 @@
         "maxLength": 64,
         "minLength": 1,
         "not": {
-          "pattern": "(?:^|_)(?:account_id|client_address|client_ip|environment|environment_variables|headers|ip_address|raw_request|request_body|source_address|workspace_id)(?:_|$)"
+          "pattern": "(?:^|_)(?:account_id|client_address|client_hash|client_identifier|client_ip|client_key|environment|environment_variables|headers|ip_address|rate_limit_key|raw_request|request_body|source_address|workspace_id)(?:_|$)"
         }
       },
       "title": "Fields",

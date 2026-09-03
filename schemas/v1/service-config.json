@@ -74,6 +74,13 @@
       "title": "Solve Enabled",
       "type": "boolean"
     },
+    "solve_gpu_seconds_per_day": {
+      "default": 3600.0,
+      "maximum": 3600.0,
+      "minimum": 0.0,
+      "title": "Solve Gpu Seconds Per Day",
+      "type": "number"
+    },
     "solve_queue_capacity": {
       "default": 0,
       "maximum": 8,

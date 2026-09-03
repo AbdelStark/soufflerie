@@ -65,6 +65,10 @@ def test_validation_and_service_identity_and_budget_controls() -> None:
         ServiceConfig.model_validate({**service.model_dump(), "solve_concurrency": 1})
     with pytest.raises(ValidationError, match="less than or equal to 20"):
         ServiceConfig.model_validate({**service.model_dump(), "solves_per_day_global": 21})
+    with pytest.raises(ValidationError, match="less than or equal to 3600"):
+        ServiceConfig.model_validate(
+            {**service.model_dump(), "solve_gpu_seconds_per_day": 3_600.001}
+        )
 
 
 def test_models_are_frozen() -> None:

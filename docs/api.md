@@ -41,6 +41,10 @@ returns `503 DEPENDENCY_UNAVAILABLE`. Reference solves are available when the
 process is configured with solve capacity and a `SolveJobManager` backed by a
 solver executor. A configured service never fabricates either response.
 
+Both work-producing routes pass the [public admission guard](operations/service.md)
+before expensive execution. Rate or daily-budget exhaustion returns `429` with
+an integer `Retry-After`; an operator kill-switch closes only solve admission.
+
 ## Solve jobs and replay
 
 `POST /solve` accepts an optional `Idempotency-Key` header of 1–64 restricted
@@ -98,8 +102,9 @@ stack traces, hostnames, accounts, paths, or credentials into the body:
 | `415` | `UNSUPPORTED_MEDIA_TYPE` |
 | `422` | `REQUEST_INVALID`, `CASE_OUT_OF_DOMAIN`, or `SCHEMA_UNSUPPORTED` |
 | `409` | `IDEMPOTENCY_CONFLICT` or `EVENT_CURSOR_INVALID` |
+| `429` | `RATE_LIMITED` or `BUDGET_EXHAUSTED`, with `Retry-After` |
 | `404` | `JOB_NOT_FOUND` for a missing/expired job; `NOT_FOUND` for a route |
-| `503` | integrity, device, dependency, capacity, or remote availability |
+| `503` | integrity, device, dependency, capacity, remote availability, or `SOLVE_DISABLED` |
 | `500` | generic internal failure |
 
 ## Readiness semantics

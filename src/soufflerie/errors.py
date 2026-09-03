@@ -59,6 +59,40 @@ class CapacityError(SoufflerieError):
     default_retryable = True
 
 
+class RateLimitError(SoufflerieError):
+    code = "RATE_LIMITED"
+    default_retryable = True
+
+    def __init__(self, message: str, *, retry_after_seconds: int) -> None:
+        if (
+            not isinstance(retry_after_seconds, int)
+            or isinstance(retry_after_seconds, bool)
+            or retry_after_seconds < 1
+        ):
+            raise ValueError("retry_after_seconds must be a positive integer")
+        super().__init__(message)
+        self.retry_after_seconds = retry_after_seconds
+
+
+class BudgetExhaustedError(SoufflerieError):
+    code = "BUDGET_EXHAUSTED"
+    default_retryable = True
+
+    def __init__(self, message: str, *, retry_after_seconds: int) -> None:
+        if (
+            not isinstance(retry_after_seconds, int)
+            or isinstance(retry_after_seconds, bool)
+            or retry_after_seconds < 1
+        ):
+            raise ValueError("retry_after_seconds must be a positive integer")
+        super().__init__(message)
+        self.retry_after_seconds = retry_after_seconds
+
+
+class SolveDisabledError(SoufflerieError):
+    code = "SOLVE_DISABLED"
+
+
 class JobNotFoundError(SoufflerieError):
     code = "JOB_NOT_FOUND"
 
@@ -86,6 +120,7 @@ class InternalInvariantError(SoufflerieError):
 
 __all__ = [
     "ArtifactIntegrityError",
+    "BudgetExhaustedError",
     "CapacityError",
     "ConfigurationError",
     "DependencyUnavailableError",
@@ -97,8 +132,10 @@ __all__ = [
     "JobNotFoundError",
     "NonConvergenceError",
     "NumericalStabilityError",
+    "RateLimitError",
     "RemoteExecutionError",
     "SchemaVersionError",
+    "SolveDisabledError",
     "SoufflerieError",
     "ValidationGateError",
 ]

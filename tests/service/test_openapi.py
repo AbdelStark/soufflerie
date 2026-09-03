@@ -94,6 +94,8 @@ def test_openapi_is_checked_in_stable_and_closed() -> None:
     ] == {"$ref": "#/components/schemas/SolveEvent"}
     for status in ("404", "409", "422", "500", "503"):
         assert set(event_responses[status]["content"]) == {"application/json"}
+    assert "429" in actual["paths"]["/predict"]["post"]["responses"]
+    assert "429" in actual["paths"]["/solve"]["post"]["responses"]
 
 
 def test_solve_event_schema_is_checked_in_and_valid() -> None:

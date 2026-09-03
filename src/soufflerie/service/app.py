@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 from collections.abc import AsyncIterator
 from typing import Annotated, cast
@@ -15,6 +16,7 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from soufflerie.config import ServiceConfig
 from soufflerie.errors import (
     ArtifactIntegrityError,
+    BudgetExhaustedError,
     CapacityError,
     ConfigurationError,
     DependencyUnavailableError,
@@ -26,13 +28,19 @@ from soufflerie.errors import (
     JobNotFoundError,
     NonConvergenceError,
     NumericalStabilityError,
+    RateLimitError,
     RemoteExecutionError,
     SchemaVersionError,
+    SolveDisabledError,
     SoufflerieError,
     ValidationGateError,
 )
 from soufflerie.observability import new_correlation_id
 from soufflerie.schemas import canonical_json
+from soufflerie.service.admission import (
+    AdmissionController,
+    load_admission_settings,
+)
 from soufflerie.service.contracts import (
     MAX_REQUEST_BODY_BYTES,
     HealthResponse,
@@ -52,6 +60,7 @@ from soufflerie.service.jobs import IDEMPOTENCY_KEY_PATTERN, SolveJobBackend
 
 _BODY_LIMIT_PATHS = frozenset({"/predict", "/solve"})
 _ERROR_RESPONSES: dict[int | str, dict[str, object]] = {
+    429: {"model": PublicErrorResponse, "description": "Request or daily budget is exhausted."},
     413: {"model": PublicErrorResponse, "description": "Request body exceeds 16 KiB."},
     415: {"model": PublicErrorResponse, "description": "Content type is not JSON."},
     422: {"model": PublicErrorResponse, "description": "Request violates the closed schema."},
@@ -104,6 +113,9 @@ _ERROR_STATUS: tuple[tuple[type[SoufflerieError], int, str], ...] = (
     (JobNotFoundError, 404, "solve job is unknown or expired"),
     (EventCursorError, 409, "event cursor conflicts with retained solve state"),
     (IdempotencyConflictError, 409, "idempotency key is bound to another request"),
+    (RateLimitError, 429, "request rate limit is exhausted"),
+    (BudgetExhaustedError, 429, "daily solve budget is exhausted"),
+    (SolveDisabledError, 503, "reference solve admission is disabled"),
     (DomainError, 422, "request is outside the supported domain"),
     (ConfigurationError, 422, "request configuration is invalid"),
     (SchemaVersionError, 422, "request schema version is unsupported"),
@@ -126,6 +138,7 @@ def _response(
     message: str,
     retryable: bool,
     correlation_id: str,
+    extra_headers: dict[str, str] | None = None,
 ) -> JSONResponse:
     payload = PublicErrorResponse(
         error=PublicError(
@@ -135,16 +148,24 @@ def _response(
             correlation_id=correlation_id,
         )
     )
+    headers = {"X-Correlation-ID": correlation_id}
+    if extra_headers is not None:
+        headers.update(extra_headers)
     return JSONResponse(
         status_code=status_code,
         content=payload.model_dump(mode="json"),
-        headers={"X-Correlation-ID": correlation_id},
+        headers=headers,
     )
 
 
 def _correlation_id(request: Request) -> str:
     value = getattr(request.state, "correlation_id", None)
     return value if isinstance(value, str) else new_correlation_id()
+
+
+def _client_coordinates(request: Request) -> tuple[str | None, tuple[str, ...]]:
+    peer = None if request.client is None else request.client.host
+    return peer, tuple(request.headers.getlist("x-forwarded-for"))
 
 
 async def _send_with_correlation(
@@ -310,10 +331,15 @@ def create_app(
     readiness: ReadinessProbe,
     package_version: str,
     solve_jobs: SolveJobBackend | None = None,
+    admission: AdmissionController | None = None,
 ) -> FastAPI:
     """Create the service boundary around optional injected runtime adapters."""
 
     health = assess_health(config, readiness, package_version=package_version)
+    admission_controller = admission or AdmissionController(
+        config=config,
+        settings=load_admission_settings(os.environ),
+    )
     app = FastAPI(
         title="Soufflerie HTTP API",
         summary="Strict prediction and asynchronous reference-solve contracts.",
@@ -346,12 +372,16 @@ def create_app(
     async def soufflerie_error_handler(request: Request, error: SoufflerieError) -> JSONResponse:
         for error_type, status_code, message in _ERROR_STATUS:
             if isinstance(error, error_type):
+                retry_after = getattr(error, "retry_after_seconds", None)
                 return _response(
                     status_code=status_code,
                     code=cast(PublicErrorCode, error.code),
                     message=message,
                     retryable=error.retryable,
                     correlation_id=_correlation_id(request),
+                    extra_headers=(
+                        {"Retry-After": str(retry_after)} if isinstance(retry_after, int) else None
+                    ),
                 )
         return _response(
             status_code=500,
@@ -401,10 +431,15 @@ def create_app(
         summary="Predict fields and consistency for one supported design",
         responses=_ERROR_RESPONSES,
     )
-    async def predict(request: PredictionRequest) -> PredictionResponse:
+    async def predict(request: PredictionRequest, http_request: Request) -> PredictionResponse:
         del request
         if health.readiness != "ready":
             raise DependencyUnavailableError("service is not ready")
+        peer, forwarded_for = _client_coordinates(http_request)
+        admission_controller.admit_prediction(
+            peer_address=peer,
+            forwarded_for=forwarded_for,
+        )
         raise DependencyUnavailableError("prediction adapter is not configured")
 
     @app.post(
@@ -432,10 +467,19 @@ def create_app(
             raise DependencyUnavailableError("service is not ready")
         if not config.solve_enabled or solve_jobs is None:
             raise DependencyUnavailableError("reference solves are disabled")
+        peer, forwarded_for = _client_coordinates(http_request)
+
+        def admission_check() -> None:
+            admission_controller.admit_solve(
+                peer_address=peer,
+                forwarded_for=forwarded_for,
+            )
+
         return await solve_jobs.submit(
             request,
             correlation_id=_correlation_id(http_request),
             idempotency_key=idempotency_key,
+            admission_check=admission_check,
         )
 
     @app.get(

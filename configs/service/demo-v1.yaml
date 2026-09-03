@@ -13,3 +13,4 @@ solve_timeout_seconds: 180
 predictions_per_minute_client: 60
 solves_per_hour_client: 0
 solves_per_day_global: 0
+solve_gpu_seconds_per_day: 0.0

@@ -22,6 +22,9 @@ class SchemaVersionError(SoufflerieError): ...       # SCHEMA_UNSUPPORTED
 class DependencyUnavailableError(SoufflerieError): ... # DEPENDENCY_UNAVAILABLE
 class DeviceUnavailableError(SoufflerieError): ...   # DEVICE_UNAVAILABLE
 class CapacityError(SoufflerieError): ...             # CAPACITY_EXHAUSTED
+class RateLimitError(SoufflerieError): ...            # RATE_LIMITED
+class BudgetExhaustedError(SoufflerieError): ...      # BUDGET_EXHAUSTED
+class SolveDisabledError(SoufflerieError): ...        # SOLVE_DISABLED
 class RemoteExecutionError(SoufflerieError): ...      # REMOTE_EXECUTION
 class ValidationGateError(SoufflerieError): ...       # VALIDATION_RED
 class InternalInvariantError(SoufflerieError): ...    # INTERNAL_INVARIANT
