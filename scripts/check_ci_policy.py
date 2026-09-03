@@ -196,10 +196,18 @@ def check_workflow_policy(path: Path) -> tuple[str, ...]:
         run = step.get("run")
         if isinstance(run, str):
             normalized_run = " ".join(run.split())
-            if normalized_run in {"uv sync --frozen", "uv sync --frozen --extra solver"}:
+            if normalized_run in {
+                "uv sync --frozen --extra viz",
+                "uv sync --frozen --extra solver --extra viz",
+            }:
                 job_evidence[job_name].add("sync")
-            if normalized_run == "uv sync --frozen --extra solver":
+            if normalized_run == "uv sync --frozen --extra solver --extra viz":
                 job_evidence[job_name].add("solver-extra")
+            if normalized_run in {
+                "uv sync --frozen --extra viz",
+                "uv sync --frozen --extra solver --extra viz",
+            }:
+                job_evidence[job_name].add("viz-extra")
             if "pytest" in run:
                 environment = step.get("env")
                 env_values = environment if isinstance(environment, Mapping) else {}
@@ -223,6 +231,8 @@ def check_workflow_policy(path: Path) -> tuple[str, ...]:
             errors.append(f"job {job_name!r} lacks setup evidence: {', '.join(missing)}")
         if job_name in {"integration", "unit-contract"} and "solver-extra" not in evidence:
             errors.append(f"job {job_name!r} must sync the locked solver extra")
+        if "viz-extra" not in evidence:
+            errors.append(f"job {job_name!r} must sync the locked visualization extra")
         raw_job = jobs[job_name]
         if isinstance(raw_job, Mapping):
             if raw_job.get("runs-on") != "ubuntu-latest":
