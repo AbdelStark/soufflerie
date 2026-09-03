@@ -8,6 +8,7 @@ repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd -- "${repository_root}"
 
 uv lock --check
+uv sync --frozen --extra solver --extra viz
 uv run ruff check .
 uv run ruff format --check .
 uv run mypy src tests

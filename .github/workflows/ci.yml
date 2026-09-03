@@ -37,7 +37,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
       - name: Sync the locked development environment
-        run: uv sync --frozen
+        run: uv sync --frozen --extra viz
       - name: Verify lock freshness
         run: uv lock --check
       - name: Lint
@@ -79,7 +79,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
       - name: Sync the locked development environment
-        run: uv sync --frozen --extra solver
+        run: uv sync --frozen --extra solver --extra viz
       - name: Run CPU-safe coverage gate without network
         env:
           UV_OFFLINE: "1"
@@ -109,7 +109,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
       - name: Sync the locked development environment
-        run: uv sync --frozen --extra solver
+        run: uv sync --frozen --extra solver --extra viz
       - name: Run bounded CPU integration tests without network
         env:
           UV_OFFLINE: "1"
