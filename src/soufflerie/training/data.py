@@ -88,6 +88,12 @@ class ManifestDataset:
     def dataset_sha256(self) -> str:
         return self._published.manifest.metadata.dataset_sha256
 
+    @property
+    def parent_run_sha256(self) -> tuple[str, ...]:
+        """Return the verified canonical solver-run lineage in manifest order."""
+
+        return self._published.manifest.metadata.parent_run_sha256
+
     def split_rows(self, split: Split) -> tuple[ManifestRow, ...]:
         """Return immutable manifest membership in canonical design-ID order."""
 

@@ -6,12 +6,15 @@ environment placeholders, non-finite numbers, and unsafe YAML tags are rejected.
 Comments and key ordering never participate in `config_digest`; validated typed
 content is canonicalized before hashing.
 
-The canonical sweep and case examples are executable inputs. Training,
-validation, and service examples use 20-character all-zero or low-numbered
-artifact identity sentinels because the dataset, model, and report artifacts do
-not exist yet. Downstream entrypoints must resolve those identities to verified
-artifacts before work starts; these examples do not claim completed training,
-validation, or deployment.
+The canonical sweep and case examples are executable inputs. Training pins the
+published canonical dataset identity. Validation and service examples retain
+20-character all-zero or low-numbered model/report identity sentinels until the
+canonical three-seed training run publishes its index. Downstream entrypoints
+must resolve every identity to a verified artifact before work starts; sentinel
+examples do not claim completed validation or deployment. The validation smoke
+uses only 100 deterministic bootstrap resamples, but it still requires real
+dataset/model/baseline parents and evaluates the fixed test/OOD/sensitivity
+memberships rather than fabricating reduced evidence.
 
 Run `uv run python scripts/validate_schemas.py` after changing a model or example.
 Regenerate schema JSON with `uv run python scripts/export_schemas.py`.

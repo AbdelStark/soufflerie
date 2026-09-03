@@ -26,7 +26,11 @@ from infra.policy import (
     SOLVE_TIMEOUT_SECONDS,
     SWEEP_MAX_CONTAINERS,
     SWEEP_TIMEOUT_SECONDS,
+    TRAIN_MAX_CONTAINERS,
+    TRAIN_TIMEOUT_SECONDS,
     UV_VERSION,
+    VALIDATE_MAX_CONTAINERS,
+    VALIDATE_TIMEOUT_SECONDS,
     VOLUME_MOUNT,
     VOLUME_NAME,
     RemoteRuntimeSettings,
@@ -204,12 +208,21 @@ def test_stubbed_entrypoint_imports_reuse_the_single_shared_policy(
     _FakeApp.instances.clear()
     monkeypatch.setitem(sys.modules, "modal", _fake_modal())
     monkeypatch.delenv("SOUFFLERIE_REMOTE_GPU", raising=False)
-    for name in ("infra.sweep", "infra.solve", "infra.solve_worker", "infra.app"):
+    for name in (
+        "infra.validate",
+        "infra.train",
+        "infra.sweep",
+        "infra.solve",
+        "infra.solve_worker",
+        "infra.app",
+    ):
         sys.modules.pop(name, None)
 
     app_module = importlib.import_module("infra.app")
     solve_module = importlib.import_module("infra.solve")
     sweep_module = importlib.import_module("infra.sweep")
+    train_module = importlib.import_module("infra.train")
+    validate_module = importlib.import_module("infra.validate")
 
     assert len(_FakeApp.instances) == 1
     fake_app = _FakeApp.instances[0]
@@ -217,6 +230,8 @@ def test_stubbed_entrypoint_imports_reuse_the_single_shared_policy(
     assert app_module.app is fake_app
     assert solve_module.app is fake_app
     assert sweep_module.app is fake_app
+    assert train_module.app is fake_app
+    assert validate_module.app is fake_app
     assert list(inspect.signature(solve_module.solve_remote.function).parameters) == [
         "case_json",
         "correlation_id",
@@ -234,6 +249,19 @@ def test_stubbed_entrypoint_imports_reuse_the_single_shared_policy(
         "request_json"
     ]
     assert list(inspect.signature(sweep_module.sweep_remote.function).parameters) == ["config_ref"]
+    assert list(
+        inspect.signature(train_module.stage_training_request_remote.function).parameters
+    ) == ["request_json"]
+    assert list(inspect.signature(train_module.train_remote.function).parameters) == [
+        "config_ref",
+        "seed",
+    ]
+    assert list(
+        inspect.signature(validate_module.stage_validation_request_remote.function).parameters
+    ) == ["request_json"]
+    assert list(inspect.signature(validate_module.validate_remote.function).parameters) == [
+        "config_ref"
+    ]
     assert _FakeVolume.calls == [(VOLUME_NAME, {"create_if_missing": True})]
 
     registry_calls = [call for call in _FakeImage.calls if call[0] == "from_registry"]
@@ -295,6 +323,36 @@ def test_stubbed_entrypoint_imports_reuse_the_single_shared_policy(
             "volumes": {VOLUME_MOUNT: app_module.volume},
             "timeout": SWEEP_TIMEOUT_SECONDS,
             "max_containers": SWEEP_MAX_CONTAINERS,
+            "retries": REMOTE_RETRIES,
+        },
+        {
+            "image": app_module.image,
+            "volumes": {VOLUME_MOUNT: app_module.volume},
+            "timeout": TRAIN_TIMEOUT_SECONDS,
+            "max_containers": TRAIN_MAX_CONTAINERS,
+            "retries": REMOTE_RETRIES,
+        },
+        {
+            "image": app_module.image,
+            "gpu": PRIMARY_GPU,
+            "volumes": {VOLUME_MOUNT: app_module.volume},
+            "timeout": TRAIN_TIMEOUT_SECONDS,
+            "max_containers": TRAIN_MAX_CONTAINERS,
+            "retries": REMOTE_RETRIES,
+        },
+        {
+            "image": app_module.image,
+            "volumes": {VOLUME_MOUNT: app_module.volume},
+            "timeout": VALIDATE_TIMEOUT_SECONDS,
+            "max_containers": VALIDATE_MAX_CONTAINERS,
+            "retries": REMOTE_RETRIES,
+        },
+        {
+            "image": app_module.image,
+            "gpu": PRIMARY_GPU,
+            "volumes": {VOLUME_MOUNT: app_module.volume},
+            "timeout": VALIDATE_TIMEOUT_SECONDS,
+            "max_containers": VALIDATE_MAX_CONTAINERS,
             "retries": REMOTE_RETRIES,
         },
     ]

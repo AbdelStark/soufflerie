@@ -32,6 +32,7 @@ EXAMPLES: Mapping[Path, type[BaseModel]] = {
     Path("configs/sweeps/mvp-v1.yaml"): SweepConfig,
     Path("configs/training/fno-v1.yaml"): TrainingConfig,
     Path("configs/validation/release-v1.yaml"): ValidationConfig,
+    Path("configs/validation/smoke.yaml"): ValidationConfig,
 }
 
 

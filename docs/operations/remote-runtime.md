@@ -141,6 +141,15 @@ payload bytes, wall/GPU seconds, dataset/manifest/statistics digests, and final
 state. `--output` writes the same JSON outside the repository for evidence
 capture without dirtying a resumable checkout.
 
+## Training and validation
+
+The same image and volume back the identity-checked training and validation
+entrypoints. Their exact runbooks are [`training.md`](training.md) and
+[`validation.md`](validation.md). Training admits at most three independent
+seed workers for 75 minutes each; validation admits one worker for 30 minutes.
+Both disable provider retries, exchange only bounded typed requests/receipts,
+and commit large checkpoints, models, and reports through the shared volume.
+
 ## Persistence and retention
 
 The shared volume contains immutable requests, fenced sweep state, and
@@ -160,6 +169,9 @@ automatic garbage collector.
 - The kernel smoke, staging function, and sweep orchestrator each use one
   container. The orchestrator times out after two hours. Other operation limits
   remain centralized as reviewed constants in `infra/policy.py`.
+- Training staging/workers use the reviewed 75-minute/concurrency-three policy;
+  validation staging/workers use 30 minutes/concurrency one. Neither may change
+  a resumed experiment's device class or accept mismatched report parents.
 - CI uses a stubbed Modal module and never authenticates or calls the provider.
 - A missing profile, unavailable GPU, dirty source image, non-CUDA resolution,
   manifest mismatch, serialization violation, artifact mismatch, or kernel
