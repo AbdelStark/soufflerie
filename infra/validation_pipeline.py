@@ -619,15 +619,15 @@ def _publish_report(root: Path, report: ValidationReport) -> ArtifactRef:
     report_path = directory / "report.json"
     artifacts = render_validation_artifacts(report, plot_directory="report.plots")
     if (report_path.exists() or report_path.is_symlink()) and (
-        load_validation_report(report_path) != report
+        load_validation_report(report_path, trusted_root=root) != report
     ):
         raise ArtifactIntegrityError(
             "REMOTE_VALIDATE_STORE_IDENTITY: immutable report ID already differs"
         )
-    write_validation_artifacts(report_path, artifacts)
-    if load_validation_report(report_path) != report:
+    write_validation_artifacts(report_path, artifacts, trusted_root=root)
+    if load_validation_report(report_path, trusted_root=root) != report:
         raise ArtifactIntegrityError("REMOTE_VALIDATE_STORE_IDENTITY: published report differs")
-    stale = check_validation_artifacts(report_path, artifacts)
+    stale = check_validation_artifacts(report_path, artifacts, trusted_root=root)
     if stale:
         raise ArtifactIntegrityError(
             "REMOTE_VALIDATE_STORE_IDENTITY: published report companions differ"
