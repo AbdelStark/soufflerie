@@ -36,10 +36,43 @@ in `[0.75, 1.25]`, and `reynolds` in `[40, 300]`. POST bodies must use
 `application/json` and are limited to 16 KiB, including streamed bodies without
 a `Content-Length` header. Repeated or invalid framing metadata fails closed.
 
-The contract-only application implemented in issue #32 deliberately has no
-model or solve adapter: valid calls return `503 DEPENDENCY_UNAVAILABLE` until
-the prediction and job-lifecycle implementations supply those adapters. It does
-not fabricate a successful response.
+The application still has no prediction adapter, so a valid `/predict` call
+returns `503 DEPENDENCY_UNAVAILABLE`. Reference solves are available when the
+process is configured with solve capacity and a `SolveJobManager` backed by a
+solver executor. A configured service never fabricates either response.
+
+## Solve jobs and replay
+
+`POST /solve` accepts an optional `Idempotency-Key` header of 1–64 restricted
+ASCII characters. Repeating the same key with the exact same canonical request
+returns the original `202 SolveAccepted` record without another execution.
+Rebinding that key to different request content returns
+`409 IDEMPOTENCY_CONFLICT`.
+
+The in-process manager admits no more than the configured running and queued
+capacity. Every admitted job follows one monotonic lifecycle:
+
+| State | SSE event | Meaning |
+| --- | --- | --- |
+| `queued` | `queued` | Admitted and waiting for bounded execution capacity |
+| `running` | `running`, then zero or more `progress` events | Executor owns the job |
+| `succeeded` | `completed` | Immutable result is available from status and replay |
+| `failed` | `failed` | Immutable sanitized error is available |
+| `expired` | none | Terminal state and event history are no longer retrievable |
+
+Event IDs are decimal sequences starting at 1 and increasing by one. Send a
+retained sequence in `Last-Event-ID` to replay only later events. A malformed,
+negative, or future cursor returns `409 EVENT_CURSOR_INVALID` as JSON before an
+SSE response begins. While a non-terminal stream is idle, the server emits a
+comment-only `: heartbeat` frame every 15 seconds; it has no `data` field and
+does not advance the cursor. Closing a subscriber never cancels its job.
+
+Successful and failed terminal records remain immutable and replayable for
+exactly 60 minutes after termination. Status then becomes `expired`, clears the
+inline result/error, and event lookup returns `404 JOB_NOT_FOUND`; referenced
+content-addressed artifacts have their own retention policy. This first backend
+is deliberately process-local: restart recovery, multi-instance queues, and
+remote solver submission are outside its contract.
 
 ## Errors and correlation
 
@@ -64,6 +97,7 @@ stack traces, hostnames, accounts, paths, or credentials into the body:
 | `413` | `REQUEST_TOO_LARGE` |
 | `415` | `UNSUPPORTED_MEDIA_TYPE` |
 | `422` | `REQUEST_INVALID`, `CASE_OUT_OF_DOMAIN`, or `SCHEMA_UNSUPPORTED` |
+| `409` | `IDEMPOTENCY_CONFLICT` or `EVENT_CURSOR_INVALID` |
 | `404` | `JOB_NOT_FOUND` for a missing/expired job; `NOT_FOUND` for a route |
 | `503` | integrity, device, dependency, capacity, or remote availability |
 | `500` | generic internal failure |
@@ -93,3 +127,7 @@ uv run python scripts/export_schemas.py
 uv run python scripts/validate_schemas.py
 uv run pytest tests/service/test_schemas.py tests/service/test_health.py tests/service/test_openapi.py
 ```
+
+SSE `data` payloads also have a standalone checked
+[`SolveEvent` JSON Schema](../schemas/v1/solve-event.json), so non-HTTP consumers
+can validate replay records without extracting the OpenAPI component.

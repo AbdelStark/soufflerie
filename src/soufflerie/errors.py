@@ -63,6 +63,14 @@ class JobNotFoundError(SoufflerieError):
     code = "JOB_NOT_FOUND"
 
 
+class EventCursorError(SoufflerieError):
+    code = "EVENT_CURSOR_INVALID"
+
+
+class IdempotencyConflictError(SoufflerieError):
+    code = "IDEMPOTENCY_CONFLICT"
+
+
 class RemoteExecutionError(SoufflerieError):
     code = "REMOTE_EXECUTION"
     default_retryable = True
@@ -83,6 +91,8 @@ __all__ = [
     "DependencyUnavailableError",
     "DeviceUnavailableError",
     "DomainError",
+    "EventCursorError",
+    "IdempotencyConflictError",
     "InternalInvariantError",
     "JobNotFoundError",
     "NonConvergenceError",
