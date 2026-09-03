@@ -408,6 +408,22 @@ def test_epoch_jsonl_is_append_only_contiguous_and_schema_bound(tmp_path: Path) 
         )
 
 
+def test_epoch_jsonl_rolls_back_exactly_one_uncheckpointed_tail(tmp_path: Path) -> None:
+    writer = EpochJsonlWriter(tmp_path / "epochs.jsonl")
+    records = tuple(_record(epoch=epoch, global_step=epoch * 2) for epoch in range(1, 4))
+    for record in records:
+        writer.append(record)
+
+    assert writer.rollback_uncheckpointed_tail(2) == records[-1]
+    assert writer.read() == records[:2]
+    assert writer.path.read_text(encoding="utf-8").count("\n") == 2
+
+    with pytest.raises(ArtifactIntegrityError, match="exactly one"):
+        writer.rollback_uncheckpointed_tail(2)
+    with pytest.raises(ArtifactIntegrityError, match="must be positive"):
+        writer.rollback_uncheckpointed_tail(True)
+
+
 def test_epoch_schema_and_writer_reject_incoherent_or_corrupt_evidence(tmp_path: Path) -> None:
     base = _record(epoch=1, global_step=2).model_dump()
     for update, message in (

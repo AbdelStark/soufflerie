@@ -64,7 +64,7 @@ class ManifestBatch:
 class ManifestDataset:
     """A fully verified dataset whose membership comes only from its manifest."""
 
-    __slots__ = ("_published", "_run_store")
+    __slots__ = ("_published", "_run_store", "_sample_cache")
 
     def __init__(
         self,
@@ -79,6 +79,7 @@ class ManifestDataset:
             raise TypeError("published must be a verified PublishedDataset")
         self._published = published
         self._run_store = run_store
+        self._sample_cache: dict[str, PreprocessingSample] = {}
 
     @property
     def reference(self) -> ArtifactRef:
@@ -158,6 +159,9 @@ class ManifestDataset:
             raise TypeError("row must be a ManifestRow")
         if row.dataset_id != self.reference.artifact_id or row not in self._published.manifest.rows:
             raise ArtifactIntegrityError("TRAIN-1 MANIFEST: row is not dataset membership")
+        cached = self._sample_cache.get(row.run_digest)
+        if cached is not None:
+            return cached
         expected = ArtifactRef(
             artifact_type="run",
             artifact_id=row.run_digest[:20],
@@ -199,6 +203,29 @@ class ManifestDataset:
             sdf=fields.sdf,
             obstacle_mask=fields.obstacle_mask,
         )
+
+    def preload_splits(self, splits: tuple[Split, ...]) -> int:
+        """Verify and retain bounded immutable samples for repeated epoch access."""
+
+        if (
+            not isinstance(splits, tuple)
+            or not splits
+            or len(set(splits)) != len(splits)
+            or any(split not in {"train", "validation", "test"} for split in splits)
+        ):
+            raise ArtifactIntegrityError(
+                "TRAIN-3 CACHE: splits must be a nonempty distinct split tuple"
+            )
+        rows = tuple(row for split in splits for row in self.split_rows(split))
+        staged = {
+            row.run_digest: self.load_sample(row)
+            for row in rows
+            if row.run_digest not in self._sample_cache
+        }
+        if len(staged) + len(self._sample_cache) > 1_000:
+            raise ArtifactIntegrityError("TRAIN-3 CACHE: sample cache exceeds manifest bounds")
+        self._sample_cache.update(staged)
+        return len(self._sample_cache)
 
     def iter_samples(self, split: Split) -> Iterator[PreprocessingSample]:
         """Stream verified samples in canonical design-ID order."""

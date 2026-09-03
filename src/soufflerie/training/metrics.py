@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import math
 import os
+import tempfile
 from pathlib import Path
 from typing import Annotated, Literal, Self
 
 from pydantic import Field, model_validator
 
 from soufflerie.config import Seed
+from soufflerie.datagen._local_files import fsync_directory
 from soufflerie.errors import ArtifactIntegrityError
 from soufflerie.schemas import ContentId, Sha256, StrictFrozenModel, VersionedModel, canonical_json
 
@@ -159,6 +161,50 @@ class EpochJsonlWriter:
             raise
         except OSError as error:
             raise ArtifactIntegrityError("TRAIN-8 JSONL: epoch record append failed") from error
+
+    def rollback_uncheckpointed_tail(self, completed_epoch: int) -> TrainingEpochRecord:
+        """Atomically remove exactly one valid record beyond a durable checkpoint."""
+
+        if (
+            isinstance(completed_epoch, bool)
+            or not isinstance(completed_epoch, int)
+            or completed_epoch < 1
+        ):
+            raise ArtifactIntegrityError(
+                "TRAIN-8 RECOVERY: completed checkpoint epoch must be positive"
+            )
+        records = self.read()
+        if len(records) != completed_epoch + 1:
+            raise ArtifactIntegrityError(
+                "TRAIN-8 RECOVERY: epoch log must have exactly one uncheckpointed record"
+            )
+        retained = records[:completed_epoch]
+        orphan = records[-1]
+        content = "".join(f"{canonical_json(record)}\n" for record in retained)
+        descriptor = -1
+        temporary: Path | None = None
+        try:
+            descriptor, temporary_name = tempfile.mkstemp(
+                prefix=f".{self.path.name}-recovery-",
+                dir=self.path.parent,
+            )
+            temporary = Path(temporary_name)
+            with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as handle:
+                descriptor = -1
+                handle.write(content)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, self.path)
+            temporary = None
+            fsync_directory(self.path.parent)
+        except OSError as error:
+            raise ArtifactIntegrityError("TRAIN-8 RECOVERY: epoch rollback failed") from error
+        finally:
+            if descriptor >= 0:
+                os.close(descriptor)
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+        return orphan
 
 
 __all__ = [
